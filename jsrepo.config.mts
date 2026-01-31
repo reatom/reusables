@@ -48,6 +48,16 @@ export default defineConfig({
         ],
       },
       {
+        name: 'hotWrap',
+        type: 'reatom:utility',
+        files: [
+          { path: 'src/hot-wrap/hot-wrap.ts' },
+          { path: 'src/hot-wrap/hot-wrap.md', role: 'doc' },
+          { path: 'src/hot-wrap/hot-wrap.test.ts', role: 'test' },
+          { path: 'src/hot-wrap/hot-wrap.example.tsx', role: 'example' },
+        ],
+      },
+      {
         name: 'tweakpane',
         type: 'reatom:integration',
         files: [
@@ -61,7 +71,7 @@ export default defineConfig({
               { path: 'essentials.ts' },
               { path: 'tweakpane.md', role: 'doc' },
               { path: 'tweakpane.test.ts', role: 'test' },
-              { path: 'tweakpane.example.ts', role: 'example' },
+              { path: 'tweakpane.example.tsx', role: 'example' },
             ],
           },
         ],

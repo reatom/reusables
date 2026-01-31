@@ -9,14 +9,20 @@ importers:
   .:
     devDependencies:
       '@reatom/core':
-        specifier: ^1000.10.0
+        specifier: ^1000.*
         version: 1000.10.0
+      '@reatom/react':
+        specifier: ^1000.*
+        version: 1000.2.2(@reatom/core@1000.10.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@tweakpane/core':
         specifier: ^2.0.5
         version: 2.0.5
       '@tweakpane/plugin-essentials':
         specifier: ^0.2.1
         version: 0.2.1(tweakpane@4.0.5)
+      '@types/react':
+        specifier: ^19.2.10
+        version: 19.2.10
       '@vitest/browser':
         specifier: ^4.0.18
         version: 4.0.18(vite@7.3.1(jiti@2.6.1)(yaml@2.8.2))(vitest@4.0.18)
@@ -355,6 +361,13 @@ packages:
   '@reatom/core@1000.10.0':
     resolution: {integrity: sha512-q3j7k3OnqHkQYsTcLPJ0Ars7qiahXsl3gsHV15a92nhhlFwjVNMvr1gZXO1rjm9HXHgAgog6tuxSGQcSPHD6bw==}
 
+  '@reatom/react@1000.2.2':
+    resolution: {integrity: sha512-QxNFwtmbsIK/DUtmjebfW9gmW+d+4UPZVq1f+Nb2wkiNOZ8yUh7o0i4xAs83nneZOFqcqwNiYKfDrEpBozMCvA==}
+    peerDependencies:
+      '@reatom/core': ^1000.14.1
+      react: '>=18.2.0'
+      react-dom: '>=18.2.0'
+
   '@rollup/rollup-android-arm-eabi@4.57.1':
     resolution: {integrity: sha512-A6ehUVSiSaaliTxai040ZpZ2zTevHYbvu/lDoeAteHI8QnaosIzm4qwtezfRg1jOYaUmnzLX1AOD6Z+UJjtifg==}
     cpu: [arm]
@@ -512,6 +525,9 @@ packages:
   '@types/ms@2.1.0':
     resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
 
+  '@types/react@19.2.10':
+    resolution: {integrity: sha512-WPigyYuGhgZ/cTPRXB2EwUw+XvsRA3GqHlsP4qteqrnnjDrApbS7MxcGr/hke5iUoeB7E/gQtrs9I37zAJ0Vjw==}
+
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
 
@@ -606,6 +622,9 @@ packages:
   comment-parser@1.4.5:
     resolution: {integrity: sha512-aRDkn3uyIlCFfk5NUA+VdwMmMsh8JGhc4hapfV4yxymHGQ3BVskMQfoXGpCo5IoBuQ9tS5iiVKhCpTcB4pW4qw==}
     engines: {node: '>= 12.0.0'}
+
+  csstype@3.2.3:
+    resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
 
   debug@4.4.3:
     resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
@@ -888,6 +907,15 @@ packages:
   quansync@1.0.0:
     resolution: {integrity: sha512-5xZacEEufv3HSTPQuchrvV6soaiACMFnq1H8wkVioctoH3TRha9Sz66lOxRwPK/qZj7HPiSveih9yAyh98gvqA==}
 
+  react-dom@19.2.4:
+    resolution: {integrity: sha512-AXJdLo8kgMbimY95O2aKQqsz2iWi9jMgKJhRBAxECE4IFxfcazB2LmzloIoibJI3C12IlY20+KFaLv+71bUJeQ==}
+    peerDependencies:
+      react: ^19.2.4
+
+  react@19.2.4:
+    resolution: {integrity: sha512-9nfp2hYpCwOjAN+8TZFGhtWEwgvWHXqESH8qT89AT/lWklpLON22Lc8pEtnpsZz7VmawabSU0gCjnj8aC0euHQ==}
+    engines: {node: '>=0.10.0'}
+
   restore-cursor@5.1.0:
     resolution: {integrity: sha512-oMA2dcrw6u0YfxJQXm342bFKX/E4sG9rbTzO9ptUcR/e8A33cHuvStiYOwH7fszkZlZ1z/ta9AAoPk2F4qIOHA==}
     engines: {node: '>=18'}
@@ -899,6 +927,9 @@ packages:
     resolution: {integrity: sha512-oQL6lgK3e2QZeQ7gcgIkS2YZPg5slw37hYufJ3edKlfQSGGm8ICoxswK15ntSzF/a8+h7ekRy7k7oWc3BQ7y8A==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
+
+  scheduler@0.27.0:
+    resolution: {integrity: sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==}
 
   siginfo@2.0.0:
     resolution: {integrity: sha512-ybx0WO1/8bSBLEWXZvEd7gMW3Sn3JFlW3TvX1nREbDLRNQNaeNN8WK0meBwPdAaOI7TtRRRJn/Es1zhrrCHu7g==}
@@ -1260,6 +1291,12 @@ snapshots:
     optionalDependencies:
       idb-keyval: 6.2.2
 
+  '@reatom/react@1000.2.2(@reatom/core@1000.10.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+    dependencies:
+      '@reatom/core': 1000.10.0
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+
   '@rollup/rollup-android-arm-eabi@4.57.1':
     optional: true
 
@@ -1366,6 +1403,10 @@ snapshots:
       '@types/unist': 3.0.3
 
   '@types/ms@2.1.0': {}
+
+  '@types/react@19.2.10':
+    dependencies:
+      csstype: 3.2.3
 
   '@types/unist@3.0.3': {}
 
@@ -1474,6 +1515,8 @@ snapshots:
   commander@14.0.2: {}
 
   comment-parser@1.4.5: {}
+
+  csstype@3.2.3: {}
 
   debug@4.4.3:
     dependencies:
@@ -1843,6 +1886,13 @@ snapshots:
 
   quansync@1.0.0: {}
 
+  react-dom@19.2.4(react@19.2.4):
+    dependencies:
+      react: 19.2.4
+      scheduler: 0.27.0
+
+  react@19.2.4: {}
+
   restore-cursor@5.1.0:
     dependencies:
       onetime: 7.0.0
@@ -1880,6 +1930,8 @@ snapshots:
       '@rollup/rollup-win32-x64-gnu': 4.57.1
       '@rollup/rollup-win32-x64-msvc': 4.57.1
       fsevents: 2.3.3
+
+  scheduler@0.27.0: {}
 
   siginfo@2.0.0: {}
 

@@ -9,6 +9,7 @@ import {
 } from './core'
 import { withBinding } from './bindings'
 import { withButton, withBlade } from './blades'
+import { hotWrap } from '../hot-wrap/hot-wrap'
 
 let container: HTMLDivElement
 
@@ -30,13 +31,12 @@ describe('reatomPane', () => {
 
   test('returns pane instance when subscribed', () => {
     const pane = reatomPane({ name: 'test', container })
-    const unsub = pane.subscribe()
+    hotWrap(pane)
     const paneInstance = pane()
 
     expect(paneInstance).toBeDefined()
     expect(paneInstance.registerPlugin).toBeDefined()
     expect(paneInstance.dispose).toBeDefined()
-    unsub()
   })
 
   test('disposes pane on unsubscribe', () => {
@@ -54,10 +54,9 @@ describe('reatomPaneFolder', () => {
     const pane = reatomPane({ name: 'main', container })
     const folder = reatomPaneFolder({ title: 'Settings' }, pane)
 
-    const unsub = pane.subscribe()
+    hotWrap(pane)
     expect(folder.name).toBe('tweakpane.pane.main.Settings')
     expect(folder()).toBeDefined()
-    unsub()
   })
 })
 
@@ -66,10 +65,9 @@ describe('reatomPaneTab', () => {
     const pane = reatomPane({ name: 'main', container })
     const tabs = reatomPaneTab(['General', 'Advanced'], pane)
 
-    const unsub = pane.subscribe()
+    hotWrap(pane)
     expect(tabs.pages).toHaveLength(2)
     expect(tabs()).toBeDefined()
-    unsub()
   })
 })
 
@@ -90,19 +88,17 @@ describe('withBinding', () => {
       withBinding({ label: 'Value' }, pane),
     )
 
-    const unsub = value.subscribe()
+    hotWrap(value)
     expect(pane()).toBeDefined()
     expect(value.binding()).toBeDefined()
-    unsub()
   })
 
   test('atom value can be retrieved while bound', () => {
     const pane = reatomPane({ name: 'test', container })
     const value = atom(42, 'value').extend(withBinding({ label: 'Num' }, pane))
 
-    const unsub = value.subscribe()
+    hotWrap(value)
     expect(value()).toBe(42)
-    unsub()
   })
 })
 
@@ -123,9 +119,8 @@ describe('withButton', () => {
       withButton({ title: 'Do Thing' }, pane),
     )
 
-    const unsub = doThing.button.subscribe()
+    hotWrap(doThing.button)
     expect(doThing.button()).toBeDefined()
-    unsub()
   })
 
   test('action can be called while button is subscribed', () => {
@@ -135,9 +130,8 @@ describe('withButton', () => {
       called = true
     }, 'doThing').extend(withButton({ title: 'Click Me' }, pane))
 
-    const unsub = doThing.button.subscribe()
+    hotWrap(doThing.button)
     doThing()
     expect(called).toBe(true)
-    unsub()
   })
 })

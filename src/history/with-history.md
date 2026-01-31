@@ -24,7 +24,7 @@ Extension that adds:
 
 ```ts
 import { atom } from '@reatom/core'
-import { withHistory } from 'reusables/reatom/extension/with-history'
+import { withHistory } from '#reatom/extension/with-history'
 
 const counter = atom(0, 'counter').extend(withHistory(3))
 

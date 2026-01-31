@@ -26,7 +26,7 @@ A computed atom extended with `withAbort()` and `withDisconnectHook()`.
 ### Example
 
 ```ts
-import { reatomInstance } from 'reusables/reatom/factory/reatom-instance'
+import { reatomInstance } from '#reatom/factory/reatom-instance'
 
 // Manage a Web Audio oscillator
 const oscillator = reatomInstance(
@@ -50,7 +50,7 @@ When the `create` function reads other atoms, the instance is automatically recr
 
 ```ts
 import { atom } from '@reatom/core'
-import { reatomInstance } from 'reusables/reatom/factory/reatom-instance'
+import { reatomInstance } from '#reatom/factory/reatom-instance'
 
 const url = atom('/api/data')
 

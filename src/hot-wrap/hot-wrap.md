@@ -29,7 +29,7 @@ Use `hotWrap` when you need subscription with lifecycle-aware cleanup:
 ```tsx
 import { action, atom, withConnectHook } from '@reatom/core'
 import { reatomComponent } from '@reatom/react'
-import { hotWrap } from 'reusables/reatom/utility/hot-wrap'
+import { hotWrap } from '#reatom/utility/hot-wrap'
 
 // Extension that runs on connect/disconnect (activates when subscribed)
 const withLog = (name: string) =>

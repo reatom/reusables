@@ -135,3 +135,55 @@ describe('withButton', () => {
     expect(called).toBe(true)
   })
 })
+
+describe('reatomPaneSeparator', () => {
+  test('creates separator with correct name', () => {
+    const pane = reatomPane({ name: 'test', container })
+    const separator = reatomPaneSeparator({}, pane)
+
+    expect(separator.name).toBe('tweakpane.pane.test.separator')
+  })
+
+  test('separator creates blade when subscribed', () => {
+    const pane = reatomPane({ name: 'test', container })
+    const separator = reatomPaneSeparator({}, pane)
+
+    hotWrap(pane)
+    hotWrap(separator)
+    expect(separator()).toBeDefined()
+    expect(separator().dispose).toBeDefined()
+  })
+})
+
+describe('withBlade', () => {
+  test('extends atom with blade property', () => {
+    const pane = reatomPane({ name: 'test', container })
+    const value = atom(50, 'value').extend(
+      withBlade({ view: 'slider', min: 0, max: 100 }, pane),
+    )
+
+    expect(value.blade).toBeDefined()
+    expect(value.blade.name).toBe('tweakpane.pane.test.value.blade')
+  })
+
+  test('blade creates control when subscribed', () => {
+    const pane = reatomPane({ name: 'test', container })
+    const value = atom(50, 'value').extend(
+      withBlade({ view: 'slider', min: 0, max: 100 }, pane),
+    )
+
+    hotWrap(value)
+    expect(pane()).toBeDefined()
+    expect(value.blade()).toBeDefined()
+  })
+
+  test('extends action with blade property', () => {
+    const pane = reatomPane({ name: 'test', container })
+    const doAction = action(() => {}, 'doAction').extend(
+      withBlade({ view: 'button', title: 'Click' }, pane),
+    )
+
+    expect(doAction.blade).toBeDefined()
+    expect(doAction.blade.name).toBe('tweakpane.pane.test.doAction.blade')
+  })
+})

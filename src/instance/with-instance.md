@@ -19,7 +19,7 @@ When the source atom changes, the previous instance is disposed and a new one is
 
 ```ts
 import { atom } from '@reatom/core'
-import { withInstance } from 'reusables/reatom/extension/with-instance'
+import { withInstance } from '#reatom/extension/with-instance'
 
 const dimensions = atom({ x: 1, y: 1, z: 1 }).extend(
   withInstance(
@@ -43,7 +43,7 @@ dimensions.set({ x: 2, y: 3, z: 4 })
 Instances created with `withInstance` can be consumed by other [`reatomInstance`](./reatom-instance.md) calls, forming reactive dependency chains:
 
 ```ts
-import { reatomInstance } from 'reusables/reatom/factory/reatom-instance'
+import { reatomInstance } from '#reatom/factory/reatom-instance'
 
 const material = atom({ color: '#00ff00' }).extend(
   withInstance(

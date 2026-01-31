@@ -27,7 +27,7 @@ The logger function receives a `LogEntry` object:
 
 ```ts
 import { atom } from '@reatom/core'
-import { withLogger } from 'reusables/reatom/extension/with-logger'
+import { withLogger } from '#reatom/extension/with-logger'
 
 const counter = atom(0, 'counter').extend(withLogger())
 
@@ -38,10 +38,7 @@ counter.set(10) // Logs: [counter] [10] -> 10
 ### Custom logger example
 
 ```ts
-import {
-  withLogger,
-  type LogEntry,
-} from 'reusables/reatom/extension/with-logger'
+import { withLogger, type LogEntry } from '#reatom/extension/with-logger'
 
 const logs: LogEntry[] = []
 
@@ -59,7 +56,7 @@ counter.set(42) // Logs: "counter changed to 42"
 
 ```ts
 import { action } from '@reatom/core'
-import { withLogger } from 'reusables/reatom/extension/with-logger'
+import { withLogger } from '#reatom/extension/with-logger'
 
 const greet = action((name: string) => `Hello, ${name}!`, 'greet').extend(
   withLogger(),
@@ -88,8 +85,8 @@ const settings = atom({ theme: 'light' }, 'settings').extend(
 ### Composing with other extensions
 
 ```ts
-import { withReset } from 'reusables/reatom/extension/with-reset'
-import { withLogger } from 'reusables/reatom/extension/with-logger'
+import { withReset } from '#reatom/extension/with-reset'
+import { withLogger } from '#reatom/extension/with-logger'
 
 const form = atom({ name: '', email: '' }, 'form')
   .extend(withReset({ name: '', email: '' }))

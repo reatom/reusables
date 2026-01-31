@@ -25,7 +25,7 @@ All Tweakpane resources (panes, folders, bindings) are wrapped in computed atoms
 Creates a reactive Tweakpane instance.
 
 ```ts
-import { reatomPane } from 'reusables/reatom/tweakpane'
+import { reatomPane } from '#reatom/tweakpane'
 
 const pane = reatomPane({ name: 'settings', title: 'Settings' })
 
@@ -57,7 +57,7 @@ Extension that creates a two-way binding between an atom and a Tweakpane control
 
 ```ts
 import { atom } from '@reatom/core'
-import { withBinding } from 'reusables/reatom/tweakpane'
+import { withBinding } from '#reatom/tweakpane'
 
 const speed = atom(1.0, 'speed').extend(
   withBinding({ label: 'Speed', min: 0, max: 10 }, pane),
@@ -76,7 +76,7 @@ speed.subscribe((v) => console.log('Speed:', v))
 | `string`               | Text input    |
 | `#rrggbb`              | Color picker  |
 | `{ x, y }` / `{x,y,z}` | Point editor  |
-| `enumAtom`             | Dropdown      |
+| `reatomEnum`           | Dropdown      |
 
 ### `withButton(params, parent)`
 
@@ -84,7 +84,7 @@ Extension that triggers an action from a button.
 
 ```ts
 import { action, effect, getCalls } from '@reatom/core'
-import { withButton } from 'reusables/reatom/tweakpane'
+import { withButton } from '#reatom/tweakpane'
 
 const reset = action(() => {
   // reset logic
@@ -99,7 +99,7 @@ effect(() => getCalls(reset))
 Creates an FPS monitoring graph.
 
 ```ts
-import { reatomFpsGraph } from 'reusables/reatom/tweakpane'
+import { reatomFpsGraph } from '#reatom/tweakpane'
 
 const fps = reatomFpsGraph({ label: 'FPS' }, pane)
 fps.subscribe()
@@ -115,13 +115,13 @@ function render() {
 ## Complete Example
 
 ```ts
-import { action, atom, effect, enumAtom, getCalls } from '@reatom/core'
+import { action, atom, effect, reatomEnum, getCalls } from '@reatom/core'
 import {
   reatomPane,
   reatomPaneFolder,
   withBinding,
   withButton,
-} from 'reusables/reatom/tweakpane'
+} from '#reatom/tweakpane'
 
 // Create pane
 const pane = reatomPane({ name: 'game', title: 'Game Settings' })
@@ -135,7 +135,7 @@ const color = atom('#ff0000', 'color').extend(
   withBinding({ label: 'Color' }, pane),
 )
 
-const difficulty = enumAtom(['easy', 'medium', 'hard'], 'difficulty').extend(
+const difficulty = reatomEnum(['easy', 'medium', 'hard'], 'difficulty').extend(
   withBinding({ label: 'Difficulty' }, pane),
 )
 

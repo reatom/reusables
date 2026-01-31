@@ -26,6 +26,27 @@ export interface ReusableFile {
   devDependencies: ReusableDependency[]
 }
 
+/**
+ * Nested file entry within a directory (used for multi-file reusables like
+ * tweakpane)
+ */
+export interface NestedFileEntry {
+  type?: string
+  role?: string
+  path: string
+  relativePath?: string
+  registryDependencies?: string[]
+  dependencies?: ReusableDependency[]
+  devDependencies?: ReusableDependency[]
+}
+
+/** Directory entry containing nested files */
+export interface DirectoryEntry {
+  path: string
+  relativePath?: string
+  files: NestedFileEntry[]
+}
+
 export interface RegistryItem {
   name: string
   type: string
@@ -152,9 +173,9 @@ function flattenFiles(
 ): ReusableFile[] {
   const result: ReusableFile[] = []
   for (const f of item.files) {
-    if ('files' in f && Array.isArray((f as any).files)) {
+    if ('files' in f && Array.isArray((f as DirectoryEntry).files)) {
       // Nested directory structure (tweakpane)
-      const dir = f as any
+      const dir = f as DirectoryEntry
       for (const nested of dir.files) {
         result.push({
           type: nested.type ?? item.type,

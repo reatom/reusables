@@ -89,7 +89,7 @@ Astro website for @reatom/reusables - a standalone GitHub Pages site showcasing 
 **Steps:**
 
 - [x] Create `index.astro` with `BaseLayout` wrapping Header + content + Footer
-- [x] Hero section: title, short description of the registry, global install command (`pnpm dlx jsrepo add github/reatom/reusables`) with copy button
+- [x] Hero section: title, short description of the registry, global install command (`npx jsrepo init github/reatom/reusables`) with copy button
 - [x] Registry grid: list all reusables as `ReusableCard` components, grouped by type with section headings
 - [x] Style grid responsively: 1 col mobile, 2 col tablet, 3 col desktop
 - [x] Verify: run `pnpm dev`, confirm homepage shows all 7 reusables grouped by type
@@ -103,7 +103,7 @@ Astro website for @reatom/reusables - a standalone GitHub Pages site showcasing 
 **Steps:**
 
 - [x] Create `[name].astro` with `getStaticPaths()` generating a page per registry item
-- [x] Page content: name + type badge, install command with copy button (`pnpm dlx jsrepo add github/reatom/reusables [name]`), rendered markdown documentation, example code with syntax highlighting, source code (collapsible `<details>` element), dependency info (devDependencies, registryDependencies as links to other reusable pages)
+- [x] Page content: name + type badge, install command with copy button (`npx jsrepo add github/reatom/reusables [name]`), rendered markdown documentation, example code with syntax highlighting, source code (collapsible `<details>` element), dependency info (devDependencies, registryDependencies as links to other reusable pages)
 - [x] Use Astro's built-in markdown rendering for doc content
 - [x] Render example and source code blocks with shiki highlighting
 - [x] Verify: navigate to each of the 7 reusable pages, confirm content renders
@@ -116,10 +116,10 @@ Astro website for @reatom/reusables - a standalone GitHub Pages site showcasing 
 
 **Steps:**
 
-- [ ] Add GitHub Pages deployment step to `ci.yml`: build astro site, deploy `dist/` to GitHub Pages using `actions/deploy-pages`
-- [ ] Run `pnpm build` locally and verify static site builds with no errors
-- [ ] Run `pnpm preview` and verify the built site works (check base path `/reusables` is correct)
-- [ ] Spot-check all pages: homepage grid, each reusable detail page, install commands, code blocks
+- [x] Add GitHub Pages deployment step to `ci.yml`: build astro site, deploy `dist/` to GitHub Pages using `actions/deploy-pages`
+- [x] Run `pnpm build` locally and verify static site builds with no errors
+- [x] Run `pnpm preview` and verify the built site works (check base path `/reusables` is correct)
+- [x] Spot-check all pages: homepage grid, each reusable detail page, install commands, code blocks
 
 ## Verification
 

@@ -4,8 +4,10 @@ import { abortVar, wrap } from '@reatom/core'
  * Combines `subscribe` + `wrap` in one call, with automatic cleanup on
  * component unmount.
  *
- * Equivalent to: abortVar.subscribe(target.subscribe()) return wrap(target,
- * frame)
+ * Equivalent to:
+ *
+ *     abortVar.subscribe(target.subscribe())
+ *     return wrap(target, frame)
  *
  * @example
  *   const toggle = action(...).extend(withButton({ title: 'Toggle' }))

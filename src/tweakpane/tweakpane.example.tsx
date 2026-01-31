@@ -24,10 +24,15 @@ const position = atom({ x: 0, y: 0 }, 'position').extend(
   withBinding({ label: 'Position' }, settingsPane),
 )
 
+const mode = reatomEnum(['idle', 'running', 'paused'], 'mode').extend(
+  withBinding({ label: 'Mode' }, settingsPane),
+)
+
 const resetAction = action(() => {
   speed.set(1.0)
   enabled.set(true)
   position.set({ x: 0, y: 0 })
+  mode.reset()
 }, 'reset').extend(withButton({ title: 'Reset All' }, settingsPane))
 
 export const SettingsPanel = reatomComponent(() => {
@@ -35,6 +40,7 @@ export const SettingsPanel = reatomComponent(() => {
   const currentSpeed = speed()
   const isEnabled = enabled()
   const pos = position()
+  const currentMode = mode()
 
   return (
     <div>
@@ -43,6 +49,7 @@ export const SettingsPanel = reatomComponent(() => {
       <p>
         Position: {pos.x}, {pos.y}
       </p>
+      <p>Mode: {currentMode}</p>
       {/* hotWrap for actions: subscribes (creates button) + wraps for onClick */}
       <button onClick={hotWrap(resetAction)}> Reset </button>
     </div>

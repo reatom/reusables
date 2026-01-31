@@ -1,0 +1,82 @@
+---
+interface Props {
+  showTagline?: boolean;
+}
+
+const { showTagline = true } = Astro.props;
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href={`${import.meta.env.BASE_URL}`} class="header-brand">
+      <span class="header-title">@reatom/reusables</span>
+      {showTagline && <span class="header-tagline">jsrepo registry</span>}
+    </a>
+    <nav class="header-nav">
+      <a href="https://v1000.reatom.dev" class="header-link" target="_blank" rel="noopener">
+        Docs
+      </a>
+      <a
+        href="https://github.com/reatom/reusables"
+        class="header-link"
+        target="_blank"
+        rel="noopener"
+      >
+        GitHub
+      </a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-bottom: 1px solid var(--color-gray-5);
+    background: var(--color-bg-deep);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 3.5rem;
+  }
+
+  .header-brand {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-sm);
+    color: var(--color-white);
+  }
+
+  .header-brand:hover {
+    color: var(--color-white);
+  }
+
+  .header-title {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  .header-tagline {
+    font-size: 0.8125rem;
+    color: var(--color-gray-3);
+  }
+
+  .header-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+  }
+
+  .header-link {
+    font-size: 0.875rem;
+    color: var(--color-gray-2);
+  }
+
+  .header-link:hover {
+    color: var(--color-white);
+  }
+</style>

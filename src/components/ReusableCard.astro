@@ -1,0 +1,71 @@
+---
+import type { Reusable } from '../lib/registry';
+import TypeBadge from './TypeBadge.astro';
+
+interface Props {
+  reusable: Reusable;
+}
+
+const { reusable } = Astro.props;
+
+function getDescription(doc: string | null): string {
+  if (!doc) return '';
+  const lines = doc.split('\n');
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith('#')) return trimmed;
+  }
+  return '';
+}
+
+const description = getDescription(reusable.doc);
+---
+
+<a href={`${import.meta.env.BASE_URL}${reusable.name}/`} class="reusable-card">
+  <div class="card-header">
+    <span class="card-name">{reusable.name}</span>
+    <TypeBadge type={reusable.type} />
+  </div>
+  {description && <p class="card-description">{description}</p>}
+</a>
+
+<style>
+  .reusable-card {
+    display: block;
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-gray-5);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    transition: border-color 0.15s, background 0.15s;
+    color: inherit;
+  }
+
+  .reusable-card:hover {
+    border-color: var(--color-accent);
+    background: var(--color-bg-surface-hover);
+    color: inherit;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+  }
+
+  .card-name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--color-white);
+  }
+
+  .card-description {
+    font-size: 0.875rem;
+    color: var(--color-gray-2);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

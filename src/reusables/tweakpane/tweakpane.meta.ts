@@ -5,7 +5,7 @@ export const tweakpane: RegistryItem = {
   type: 'reatom:integration',
   files: [
     {
-      path: 'src/tweakpane',
+      path: 'src/reusables/tweakpane',
       files: [
         { path: 'index.ts' },
         { path: 'core.ts' },

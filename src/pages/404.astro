@@ -1,0 +1,67 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout title="404 - Not Found">
+  <Header />
+  <main>
+    <div class="container not-found">
+      <h1 class="title">404</h1>
+      <p class="message">Reusable not found</p>
+      <a href={`${import.meta.env.BASE_URL}`} class="home-link">View all reusables</a>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+    padding: var(--space-2xl) var(--space-md);
+  }
+
+  .title {
+    font-size: 4rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: var(--color-gray-3);
+    margin-bottom: var(--space-md);
+  }
+
+  .message {
+    font-size: 1.25rem;
+    color: var(--color-gray-2);
+    margin-bottom: var(--space-xl);
+  }
+
+  .home-link {
+    display: inline-block;
+    padding: var(--space-sm) var(--space-lg);
+    background: var(--color-accent);
+    color: var(--color-white);
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    transition: background 0.2s ease;
+  }
+
+  .home-link:hover {
+    background: var(--color-accent-light);
+  }
+
+  @media (max-width: 640px) {
+    .title {
+      font-size: 3rem;
+    }
+
+    .message {
+      font-size: 1rem;
+    }
+  }
+</style>

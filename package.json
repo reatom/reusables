@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
     "test": "vitest run",
     "test:browser": "vitest --browser.headless=false",
     "format": "prettier --write .",
@@ -20,11 +23,17 @@
   "author": "Aleksei Gurianov <gurianov@gmail.com>",
   "license": "MIT",
   "packageManager": "pnpm@10.28.1",
+  "dependencies": {
+    "astro": "^5.17.1",
+    "marked": "^17.0.1",
+    "shiki": "^3.22.0"
+  },
   "devDependencies": {
     "@reatom/core": "^1000.*",
     "@reatom/react": "^1000.*",
     "@tweakpane/core": "^2.0.5",
     "@tweakpane/plugin-essentials": "^0.2.1",
+    "@types/node": "^25.1.0",
     "@types/react": "^19.2.10",
     "@vitest/browser": "^4.0.18",
     "@vitest/browser-playwright": "^4.0.18",

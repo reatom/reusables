@@ -1,0 +1,145 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import CopyButton from '../components/CopyButton.astro';
+import ReusableCard from '../components/ReusableCard.astro';
+import { getReusablesGroupedByType } from '../lib/registry';
+
+const groups = getReusablesGroupedByType();
+const totalCount = groups.reduce((sum, g) => sum + g.items.length, 0);
+
+const typeLabels: Record<string, string> = {
+  factory: 'Factories',
+  extension: 'Extensions',
+  utility: 'Utilities',
+  integration: 'Integrations',
+};
+---
+
+<BaseLayout>
+  <Header />
+  <main>
+    <section class="hero">
+      <div class="container hero-inner">
+        <h1 class="hero-title">
+          Reusable primitives for<br />
+          <span class="hero-highlight">reatom</span> state management
+        </h1>
+        <p class="hero-description">
+          A jsrepo registry of {totalCount} drop-in extensions, factories, and utilities.
+          Copy-paste the pieces you need — no extra packages.
+        </p>
+        <div class="hero-install">
+          <code class="install-command">npx jsrepo init github/reatom/reusables</code>
+          <CopyButton text="npx jsrepo init github/reatom/reusables" />
+        </div>
+      </div>
+    </section>
+
+    <section class="registry">
+      <div class="container">
+        {groups.map((group) => (
+          <div class="registry-group">
+            <h2 class="group-heading">{typeLabels[group.type] ?? group.type}</h2>
+            <div class="registry-grid">
+              {group.items.map((item) => (
+                <ReusableCard reusable={item} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .hero {
+    padding: var(--space-3xl) 0 var(--space-2xl);
+    border-bottom: 1px solid var(--color-gray-5);
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 97, 161, 0.15), transparent);
+  }
+
+  .hero-inner {
+    max-width: 640px;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-highlight {
+    color: var(--color-accent-light);
+  }
+
+  .hero-description {
+    margin-top: var(--space-md);
+    color: var(--color-gray-2);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+
+  .hero-install {
+    margin-top: var(--space-xl);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-gray-5);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-md);
+  }
+
+  .install-command {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--color-gray-1);
+    white-space: nowrap;
+  }
+
+  .registry {
+    padding: var(--space-2xl) 0;
+  }
+
+  .registry-group {
+    margin-bottom: var(--space-2xl);
+  }
+
+  .registry-group:last-child {
+    margin-bottom: 0;
+  }
+
+  .group-heading {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+    color: var(--color-white);
+  }
+
+  .registry-grid {
+    display: grid;
+    gap: var(--space-md);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 640px) {
+    .registry-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 960px) {
+    .registry-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .hero-title {
+      font-size: 2.5rem;
+    }
+  }
+</style>

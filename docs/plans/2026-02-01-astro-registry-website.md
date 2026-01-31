@@ -55,11 +55,11 @@ Astro website for @reatom/reusables - a standalone GitHub Pages site showcasing 
 
 **Steps:**
 
-- [ ] Create `registry.ts` that imports `registry.json` and reads co-located files at build time
-- [ ] Export typed helpers: `getAllReusables()` (returns all registry items with parsed metadata), `getReusableByName(name)` (single item lookup), `getReusableDoc(name)` (reads the `.md` file content), `getReusableExample(name)` (reads `.example.ts`/`.tsx` content), `getReusableSource(name)` (reads main `.ts` source)
-- [ ] Export TypeScript types for registry item shape
-- [ ] Add grouping by type: extension, factory, utility, integration
-- [ ] Verify: create a temporary test page that dumps JSON of all reusables to confirm data layer works
+- [x] Create `registry.ts` that imports `registry.json` and reads co-located files at build time
+- [x] Export typed helpers: `getAllReusables()` (returns all registry items with parsed metadata), `getReusableByName(name)` (single item lookup), `getReusableDoc(name)` (reads the `.md` file content), `getReusableExample(name)` (reads `.example.ts`/`.tsx` content), `getReusableSource(name)` (reads main `.ts` source)
+- [x] Export TypeScript types for registry item shape
+- [x] Add grouping by type: extension, factory, utility, integration
+- [x] Verify: create a temporary test page that dumps JSON of all reusables to confirm data layer works
 
 ### Task 3: Shared UI components
 

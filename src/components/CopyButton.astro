@@ -1,0 +1,61 @@
+---
+interface Props {
+  text: string;
+  label?: string;
+}
+
+const { text, label = 'Copy' } = Astro.props;
+---
+
+<button class="copy-btn" data-copy={text} type="button">
+  <span class="copy-label">{label}</span>
+  <span class="copy-check" aria-hidden="true">Copied!</span>
+</button>
+
+<style>
+  .copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-gray-5);
+    color: var(--color-gray-2);
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .copy-btn:hover {
+    background: var(--color-bg-surface-hover);
+    color: var(--color-white);
+  }
+
+  .copy-check {
+    display: none;
+    color: #6bcf9a;
+  }
+
+  .copy-btn.copied .copy-label {
+    display: none;
+  }
+
+  .copy-btn.copied .copy-check {
+    display: inline;
+  }
+</style>
+
+<script>
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.copy-btn');
+    if (!btn) return;
+    const text = btn.dataset.copy;
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.classList.add('copied');
+      setTimeout(() => btn.classList.remove('copied'), 1500);
+    });
+  });
+</script>

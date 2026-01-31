@@ -1,10 +1,51 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import TypeBadge from '../components/TypeBadge.astro';
+import CopyButton from '../components/CopyButton.astro';
+import ReusableCard from '../components/ReusableCard.astro';
+import { getReusablesGroupedByType } from '../lib/registry';
+
+const groups = getReusablesGroupedByType();
 ---
 
 <BaseLayout>
-  <main class="container" style="padding-top: 4rem;">
+  <Header />
+  <main class="container" style="padding-top: var(--space-2xl); padding-bottom: var(--space-2xl);">
     <h1>@reatom/reusables</h1>
-    <p>jsrepo registry - setup verified</p>
+    <p style="color: var(--color-gray-2); margin-top: var(--space-sm);">jsrepo registry - component test page</p>
+
+    <section style="margin-top: var(--space-2xl);">
+      <h2>TypeBadge variants</h2>
+      <div style="display: flex; gap: var(--space-sm); margin-top: var(--space-md);">
+        <TypeBadge type="extension" />
+        <TypeBadge type="factory" />
+        <TypeBadge type="utility" />
+        <TypeBadge type="integration" />
+      </div>
+    </section>
+
+    <section style="margin-top: var(--space-2xl);">
+      <h2>CopyButton</h2>
+      <div style="margin-top: var(--space-md);">
+        <CopyButton text="pnpm dlx jsrepo add github/reatom/reusables" />
+      </div>
+    </section>
+
+    <section style="margin-top: var(--space-2xl);">
+      <h2>ReusableCards</h2>
+      {groups.map((group) => (
+        <div style="margin-top: var(--space-lg);">
+          <h3 style="text-transform: capitalize; margin-bottom: var(--space-md);">{group.type}s</h3>
+          <div style="display: grid; gap: var(--space-md); grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
+            {group.items.map((item) => (
+              <ReusableCard reusable={item} />
+            ))}
+          </div>
+        </div>
+      ))}
+    </section>
   </main>
+  <Footer />
 </BaseLayout>

@@ -73,12 +73,12 @@ Astro website for @reatom/reusables - a standalone GitHub Pages site showcasing 
 
 **Steps:**
 
-- [ ] Create `Header.astro` with site title "@reatom/reusables", tagline "jsrepo registry", link to GitHub repo, link to reatom.dev docs
-- [ ] Create `TypeBadge.astro` rendering colored badges per type (extension=blue, factory=green, utility=amber, integration=purple)
-- [ ] Create `CopyButton.astro` with inline client-side JS for clipboard copy (for install commands)
-- [ ] Create `ReusableCard.astro` showing: name, type badge, brief description (first line of doc), link to detail page
-- [ ] Create `Footer.astro` with links to GitHub, reatom.dev, MIT license
-- [ ] Verify: components render correctly when used in a test page
+- [x] Create `Header.astro` with site title "@reatom/reusables", tagline "jsrepo registry", link to GitHub repo, link to reatom.dev docs
+- [x] Create `TypeBadge.astro` rendering colored badges per type (extension=blue, factory=green, utility=amber, integration=purple)
+- [x] Create `CopyButton.astro` with inline client-side JS for clipboard copy (for install commands)
+- [x] Create `ReusableCard.astro` showing: name, type badge, brief description (first line of doc), link to detail page
+- [x] Create `Footer.astro` with links to GitHub, reatom.dev, MIT license
+- [x] Verify: components render correctly when used in a test page
 
 ### Task 4: Homepage
 

@@ -123,12 +123,12 @@ Astro website for @reatom/reusables - a standalone GitHub Pages site showcasing 
 
 ## Verification
 
-- [ ] manual test: browse homepage, click each reusable card, verify docs render on detail page
-- [ ] manual test: copy install command via copy button, verify clipboard content
-- [ ] manual test: check responsive layout at mobile/tablet/desktop widths
-- [ ] run build: `pnpm build` - must succeed with no errors
-- [ ] run preview: `pnpm preview` - verify site works with `/reusables` base path
+- [x] manual test: browse homepage, click each reusable card, verify docs render on detail page
+- [x] manual test: copy install command via copy button, verify clipboard content
+- [x] manual test: check responsive layout at mobile/tablet/desktop widths
+- [x] run build: `pnpm build` - must succeed with no errors
+- [x] run preview: `pnpm preview` - verify site works with `/reusables` base path
 
 ## Wrap-up
 
-- [ ] move this plan to `docs/plans/completed/`
+- [x] move this plan to `docs/plans/completed/`

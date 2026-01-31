@@ -24,7 +24,7 @@ Extension that adds:
 
 ```ts
 import { atom } from '@reatom/core'
-import { withReset } from 'reusables/reatom/extension/with-reset'
+import { withReset } from '#reatom/extension/with-reset'
 
 const counter = atom(0, 'counter').extend(withReset(0))
 
@@ -59,7 +59,7 @@ formState.reset()
 ### Composing with other extensions
 
 ```ts
-import { withReset } from 'reusables/reatom/extension/with-reset'
+import { withReset } from '#reatom/extension/with-reset'
 import { withLocalStorage } from '@reatom/core'
 
 const settings = atom({ theme: 'light' }, 'settings')

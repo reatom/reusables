@@ -47,12 +47,42 @@ export default defineConfig({
           { path: 'src/history/with-history.example.ts', role: 'example' },
         ],
       },
+      {
+        name: 'hotWrap',
+        type: 'reatom:utility',
+        files: [
+          { path: 'src/hot-wrap/hot-wrap.ts' },
+          { path: 'src/hot-wrap/hot-wrap.md', role: 'doc' },
+          { path: 'src/hot-wrap/hot-wrap.test.ts', role: 'test' },
+          { path: 'src/hot-wrap/hot-wrap.example.tsx', role: 'example' },
+        ],
+      },
+      {
+        name: 'tweakpane',
+        type: 'reatom:integration',
+        files: [
+          {
+            path: 'src/tweakpane',
+            files: [
+              { path: 'index.ts' },
+              { path: 'core.ts' },
+              { path: 'bindings.ts' },
+              { path: 'blades.ts' },
+              { path: 'essentials.ts' },
+              { path: 'tweakpane.md', role: 'doc' },
+              { path: 'tweakpane.test.ts', role: 'test' },
+              { path: 'tweakpane.example.tsx', role: 'example' },
+            ],
+          },
+        ],
+      },
     ],
     outputs: [repository()],
     defaultPaths: {
       'reatom:utility': 'src/reatom',
       'reatom:factory': 'src/reatom',
       'reatom:extension': 'src/reatom',
+      'reatom:integration': 'src/reatom',
     },
   },
 })

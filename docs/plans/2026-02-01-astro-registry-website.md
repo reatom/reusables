@@ -102,11 +102,11 @@ Astro website for @reatom/reusables - a standalone GitHub Pages site showcasing 
 
 **Steps:**
 
-- [ ] Create `[name].astro` with `getStaticPaths()` generating a page per registry item
-- [ ] Page content: name + type badge, install command with copy button (`pnpm dlx jsrepo add github/reatom/reusables [name]`), rendered markdown documentation, example code with syntax highlighting, source code (collapsible `<details>` element), dependency info (devDependencies, registryDependencies as links to other reusable pages)
-- [ ] Use Astro's built-in markdown rendering for doc content
-- [ ] Render example and source code blocks with shiki highlighting
-- [ ] Verify: navigate to each of the 7 reusable pages, confirm content renders
+- [x] Create `[name].astro` with `getStaticPaths()` generating a page per registry item
+- [x] Page content: name + type badge, install command with copy button (`pnpm dlx jsrepo add github/reatom/reusables [name]`), rendered markdown documentation, example code with syntax highlighting, source code (collapsible `<details>` element), dependency info (devDependencies, registryDependencies as links to other reusable pages)
+- [x] Use Astro's built-in markdown rendering for doc content
+- [x] Render example and source code blocks with shiki highlighting
+- [x] Verify: navigate to each of the 7 reusable pages, confirm content renders
 
 ### Task 6: GitHub Pages deployment and build verification
 

@@ -1,0 +1,337 @@
+---
+import { Code } from 'astro:components';
+import { marked } from 'marked';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import TypeBadge from '../components/TypeBadge.astro';
+import CopyButton from '../components/CopyButton.astro';
+import { getAllReusables, getReusableByName } from '../lib/registry';
+import type { Reusable } from '../lib/registry';
+
+export function getStaticPaths() {
+  return getAllReusables().map((r) => ({
+    params: { name: r.name },
+  }));
+}
+
+const { name } = Astro.params;
+const reusable = getReusableByName(name)!;
+
+const installCommand = `npx jsrepo add github/reatom/reusables ${reusable.name}`;
+
+// Render markdown doc to HTML
+let docHtml = '';
+if (reusable.doc) {
+  docHtml = await marked.parse(reusable.doc);
+}
+
+// Determine language for example code
+function getExampleLang(reusable: Reusable): string {
+  if (reusable.examplePath?.endsWith('.tsx')) return 'tsx';
+  return 'ts';
+}
+
+// For tweakpane (multi-file source), the source field contains the index.ts
+// Show it with appropriate label
+function getSourceLabel(reusable: Reusable): string {
+  if (!reusable.sourcePath) return 'Source';
+  const parts = reusable.sourcePath.split('/');
+  return parts[parts.length - 1];
+}
+
+// Build link for registry dependencies
+function getReusableLink(depName: string): string {
+  return `${import.meta.env.BASE_URL}${depName}/`;
+}
+---
+
+<BaseLayout title={reusable.name}>
+  <Header />
+  <main>
+    <div class="container detail-page">
+      <a href={`${import.meta.env.BASE_URL}`} class="back-link">&larr; All reusables</a>
+
+      <div class="detail-header">
+        <h1 class="detail-title">{reusable.name}</h1>
+        <TypeBadge type={reusable.type} />
+      </div>
+
+      <section class="install-section">
+        <h2 class="section-heading">Install</h2>
+        <div class="install-row">
+          <code class="install-command">{installCommand}</code>
+          <CopyButton text={installCommand} />
+        </div>
+      </section>
+
+      {reusable.devDependencies.length > 0 && (
+        <section class="deps-section">
+          <h2 class="section-heading">Dependencies</h2>
+          <ul class="deps-list">
+            {reusable.devDependencies.map((dep) => (
+              <li class="dep-item">
+                <code>{dep.name}</code>
+                <span class="dep-version">{dep.version}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {reusable.registryDependencies.length > 0 && (
+        <section class="deps-section">
+          <h2 class="section-heading">Registry dependencies</h2>
+          <ul class="deps-list">
+            {reusable.registryDependencies.map((depName) => (
+              <li class="dep-item">
+                <a href={getReusableLink(depName)}>{depName}</a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {docHtml && (
+        <section class="doc-section">
+          <h2 class="section-heading">Documentation</h2>
+          <div class="doc-content" set:html={docHtml} />
+        </section>
+      )}
+
+      {reusable.example && (
+        <section class="code-section">
+          <h2 class="section-heading">Example</h2>
+          <Code code={reusable.example} lang={getExampleLang(reusable)} theme="github-dark" />
+        </section>
+      )}
+
+      {reusable.source && (
+        <section class="code-section">
+          <h2 class="section-heading">Source</h2>
+          <details class="source-details">
+            <summary>{getSourceLabel(reusable)}</summary>
+            <Code code={reusable.source} lang="ts" theme="github-dark" />
+          </details>
+        </section>
+      )}
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .detail-page {
+    padding-top: var(--space-xl);
+    padding-bottom: var(--space-2xl);
+    max-width: 800px;
+  }
+
+  .back-link {
+    display: inline-block;
+    font-size: 0.875rem;
+    color: var(--color-gray-3);
+    margin-bottom: var(--space-lg);
+  }
+
+  .back-link:hover {
+    color: var(--color-accent-light);
+  }
+
+  .detail-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+  }
+
+  .detail-title {
+    font-size: 2rem;
+    letter-spacing: -0.02em;
+  }
+
+  .section-heading {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+    color: var(--color-gray-2);
+  }
+
+  .install-section {
+    margin-bottom: var(--space-xl);
+  }
+
+  .install-row {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-gray-5);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-md);
+  }
+
+  .install-command {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--color-gray-1);
+  }
+
+  .deps-section {
+    margin-bottom: var(--space-xl);
+  }
+
+  .deps-list {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .dep-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-gray-5);
+    border-radius: var(--radius-sm);
+    padding: 0.25rem 0.625rem;
+    font-size: 0.8125rem;
+  }
+
+  .dep-item code {
+    font-size: 0.8125rem;
+    background: none;
+    padding: 0;
+    color: var(--color-gray-1);
+  }
+
+  .dep-version {
+    color: var(--color-gray-3);
+  }
+
+  .doc-section {
+    margin-bottom: var(--space-xl);
+  }
+
+  .doc-content {
+    line-height: 1.7;
+    color: var(--color-gray-1);
+  }
+
+  .doc-content :global(h1) {
+    font-size: 1.75rem;
+    margin-top: var(--space-xl);
+    margin-bottom: var(--space-md);
+  }
+
+  .doc-content :global(h2) {
+    font-size: 1.375rem;
+    margin-top: var(--space-xl);
+    margin-bottom: var(--space-sm);
+  }
+
+  .doc-content :global(h3) {
+    font-size: 1.125rem;
+    margin-top: var(--space-lg);
+    margin-bottom: var(--space-sm);
+  }
+
+  .doc-content :global(p) {
+    margin-bottom: var(--space-md);
+  }
+
+  .doc-content :global(ul),
+  .doc-content :global(ol) {
+    margin-bottom: var(--space-md);
+    padding-left: var(--space-lg);
+  }
+
+  .doc-content :global(li) {
+    margin-bottom: var(--space-xs);
+  }
+
+  .doc-content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: var(--space-md);
+    font-size: 0.875rem;
+  }
+
+  .doc-content :global(th) {
+    text-align: left;
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 2px solid var(--color-gray-5);
+    color: var(--color-gray-2);
+    font-weight: 600;
+  }
+
+  .doc-content :global(td) {
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 1px solid var(--color-gray-5);
+  }
+
+  .doc-content :global(strong) {
+    color: var(--color-white);
+    font-weight: 600;
+  }
+
+  .doc-content :global(a) {
+    color: var(--color-accent-light);
+  }
+
+  .doc-content :global(a:hover) {
+    color: var(--color-white);
+  }
+
+  .code-section {
+    margin-bottom: var(--space-xl);
+  }
+
+  .source-details {
+    border: 1px solid var(--color-gray-5);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .source-details summary {
+    cursor: pointer;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-bg-surface);
+    color: var(--color-gray-2);
+    font-size: 0.875rem;
+    font-family: var(--font-mono);
+    user-select: none;
+  }
+
+  .source-details summary:hover {
+    color: var(--color-white);
+    background: var(--color-bg-surface-hover);
+  }
+
+  .source-details[open] summary {
+    border-bottom: 1px solid var(--color-gray-5);
+  }
+
+  .source-details :global(pre) {
+    border: none;
+    border-radius: 0;
+    margin: 0;
+  }
+
+  @media (max-width: 640px) {
+    .detail-title {
+      font-size: 1.5rem;
+    }
+
+    .install-row {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .install-command {
+      font-size: 0.75rem;
+      word-break: break-all;
+    }
+  }
+</style>

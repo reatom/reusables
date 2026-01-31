@@ -16,14 +16,21 @@ export function getStaticPaths() {
 }
 
 const { name } = Astro.params;
-const reusable = getReusableByName(name)!;
+const reusable = getReusableByName(name);
+if (!reusable) {
+  return Astro.redirect('/404');
+}
 
 const installCommand = `npx jsrepo add github/reatom/reusables ${reusable.name}`;
 
 // Render markdown doc to HTML
 let docHtml = '';
 if (reusable.doc) {
-  docHtml = await marked.parse(reusable.doc);
+  docHtml = await marked.parse(reusable.doc, {
+    async: true,
+    gfm: true,
+    breaks: false
+  });
 }
 
 // Determine language for example code

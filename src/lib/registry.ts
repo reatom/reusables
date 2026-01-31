@@ -64,7 +64,10 @@ function parseType(rawType: string): ReusableType {
 function readFile(relativePath: string): string | null {
   try {
     return readFileSync(resolve(ROOT, relativePath), 'utf-8')
-  } catch {
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn(`Failed to read file: ${relativePath}`, error)
+    }
     return null
   }
 }

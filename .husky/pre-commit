@@ -1,0 +1,6 @@
+pnpm exec lint-staged
+pnpm test
+pnpm jsrepo:build
+
+# Stage the updated registry.json
+git add registry.json

@@ -1,0 +1,35 @@
+{
+  "name": "reusables",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "vitest run",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "jsrepo:build": "jsrepo build",
+    "prepare": "husky"
+  },
+  "keywords": [
+    "jsrepo",
+    "reatom",
+    "reactive",
+    "state management",
+    "extensions"
+  ],
+  "author": "Aleksei Gurianov <gurianov@gmail.com>",
+  "license": "MIT",
+  "packageManager": "pnpm@10.28.1",
+  "devDependencies": {
+    "@reatom/core": "^1000.10.0",
+    "add": "^2.0.6",
+    "husky": "^9.1.7",
+    "jsrepo": "^3.1.1",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.8.1",
+    "prettier-plugin-jsdoc": "^1.8.0",
+    "vitest": "^4.0.18"
+  },
+  "lint-staged": {
+    "*.{js,ts,mts,json,md}": "prettier --write"
+  }
+}

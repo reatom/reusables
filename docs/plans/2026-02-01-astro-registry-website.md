@@ -41,11 +41,11 @@ Astro website for @reatom/reusables - a standalone GitHub Pages site showcasing 
 
 **Steps:**
 
-- [ ] Configure `astro.config.mjs`: set site to `https://reatom.github.io`, base to `/reusables`, configure shiki with dark theme for syntax highlighting
-- [ ] Create `global.css` with CSS custom properties from reatom branding: dark bg (`#0a0a0f`), accent (`#6361a1`, `#bca4e0`), grays from reatom.dev palette, Inter font, code block styling, responsive utilities
-- [ ] Create `BaseLayout.astro` with HTML head (meta, Inter font import, global styles, favicon), body wrapper with slot
-- [ ] Add reatom-style SVG favicon
-- [ ] Verify: run `pnpm dev` and confirm dev server starts with the layout rendering
+- [x] Configure `astro.config.mjs`: set site to `https://reatom.github.io`, base to `/reusables`, configure shiki with dark theme for syntax highlighting
+- [x] Create `global.css` with CSS custom properties from reatom branding: dark bg (`#0a0a0f`), accent (`#6361a1`, `#bca4e0`), grays from reatom.dev palette, Inter font, code block styling, responsive utilities
+- [x] Create `BaseLayout.astro` with HTML head (meta, Inter font import, global styles, favicon), body wrapper with slot
+- [x] Add reatom-style SVG favicon
+- [x] Verify: run `pnpm dev` and confirm dev server starts with the layout rendering
 
 ### Task 2: Registry data layer
 

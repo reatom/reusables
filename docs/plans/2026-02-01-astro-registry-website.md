@@ -88,11 +88,11 @@ Astro website for @reatom/reusables - a standalone GitHub Pages site showcasing 
 
 **Steps:**
 
-- [ ] Create `index.astro` with `BaseLayout` wrapping Header + content + Footer
-- [ ] Hero section: title, short description of the registry, global install command (`pnpm dlx jsrepo add github/reatom/reusables`) with copy button
-- [ ] Registry grid: list all reusables as `ReusableCard` components, grouped by type with section headings
-- [ ] Style grid responsively: 1 col mobile, 2 col tablet, 3 col desktop
-- [ ] Verify: run `pnpm dev`, confirm homepage shows all 7 reusables grouped by type
+- [x] Create `index.astro` with `BaseLayout` wrapping Header + content + Footer
+- [x] Hero section: title, short description of the registry, global install command (`pnpm dlx jsrepo add github/reatom/reusables`) with copy button
+- [x] Registry grid: list all reusables as `ReusableCard` components, grouped by type with section headings
+- [x] Style grid responsively: 1 col mobile, 2 col tablet, 3 col desktop
+- [x] Verify: run `pnpm dev`, confirm homepage shows all 7 reusables grouped by type
 
 ### Task 5: Individual reusable detail pages
 

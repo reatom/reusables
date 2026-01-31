@@ -1,13 +1,13 @@
 import { defineConfig } from 'jsrepo'
 import { repository } from 'jsrepo/outputs'
 
-import { reatomInstance } from './src/instance/reatom-instance.meta'
-import { withInstance } from './src/instance/with-instance.meta'
-import { withReset } from './src/reset/with-reset.meta'
-import { withHistory } from './src/history/with-history.meta'
-import { hotWrap } from './src/hot-wrap/hot-wrap.meta'
-import { tweakpane } from './src/tweakpane/tweakpane.meta'
-import { withLogger } from './src/logger/with-logger.meta'
+import { reatomInstance } from './src/reusables/instance/reatom-instance.meta'
+import { withInstance } from './src/reusables/instance/with-instance.meta'
+import { withReset } from './src/reusables/reset/with-reset.meta'
+import { withHistory } from './src/reusables/history/with-history.meta'
+import { hotWrap } from './src/reusables/hot-wrap/hot-wrap.meta'
+import { tweakpane } from './src/reusables/tweakpane/tweakpane.meta'
+import { withLogger } from './src/reusables/logger/with-logger.meta'
 
 export default defineConfig({
   registry: {

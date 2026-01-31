@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
     "test": "vitest run",
     "test:browser": "vitest --browser.headless=false",
     "format": "prettier --write .",
@@ -20,6 +23,9 @@
   "author": "Aleksei Gurianov <gurianov@gmail.com>",
   "license": "MIT",
   "packageManager": "pnpm@10.28.1",
+  "dependencies": {
+    "astro": "^5.17.1"
+  },
   "devDependencies": {
     "@reatom/core": "^1000.*",
     "@reatom/react": "^1000.*",

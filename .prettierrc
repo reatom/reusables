@@ -3,7 +3,5 @@
   "trailingComma": "all",
   "semi": false,
   "printWidth": 80,
-  "plugins": [
-    "prettier-plugin-jsdoc"
-  ]
+  "plugins": ["prettier-plugin-jsdoc"]
 }

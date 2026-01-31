@@ -47,12 +47,32 @@ export default defineConfig({
           { path: 'src/history/with-history.example.ts', role: 'example' },
         ],
       },
+      {
+        name: 'tweakpane',
+        type: 'reatom:integration',
+        files: [
+          {
+            path: 'src/tweakpane',
+            files: [
+              { path: 'index.ts' },
+              { path: 'core.ts' },
+              { path: 'bindings.ts' },
+              { path: 'blades.ts' },
+              { path: 'essentials.ts' },
+              { path: 'tweakpane.md', role: 'doc' },
+              { path: 'tweakpane.test.ts', role: 'test' },
+              { path: 'tweakpane.example.ts', role: 'example' },
+            ],
+          },
+        ],
+      },
     ],
     outputs: [repository()],
     defaultPaths: {
       'reatom:utility': 'src/reatom',
       'reatom:factory': 'src/reatom',
       'reatom:extension': 'src/reatom',
+      'reatom:integration': 'src/reatom',
     },
   },
 })

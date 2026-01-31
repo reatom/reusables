@@ -25,7 +25,8 @@
   "packageManager": "pnpm@10.28.1",
   "dependencies": {
     "astro": "^5.17.1",
-    "marked": "^17.0.1"
+    "marked": "^17.0.1",
+    "shiki": "^3.22.0"
   },
   "devDependencies": {
     "@reatom/core": "^1000.*",

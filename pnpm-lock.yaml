@@ -14,6 +14,9 @@ importers:
       marked:
         specifier: ^17.0.1
         version: 17.0.1
+      shiki:
+        specifier: ^3.22.0
+        version: 3.22.0
     devDependencies:
       '@reatom/core':
         specifier: ^1000.*

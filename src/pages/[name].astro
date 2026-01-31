@@ -1,6 +1,7 @@
 ---
 import { Code } from 'astro:components';
 import { marked } from 'marked';
+import { createHighlighter } from 'shiki';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -9,6 +10,12 @@ import CopyButton from '../components/CopyButton.astro';
 import { getAllReusables, getReusableByName } from '../lib/registry';
 import type { Reusable } from '../lib/registry';
 
+// Initialize Shiki highlighter
+const highlighter = await createHighlighter({
+  themes: ['github-dark'],
+  langs: ['typescript', 'tsx', 'javascript', 'jsx', 'bash', 'json'],
+});
+
 export function getStaticPaths() {
   return getAllReusables().map((r) => ({
     params: { name: r.name },
@@ -16,12 +23,38 @@ export function getStaticPaths() {
 }
 
 const { name } = Astro.params;
+
+// Validate name parameter to prevent injection attacks
+if (!name || !/^[a-zA-Z0-9_-]+$/.test(name)) {
+  return Astro.redirect(`${import.meta.env.BASE_URL}404`);
+}
+
 const reusable = getReusableByName(name);
 if (!reusable) {
   return Astro.redirect(`${import.meta.env.BASE_URL}404`);
 }
 
 const installCommand = `npx jsrepo add github/reatom/reusables ${reusable.name}`;
+
+// Configure marked with custom renderer for Shiki syntax highlighting
+const renderer = new marked.Renderer();
+renderer.code = function ({ text, lang }) {
+  const language = lang || 'text';
+  try {
+    return highlighter.codeToHtml(text, {
+      lang: language,
+      theme: 'github-dark',
+    });
+  } catch {
+    // Fallback if language is not supported
+    return highlighter.codeToHtml(text, {
+      lang: 'text',
+      theme: 'github-dark',
+    });
+  }
+};
+
+marked.use({ renderer });
 
 // Render markdown doc to HTML with XSS protection
 // Configure marked to strip raw HTML tokens and sanitize URLs
@@ -47,11 +80,16 @@ marked.use({
 
 let docHtml = '';
 if (reusable.doc) {
-  docHtml = await marked.parse(reusable.doc, {
-    async: true,
-    gfm: true,
-    breaks: false
-  });
+  try {
+    docHtml = await marked.parse(reusable.doc, {
+      async: true,
+      gfm: true,
+      breaks: false
+    });
+  } catch (error) {
+    console.error(`Failed to parse markdown for ${name}:`, error);
+    docHtml = '<p>Documentation failed to render.</p>';
+  }
 }
 
 // Determine language for example code
@@ -134,13 +172,15 @@ function getReusableLink(depName: string): string {
         </section>
       )}
 
-      {reusable.source && (
+      {reusable.sources.length > 0 && (
         <section class="code-section">
           <h2 class="section-heading">Source</h2>
-          <details class="source-details">
-            <summary>{getSourceLabel(reusable)}</summary>
-            <Code code={reusable.source} lang="ts" theme="github-dark" />
-          </details>
+          {reusable.sources.map((source) => (
+            <details class="source-details">
+              <summary>{source.path}</summary>
+              <Code code={source.content} lang="ts" theme="github-dark" />
+            </details>
+          ))}
         </section>
       )}
     </div>
@@ -320,6 +360,11 @@ function getReusableLink(depName: string): string {
     border: 1px solid var(--color-gray-5);
     border-radius: var(--radius-md);
     overflow: hidden;
+    margin-bottom: var(--space-md);
+  }
+
+  .source-details:last-child {
+    margin-bottom: 0;
   }
 
   .source-details summary {

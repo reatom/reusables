@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs'
-import { resolve, sep } from 'node:path'
+import { resolve, relative, isAbsolute } from 'node:path'
 import registryData from '../../registry.json'
 
 // ROOT should point to the repository root
@@ -35,6 +35,11 @@ export interface RegistryItem {
   files: ReusableFile[]
 }
 
+export interface SourceFile {
+  path: string
+  content: string
+}
+
 export interface Reusable {
   name: string
   type: ReusableType
@@ -43,6 +48,7 @@ export interface Reusable {
   doc: string | null
   example: string | null
   source: string | null
+  sources: SourceFile[]
   docPath: string | null
   examplePath: string | null
   sourcePath: string | null
@@ -67,14 +73,17 @@ function readFile(relativePath: string): string | null {
   try {
     const fullPath = resolve(ROOT, relativePath)
     // Prevent path traversal attacks by ensuring resolved path stays within ROOT
-    // Use proper path containment check to prevent sibling directory attacks
-    const normalizedRoot = ROOT + sep
-    const normalizedPath = fullPath + sep
-    if (!normalizedPath.startsWith(normalizedRoot) && fullPath !== ROOT) {
+    // This handles symlinks correctly by checking if the relative path escapes ROOT
+    const rel = relative(ROOT, fullPath)
+    if (rel.startsWith('..') || isAbsolute(rel)) {
       throw new Error(`Path traversal detected: ${relativePath}`)
     }
     return readFileSync(fullPath, 'utf-8')
   } catch (error) {
+    // Re-throw security errors instead of silently ignoring them
+    if (error instanceof Error && error.message.includes('Path traversal')) {
+      throw error
+    }
     if (process.env.NODE_ENV === 'development') {
       console.warn(`Failed to read file: ${relativePath}`, error)
     }
@@ -99,10 +108,28 @@ function findSourceFile(item: RegistryItem): ReusableFile | undefined {
   return undefined
 }
 
+function findAllSourceFiles(item: RegistryItem): ReusableFile[] {
+  const sourceFiles: ReusableFile[] = []
+  for (const file of item.files) {
+    if (!file.role || file.role === 'file') {
+      sourceFiles.push(file)
+    }
+  }
+  return sourceFiles
+}
+
 function buildReusable(item: RegistryItem): Reusable {
   const docFile = findFileByRole(item, 'doc')
   const exampleFile = findFileByRole(item, 'example')
   const sourceFile = findSourceFile(item)
+  const allSourceFiles = findAllSourceFiles(item)
+
+  const sources: SourceFile[] = allSourceFiles
+    .map((f) => {
+      const content = readFile(f.relativePath)
+      return content ? { path: f.path, content } : null
+    })
+    .filter((s): s is SourceFile => s !== null)
 
   return {
     name: item.name,
@@ -112,6 +139,7 @@ function buildReusable(item: RegistryItem): Reusable {
     doc: docFile ? readFile(docFile.relativePath) : null,
     example: exampleFile ? readFile(exampleFile.relativePath) : null,
     source: sourceFile ? readFile(sourceFile.relativePath) : null,
+    sources,
     docPath: docFile?.relativePath ?? null,
     examplePath: exampleFile?.relativePath ?? null,
     sourcePath: sourceFile?.relativePath ?? null,

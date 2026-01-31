@@ -18,19 +18,29 @@ export function getStaticPaths() {
 const { name } = Astro.params;
 const reusable = getReusableByName(name);
 if (!reusable) {
-  return Astro.redirect('/404');
+  return Astro.redirect(`${import.meta.env.BASE_URL}404`);
 }
 
 const installCommand = `npx jsrepo add github/reatom/reusables ${reusable.name}`;
 
 // Render markdown doc to HTML with XSS protection
-// Configure marked to strip raw HTML tokens
+// Configure marked to strip raw HTML tokens and sanitize URLs
 marked.use({
   walkTokens(token) {
     // Remove any raw HTML tokens to prevent XSS
     if (token.type === 'html') {
       token.text = '';
       token.raw = '';
+    }
+    // Sanitize link URLs to prevent javascript: and data: URIs
+    if (token.type === 'link' || token.type === 'image') {
+      const href = (token as any).href;
+      if (href && typeof href === 'string') {
+        const lower = href.toLowerCase().trim();
+        if (lower.startsWith('javascript:') || lower.startsWith('data:') || lower.startsWith('vbscript:')) {
+          (token as any).href = '';
+        }
+      }
     }
   }
 });

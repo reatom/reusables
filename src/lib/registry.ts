@@ -1,7 +1,9 @@
 import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { resolve, sep } from 'node:path'
 import registryData from '../../registry.json'
 
+// ROOT should point to the repository root
+// registry.json paths already include "src/" prefix
 const ROOT = resolve(import.meta.dirname, '..', '..')
 
 // --- Types ---
@@ -65,7 +67,10 @@ function readFile(relativePath: string): string | null {
   try {
     const fullPath = resolve(ROOT, relativePath)
     // Prevent path traversal attacks by ensuring resolved path stays within ROOT
-    if (!fullPath.startsWith(ROOT)) {
+    // Use proper path containment check to prevent sibling directory attacks
+    const normalizedRoot = ROOT + sep
+    const normalizedPath = fullPath + sep
+    if (!normalizedPath.startsWith(normalizedRoot) && fullPath !== ROOT) {
       throw new Error(`Path traversal detected: ${relativePath}`)
     }
     return readFileSync(fullPath, 'utf-8')

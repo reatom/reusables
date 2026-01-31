@@ -47,12 +47,17 @@ const { text, label = 'Copy' } = Astro.props;
   }
 </style>
 
-<script>
+<script lang="ts">
   document.addEventListener('click', (e) => {
     const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.copy-btn');
     if (!btn) return;
     const text = btn.dataset.copy;
     if (!text) return;
+    // Check if clipboard API is available before using it
+    if (!navigator.clipboard || !navigator.clipboard.writeText) {
+      console.warn('Clipboard API not available');
+      return;
+    }
     navigator.clipboard.writeText(text).then(() => {
       btn.classList.add('copied');
       setTimeout(() => btn.classList.remove('copied'), 1500);

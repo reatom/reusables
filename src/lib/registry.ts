@@ -63,7 +63,12 @@ function parseType(rawType: string): ReusableType {
 
 function readFile(relativePath: string): string | null {
   try {
-    return readFileSync(resolve(ROOT, relativePath), 'utf-8')
+    const fullPath = resolve(ROOT, relativePath)
+    // Prevent path traversal attacks by ensuring resolved path stays within ROOT
+    if (!fullPath.startsWith(ROOT)) {
+      throw new Error(`Path traversal detected: ${relativePath}`)
+    }
+    return readFileSync(fullPath, 'utf-8')
   } catch (error) {
     if (process.env.NODE_ENV === 'development') {
       console.warn(`Failed to read file: ${relativePath}`, error)

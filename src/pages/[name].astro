@@ -23,7 +23,18 @@ if (!reusable) {
 
 const installCommand = `npx jsrepo add github/reatom/reusables ${reusable.name}`;
 
-// Render markdown doc to HTML
+// Render markdown doc to HTML with XSS protection
+// Configure marked to strip raw HTML tokens
+marked.use({
+  walkTokens(token) {
+    // Remove any raw HTML tokens to prevent XSS
+    if (token.type === 'html') {
+      token.text = '';
+      token.raw = '';
+    }
+  }
+});
+
 let docHtml = '';
 if (reusable.doc) {
   docHtml = await marked.parse(reusable.doc, {

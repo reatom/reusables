@@ -1,11 +1,11 @@
 import type { RegistryItem } from 'jsrepo'
 
-export const tweakpane: RegistryItem = {
+export const tweakpane = {
   name: 'tweakpane',
   type: 'reatom:integration',
   files: [
     {
-      path: 'src/reusables/tweakpane',
+      path: '.',
       files: [
         { path: 'index.ts' },
         { path: 'core.ts' },
@@ -18,4 +18,4 @@ export const tweakpane: RegistryItem = {
       ],
     },
   ],
-}
+} satisfies RegistryItem

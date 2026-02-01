@@ -1,12 +1,12 @@
 import type { RegistryItem } from 'jsrepo'
 
-export const withLogger: RegistryItem = {
+export const withLogger = {
   name: 'withLogger',
   type: 'reatom:extension',
   files: [
-    { path: 'src/reusables/logger/with-logger.ts' },
-    { path: 'src/reusables/logger/with-logger.md', role: 'doc' },
-    { path: 'src/reusables/logger/with-logger.test.ts', role: 'test' },
-    { path: 'src/reusables/logger/with-logger.example.ts', role: 'example' },
+    { path: './with-logger.ts' },
+    { path: './with-logger.md', role: 'doc' },
+    { path: './with-logger.test.ts', role: 'test' },
+    { path: './with-logger.example.ts', role: 'example' },
   ],
-}
+} satisfies RegistryItem

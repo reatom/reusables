@@ -1,12 +1,12 @@
 import type { RegistryItem } from 'jsrepo'
 
-export const withReset: RegistryItem = {
+export const withReset = {
   name: 'withReset',
   type: 'reatom:extension',
   files: [
-    { path: 'src/reusables/reset/with-reset.ts' },
-    { path: 'src/reusables/reset/with-reset.md', role: 'doc' },
-    { path: 'src/reusables/reset/with-reset.test.ts', role: 'test' },
-    { path: 'src/reusables/reset/with-reset.example.ts', role: 'example' },
+    { path: './with-reset.ts' },
+    { path: './with-reset.md', role: 'doc' },
+    { path: './with-reset.test.ts', role: 'test' },
+    { path: './with-reset.example.ts', role: 'example' },
   ],
-}
+} satisfies RegistryItem

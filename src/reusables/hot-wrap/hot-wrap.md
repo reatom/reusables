@@ -24,22 +24,43 @@ The wrapped action (same as `wrap` returns).
 
 ### When to use
 
-Use `hotWrap` when you need subscription with lifecycle-aware cleanup:
+Use `hotWrap` when you need subscription with lifecycle-aware cleanup, like
+starting and stopping a remote control channel (socket/CRDT):
 
 ```tsx
-import { action, atom, withConnectHook } from '@reatom/core'
+import {
+  action,
+  atom,
+  type Action,
+  type Ext,
+  withConnectHook,
+} from '@reatom/core'
 import { reatomComponent } from '@reatom/react'
 import { hotWrap } from '#reatom/utility/hot-wrap'
 
-// Extension that runs on connect/disconnect (activates when subscribed)
-const withLog = (name: string) =>
-  withConnectHook(() => {
-    console.log(`${name} connected`)
-    return () => console.log(`${name} disconnected`)
+// External control channel (socket/CRDT) for remote resets.
+type ResetSocket = {
+  on: (event: 'reset', handler: () => void) => () => void
+  close: () => void
+}
+
+const connectResetSocket = (_url: string): ResetSocket => ({
+  on: () => () => undefined,
+  close: () => undefined,
+})
+
+const withRemoteReset = <Target extends Action<[], unknown>>(): Ext<Target> =>
+  withConnectHook((target) => {
+    const socket = connectResetSocket('wss://example')
+    const off = socket.on('reset', () => target())
+    return () => {
+      off()
+      socket.close()
+    }
   })
 
 const count = atom(0, 'count')
-const reset = action(() => count.set(0), 'reset').extend(withLog('reset'))
+const reset = action(() => count.set(0), 'reset').extend(withRemoteReset())
 
 export const Counter = reatomComponent(() => {
   const value = count()
@@ -47,8 +68,8 @@ export const Counter = reatomComponent(() => {
   return (
     <div>
       <p>Count: {value}</p>
-      {/* hotWrap subscribes → extension activates */}
-      {/* On unmount → cleanup runs automatically */}
+      {/* hotWrap subscribes -> socket listener starts */}
+      {/* On unmount -> cleanup runs automatically */}
       <button onClick={hotWrap(reset)}>Reset</button>
     </div>
   )

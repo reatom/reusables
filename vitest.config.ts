@@ -10,14 +10,20 @@ export default defineConfig({
         test: {
           name: 'unit',
           include: ['src/reusables/**/*.test.ts'],
-          exclude: ['src/reusables/tweakpane/**/*.test.ts'],
+          exclude: [
+            'src/reusables/tweakpane/**/*.test.ts',
+            'src/reusables/router/**/*.test.ts',
+          ],
         },
       },
       {
         extends: true,
         test: {
           name: 'browser',
-          include: ['src/reusables/tweakpane/**/*.test.ts'],
+          include: [
+            'src/reusables/tweakpane/**/*.test.ts',
+            'src/reusables/router/**/*.test.ts',
+          ],
           browser: {
             enabled: true,
             provider: playwright(),

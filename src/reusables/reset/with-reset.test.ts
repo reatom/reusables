@@ -1,11 +1,7 @@
-import { atom, context } from '@reatom/core'
-import { describe, test, beforeEach, expect } from 'vitest'
+import { atom } from '@reatom/core'
+import { describe, test, expect } from 'test'
 
 import { withReset } from './with-reset'
-
-beforeEach(() => {
-  context.reset()
-})
 
 describe('withReset', () => {
   test('adds .reset action to atom', () => {

@@ -32,6 +32,24 @@ Browse and select items interactively:
 npx jsrepo add
 ```
 
+## Testing
+
+This repository includes a reusable test harness for testing Reatom applications with automatic context management.
+
+### Add the test harness
+
+```bash
+npx jsrepo add test
+```
+
+The test harness provides:
+
+- Automatic Reatom context management in tests
+- Mock subscription utilities for tracking atom updates
+- Full Vitest compatibility with enhanced testing capabilities
+
+For detailed documentation, see the [test harness README](src/reusables/test/test.md).
+
 ## Documentation
 
 - [jsrepo Documentation](https://www.jsrepo.dev/docs)

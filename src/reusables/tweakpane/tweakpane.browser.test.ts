@@ -1,5 +1,5 @@
-import { action, atom, context } from '@reatom/core'
-import { describe, test, beforeEach, afterEach, expect } from 'vitest'
+import { action, atom } from '@reatom/core'
+import { describe, test, beforeEach, afterEach, expect } from '../test/test'
 
 import {
   reatomPane,
@@ -19,7 +19,6 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  context.reset()
   container.remove()
 })
 
@@ -37,6 +36,15 @@ describe('reatomPane', () => {
     expect(paneInstance).toBeDefined()
     expect(paneInstance.registerPlugin).toBeDefined()
     expect(paneInstance.dispose).toBeDefined()
+    expect(paneInstance.children).toEqual([])
+  })
+
+  test('pane element is in the DOM', () => {
+    const pane = reatomPane({ name: 'test', container })
+    hotWrap(pane)
+    const paneInstance = pane()
+    expect(paneInstance.element).toBeInTheDocument()
+    expect(paneInstance.element.parentElement).toBe(container)
   })
 
   test('disposes pane on unsubscribe', () => {
@@ -58,6 +66,17 @@ describe('reatomPaneFolder', () => {
     expect(folder.name).toBe('tweakpane.pane.main.Settings')
     expect(folder()).toBeDefined()
   })
+
+  test('folder element is in the DOM', () => {
+    const pane = reatomPane({ name: 'main', container })
+    const folder = reatomPaneFolder({ title: 'Settings' }, pane)
+
+    hotWrap(pane)
+    hotWrap(folder)
+    const folderInstance = folder()
+    expect(folderInstance.element).toBeInTheDocument()
+    expect(folderInstance.element.parentElement).toBeDefined()
+  })
 })
 
 describe('reatomPaneTab', () => {
@@ -68,6 +87,17 @@ describe('reatomPaneTab', () => {
     hotWrap(pane)
     expect(tabs.pages).toHaveLength(2)
     expect(tabs()).toBeDefined()
+  })
+
+  test('tab element is in the DOM', () => {
+    const pane = reatomPane({ name: 'main', container })
+    const tabs = reatomPaneTab(['General', 'Advanced'], pane)
+
+    hotWrap(pane)
+    hotWrap(tabs)
+    const tabsInstance = tabs()
+    expect(tabsInstance.element).toBeInTheDocument()
+    expect(tabsInstance.element.parentElement).toBeDefined()
   })
 })
 
@@ -91,6 +121,19 @@ describe('withBinding', () => {
     hotWrap(value)
     expect(pane()).toBeDefined()
     expect(value.binding()).toBeDefined()
+  })
+
+  test('binding control is in the DOM', () => {
+    const pane = reatomPane({ name: 'test', container })
+    const value = atom(0.5, 'value').extend(
+      withBinding({ label: 'Value' }, pane),
+    )
+
+    hotWrap(pane)
+    hotWrap(value.binding)
+    const bindingInstance = value.binding()
+    expect(bindingInstance.element).toBeInTheDocument()
+    expect(bindingInstance.element.parentElement).toBeDefined()
   })
 
   test('atom value can be retrieved while bound', () => {
@@ -123,6 +166,19 @@ describe('withButton', () => {
     expect(doThing.button()).toBeDefined()
   })
 
+  test('button element is in the DOM', () => {
+    const pane = reatomPane({ name: 'test', container })
+    const doThing = action(() => {}, 'doThing').extend(
+      withButton({ title: 'Do Thing' }, pane),
+    )
+
+    hotWrap(pane)
+    hotWrap(doThing.button)
+    const buttonInstance = doThing.button()
+    expect(buttonInstance.element).toBeInTheDocument()
+    expect(buttonInstance.element.parentElement).toBeDefined()
+  })
+
   test('action can be called while button is subscribed', () => {
     const pane = reatomPane({ name: 'test', container })
     let called = false
@@ -153,6 +209,17 @@ describe('reatomPaneSeparator', () => {
     expect(separator()).toBeDefined()
     expect(separator().dispose).toBeDefined()
   })
+
+  test('separator element is in the DOM', () => {
+    const pane = reatomPane({ name: 'test', container })
+    const separator = reatomPaneSeparator({}, pane)
+
+    hotWrap(pane)
+    hotWrap(separator)
+    const separatorInstance = separator()
+    expect(separatorInstance.element).toBeInTheDocument()
+    expect(separatorInstance.element.parentElement).toBeDefined()
+  })
 })
 
 describe('withBlade', () => {
@@ -175,6 +242,19 @@ describe('withBlade', () => {
     hotWrap(value)
     expect(pane()).toBeDefined()
     expect(value.blade()).toBeDefined()
+  })
+
+  test('blade element is in the DOM', () => {
+    const pane = reatomPane({ name: 'test', container })
+    const value = atom(50, 'value').extend(
+      withBlade({ view: 'slider', min: 0, max: 100 }, pane),
+    )
+
+    hotWrap(pane)
+    hotWrap(value.blade)
+    const bladeInstance = value.blade()
+    expect(bladeInstance.element).toBeInTheDocument()
+    expect(bladeInstance.element.parentElement).toBeDefined()
   })
 
   test('extends action with blade property', () => {

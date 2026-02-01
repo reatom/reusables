@@ -1,11 +1,7 @@
-import { atom, context } from '@reatom/core'
-import { describe, test, beforeEach, expect, vi } from 'vitest'
+import { atom } from '@reatom/core'
+import { describe, test, expect, vi } from 'test'
 
 import { reatomInstance } from './reatom-instance'
-
-beforeEach(() => {
-  context.reset()
-})
 
 describe('reatomInstance', () => {
   test('creates instance lazily on subscribe', () => {

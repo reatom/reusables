@@ -1,11 +1,7 @@
-import { atom, context } from '@reatom/core'
-import { describe, test, beforeEach, expect, vi } from 'vitest'
+import { atom } from '@reatom/core'
+import { describe, test, expect, vi } from 'test'
 
 import { withInstance } from './with-instance'
-
-beforeEach(() => {
-  context.reset()
-})
 
 describe('withInstance', () => {
   test('adds .instance property to atom', () => {

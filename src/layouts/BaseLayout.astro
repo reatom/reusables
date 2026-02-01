@@ -90,6 +90,41 @@ const pageTitle =
     })
   }
 
+  function initCollapsibleCode() {
+    document
+      .querySelectorAll('.collapsible-code:not([data-initialized])')
+      .forEach((container) => {
+        container.setAttribute('data-initialized', 'true')
+
+        const button = container.querySelector('.expand-button') as HTMLElement
+        const code = container.querySelector('code')
+        const style = getComputedStyle(container)
+        const thresholdValue = style
+          .getPropertyValue('--collapse-threshold')
+          .trim()
+        const threshold = thresholdValue ? parseInt(thresholdValue) : 16
+
+        const codeText = code?.textContent || ''
+        const lineCount = (codeText.match(/\n/g) || []).length + 1
+
+        if (lineCount < threshold) {
+          container.classList.add('no-collapse')
+        }
+
+        if (button && !button.hasAttribute('data-bound')) {
+          button.setAttribute('data-bound', 'true')
+          button.addEventListener('click', () => {
+            container.classList.toggle('expanded')
+          })
+        }
+      })
+  }
+
   addCopyButtons()
-  document.addEventListener('astro:after-swap', addCopyButtons)
+  initCollapsibleCode()
+  document.addEventListener('astro:after-swap', () => {
+    addCopyButtons()
+    initCollapsibleCode()
+  })
+  window.addEventListener('tab-change', initCollapsibleCode)
 </script>

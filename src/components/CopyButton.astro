@@ -49,28 +49,31 @@ const { text, label = 'Copy' } = Astro.props
   }
 </style>
 
-<script lang="ts">
-  document.addEventListener('click', (e) => {
-    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>(
-      '.copy-btn',
-    )
-    if (!btn) return
-    const text = btn.dataset.copy
-    if (!text) return
-    // Check if clipboard API is available before using it
-    if (!navigator.clipboard || !navigator.clipboard.writeText) {
-      console.warn('Clipboard API not available')
-      return
-    }
-    navigator.clipboard
-      .writeText(text)
-      .then(() => {
-        btn.classList.add('copied')
-        setTimeout(() => btn.classList.remove('copied'), 1500)
+<script is:inline>
+  function initCopyButtons() {
+    document.querySelectorAll('.copy-btn').forEach((btn) => {
+      if (btn.hasAttribute('data-copy-bound')) return
+      btn.setAttribute('data-copy-bound', 'true')
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation()
+        const text = btn.dataset.copy
+        if (!text) return
+        if (!navigator.clipboard || !navigator.clipboard.writeText) {
+          console.warn('Clipboard API not available')
+          return
+        }
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            btn.classList.add('copied')
+            setTimeout(() => btn.classList.remove('copied'), 1500)
+          })
+          .catch(() => {
+            console.warn('Failed to copy to clipboard')
+          })
       })
-      .catch(() => {
-        // Silently fail - clipboard API may not be available in all contexts
-        console.warn('Failed to copy to clipboard')
-      })
-  })
+    })
+  }
+  initCopyButtons()
+  document.addEventListener('astro:after-swap', initCopyButtons)
 </script>

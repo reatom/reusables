@@ -8,16 +8,6 @@ importers:
 
   .:
     dependencies:
-      astro:
-        specifier: ^5.17.1
-        version: 5.17.1(@types/node@25.1.0)(idb-keyval@6.2.2)(jiti@2.6.1)(rollup@4.57.1)(typescript@5.9.3)(yaml@2.8.2)
-      marked:
-        specifier: ^17.0.1
-        version: 17.0.1
-      shiki:
-        specifier: ^3.22.0
-        version: 3.22.0
-    devDependencies:
       '@reatom/core':
         specifier: ^1000.*
         version: 1000.10.0
@@ -30,6 +20,10 @@ importers:
       '@tweakpane/plugin-essentials':
         specifier: ^0.2.1
         version: 0.2.1(tweakpane@4.0.5)
+      tweakpane:
+        specifier: ^4.0.5
+        version: 4.0.5
+    devDependencies:
       '@types/node':
         specifier: ^25.1.0
         version: 25.1.0
@@ -38,13 +32,16 @@ importers:
         version: 19.2.10
       '@vitest/browser':
         specifier: ^4.0.18
-        version: 4.0.18(vite@6.4.1(@types/node@25.1.0)(jiti@2.6.1)(yaml@2.8.2))(vitest@4.0.18)
+        version: 4.0.18(vite@7.3.1(@types/node@25.1.0)(jiti@2.6.1)(yaml@2.8.2))(vitest@4.0.18)
       '@vitest/browser-playwright':
         specifier: ^4.0.18
-        version: 4.0.18(playwright@1.58.1)(vite@6.4.1(@types/node@25.1.0)(jiti@2.6.1)(yaml@2.8.2))(vitest@4.0.18)
+        version: 4.0.18(playwright@1.58.1)(vite@7.3.1(@types/node@25.1.0)(jiti@2.6.1)(yaml@2.8.2))(vitest@4.0.18)
       add:
         specifier: ^2.0.6
         version: 2.0.6
+      astro:
+        specifier: ^5.17.1
+        version: 5.17.1(@types/node@25.1.0)(idb-keyval@6.2.2)(jiti@2.6.1)(rollup@4.57.1)(typescript@5.9.3)(yaml@2.8.2)
       husky:
         specifier: ^9.1.7
         version: 9.1.7
@@ -54,6 +51,9 @@ importers:
       lint-staged:
         specifier: ^16.2.7
         version: 16.2.7
+      marked:
+        specifier: ^17.0.1
+        version: 17.0.1
       playwright:
         specifier: ^1.58.1
         version: 1.58.1
@@ -66,9 +66,9 @@ importers:
       prettier-plugin-jsdoc:
         specifier: ^1.8.0
         version: 1.8.0(prettier@3.8.1)
-      tweakpane:
-        specifier: ^4.0.5
-        version: 4.0.5
+      shiki:
+        specifier: ^3.22.0
+        version: 3.22.0
       vitest:
         specifier: ^4.0.18
         version: 4.0.18(@types/node@25.1.0)(@vitest/browser-playwright@4.0.18)(jiti@2.6.1)(yaml@2.8.2)
@@ -2870,10 +2870,10 @@ snapshots:
 
   '@ungap/structured-clone@1.3.0': {}
 
-  '@vitest/browser-playwright@4.0.18(playwright@1.58.1)(vite@6.4.1(@types/node@25.1.0)(jiti@2.6.1)(yaml@2.8.2))(vitest@4.0.18)':
+  '@vitest/browser-playwright@4.0.18(playwright@1.58.1)(vite@7.3.1(@types/node@25.1.0)(jiti@2.6.1)(yaml@2.8.2))(vitest@4.0.18)':
     dependencies:
-      '@vitest/browser': 4.0.18(vite@6.4.1(@types/node@25.1.0)(jiti@2.6.1)(yaml@2.8.2))(vitest@4.0.18)
-      '@vitest/mocker': 4.0.18(vite@6.4.1(@types/node@25.1.0)(jiti@2.6.1)(yaml@2.8.2))
+      '@vitest/browser': 4.0.18(vite@7.3.1(@types/node@25.1.0)(jiti@2.6.1)(yaml@2.8.2))(vitest@4.0.18)
+      '@vitest/mocker': 4.0.18(vite@7.3.1(@types/node@25.1.0)(jiti@2.6.1)(yaml@2.8.2))
       playwright: 1.58.1
       tinyrainbow: 3.0.3
       vitest: 4.0.18(@types/node@25.1.0)(@vitest/browser-playwright@4.0.18)(jiti@2.6.1)(yaml@2.8.2)
@@ -2883,9 +2883,9 @@ snapshots:
       - utf-8-validate
       - vite
 
-  '@vitest/browser@4.0.18(vite@6.4.1(@types/node@25.1.0)(jiti@2.6.1)(yaml@2.8.2))(vitest@4.0.18)':
+  '@vitest/browser@4.0.18(vite@7.3.1(@types/node@25.1.0)(jiti@2.6.1)(yaml@2.8.2))(vitest@4.0.18)':
     dependencies:
-      '@vitest/mocker': 4.0.18(vite@6.4.1(@types/node@25.1.0)(jiti@2.6.1)(yaml@2.8.2))
+      '@vitest/mocker': 4.0.18(vite@7.3.1(@types/node@25.1.0)(jiti@2.6.1)(yaml@2.8.2))
       '@vitest/utils': 4.0.18
       magic-string: 0.30.21
       pixelmatch: 7.1.0
@@ -2908,14 +2908,6 @@ snapshots:
       '@vitest/utils': 4.0.18
       chai: 6.2.2
       tinyrainbow: 3.0.3
-
-  '@vitest/mocker@4.0.18(vite@6.4.1(@types/node@25.1.0)(jiti@2.6.1)(yaml@2.8.2))':
-    dependencies:
-      '@vitest/spy': 4.0.18
-      estree-walker: 3.0.3
-      magic-string: 0.30.21
-    optionalDependencies:
-      vite: 6.4.1(@types/node@25.1.0)(jiti@2.6.1)(yaml@2.8.2)
 
   '@vitest/mocker@4.0.18(vite@7.3.1(@types/node@25.1.0)(jiti@2.6.1)(yaml@2.8.2))':
     dependencies:
@@ -4498,7 +4490,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 25.1.0
-      '@vitest/browser-playwright': 4.0.18(playwright@1.58.1)(vite@6.4.1(@types/node@25.1.0)(jiti@2.6.1)(yaml@2.8.2))(vitest@4.0.18)
+      '@vitest/browser-playwright': 4.0.18(playwright@1.58.1)(vite@7.3.1(@types/node@25.1.0)(jiti@2.6.1)(yaml@2.8.2))(vitest@4.0.18)
     transitivePeerDependencies:
       - jiti
       - less

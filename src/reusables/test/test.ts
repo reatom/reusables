@@ -1,22 +1,8 @@
 import { type Mock, test as viTest, vi } from 'vitest'
 
 import type { AtomLike, Unsubscribe } from '@reatom/core'
-import { context, noop, notify, top } from '@reatom/core'
+import { assign, context, noop, notify, top } from '@reatom/core'
 
-/**
- * Silences unhandled errors in Reatom's queues to prevent console noise during
- * tests that intentionally check for errors. This function overrides the
- * default queue push behavior to catch and ignore any errors thrown within
- * queue callbacks.
- *
- * @example
- *   import { test, silentQueuesErrors } from 'test'
- *
- *   test('handles errors silently', () => {
- *     silentQueuesErrors()
- *     // Now errors in Reatom queues won't log to console
- *   })
- */
 export const silentQueuesErrors = () => {
   top().root.pushQueue = function pushQueue(cb, queue) {
     this[queue].push(async () => {
@@ -38,9 +24,8 @@ export const silentQueuesErrors = () => {
  * Reatom-specific context handling, which prevents "missed context" errors when
  * testing Reatom atoms and actions.
  *
- * > **NOTE**: the test methods (`test.skip`, `test.each` and so on) are not
- * > supported, use `viTest` export for this cases (`viTest.skip`, `viTest.each`
- * > and so on)
+ * All Vitest test modifiers (skip, only, concurrent, each, todo, etc.) are
+ * available on the exported test function.
  *
  * @example
  *   import { test, expect } from 'test'
@@ -63,6 +48,11 @@ const test = ((name: string, fn: () => void | Promise<void>) =>
     return context.start(fn)
   })) as typeof viTest
 
+// Copy all static properties from viTest to maintain full Vitest API
+// This ensures test.skip, test.only, test.concurrent, test.each, etc. are all available
+assign(test, viTest)
+
+/** Re-export notify from Reatom for manual transaction flushing in tests. */
 export { test, viTest, notify }
 
 /**
@@ -75,7 +65,7 @@ export { test, viTest, notify }
  * an attached unsubscribe method.
  *
  * @example
- *   import { test, expect, subscribe } from 'test'
+ *   import { test, expect, subscribe } from '@reatom/reusables/test'
  *   import { atom } from '@reatom/core'
  *
  *   test('subscribe captures all updates', () => {
@@ -125,6 +115,7 @@ export {
 /**
  * Re-exports all type definitions from Vitest.
  *
- * This ensures that Vitest types are available when importing from 'test'.
+ * This ensures that Vitest types are available when importing from
+ * '@reatom/reusables/test'.
  */
 export type * from 'vitest'

@@ -1,8 +1,6 @@
 # Test Harness
 
-A reusable testing utilities on top of Vitest API for Reatom applications that provides enhanced testing capabilities with automatic context management and subscription mocking.
-
-> **Note**: This reusable is built on top of Vitest, but you may choose to rewrite it to work with other test runners.
+A reusable testing utility for Reatom applications that provides enhanced testing capabilities with automatic context management and subscription mocking.
 
 ## Usage
 
@@ -30,8 +28,6 @@ import { test, expect, subscribe } from 'test'
 ### test()
 
 Enhanced version of Vitest's `test` function that automatically wraps test callbacks in Reatom's context.
-
-> **NOTE**: the test methods (`test.skip`, `test.each` and so on) are not supported, use `viTest` export for this cases (`viTest.skip`, `viTest.each` and so on)
 
 **Signature:**
 
@@ -62,7 +58,6 @@ test('atom updates correctly', () => {
 ### subscribe()
 
 Creates a mock subscriber for an atom that tracks all updates using Vitest's mock functionality.
-Listeners are called on the next tick after the atom is updated, capturing batched updates.
 
 **Signature:**
 
@@ -84,24 +79,19 @@ A Vitest mock function with an attached `unsubscribe` method
 **Example:**
 
 ```typescript
-import { test, expect, subscribe } from 'test'
-import { atom, sleep, wrap } from '@reatom/core'
+import { test, expect, subscribe } from '@reatom/reusables/test'
+import { atom } from '@reatom/core'
 
-test('subscribe captures batched updates', async () => {
+test('subscribe captures all updates', () => {
   const counter = atom(0, 'counter')
   const sub = subscribe(counter)
 
   counter.set(1)
-  await wrap(sleep())
   counter.set(2)
-  await wrap(sleep())
-  counter.set(3)
-  counter.set(4)
-  await wrap(sleep())
 
-  expect(sub).toHaveBeenCalledTimes(4)
-  expect(sub).toHaveBeenLastCalledWith(4)
-  expect(sub.mock.calls).toEqual([[0], [1], [2], [4]])
+  expect(sub).toHaveBeenCalledTimes(3) // Initial + 2 updates
+  expect(sub).toHaveBeenLastCalledWith(2)
+  expect(sub.mock.calls).toEqual([[0], [1], [2]])
 
   sub.unsubscribe() // Stop listening to updates
 })
@@ -126,24 +116,24 @@ test('subscribe with custom callback', () => {
 })
 ```
 
-### silentQueuesErrors()
+### notify()
 
-Silences unhandled errors in Reatom's queues to prevent console noise during tests that intentionally check for errors. This function overrides the default queue push behavior to catch and ignore any errors thrown within queue callbacks.
-
-**Signature:**
-
-```typescript
-silentQueuesErrors(): void
-```
+Re-exported from `@reatom/core` for manual transaction flushing in tests.
 
 **Example:**
 
 ```typescript
-import { test, silentQueuesErrors } from 'test'
+import { test, expect, subscribe, notify } from '@reatom/reusables/test'
+import { atom } from '@reatom/core'
 
-test('handles errors silently', () => {
-  silentQueuesErrors()
-  // Now errors in Reatom queues won't log to console
+test('manual notification', () => {
+  const counter = atom(0, 'counter')
+  const sub = subscribe(counter)
+
+  counter.set(1)
+  notify() // Manually flush the transaction
+
+  expect(sub).toHaveBeenCalledTimes(2)
 })
 ```
 
@@ -159,7 +149,6 @@ The following Vitest utilities are re-exported for convenience:
 - `afterAll`
 - `vi`
 - `expectTypeOf`
-- original `test` is aliased as `viTest`
 - All Vitest types
 
 ## Usage Patterns
@@ -185,7 +174,7 @@ test('atom updates', () => {
 ### Computed Atom Testing
 
 ```typescript
-import { test, expect, subscribe } from 'test'
+import { test, expect, subscribe } from '@reatom/reusables/test'
 import { atom, computed } from '@reatom/core'
 
 test('computed atom updates', () => {
@@ -206,7 +195,7 @@ test('computed atom updates', () => {
 ### Testing Update Sequences
 
 ```typescript
-import { test, expect, subscribe } from 'test'
+import { test, expect, subscribe } from '@reatom/reusables/test'
 import { atom } from '@reatom/core'
 
 test('tracks all updates in order', () => {
@@ -242,12 +231,52 @@ test('handles async operations', async () => {
 
 If you're migrating existing tests, the main changes are:
 
-1. Import `test` from `test` instead of `vitest`
-2. Remove manual `context.start()` calls and `clearContext` call (if used)
-3. Remove manual `context.reset()` from `beforeEach` hooks (if used)
+1. Import `test` from `@reatom/reusables/test` instead of `vitest`
+2. Remove manual `context.start()` calls
+3. Remove manual `context.reset()` from `beforeEach` hooks (handled automatically)
 4. Use `subscribe()` helper instead of manual atom subscription + vi.fn()
 
 > It your application entrypoint started with reatom routing system, you can run it just with the url atom reading - `urlAtom()`
+
+**Before:**
+
+```typescript
+import { test, expect, beforeEach, vi } from 'vitest'
+import { atom, context } from '@reatom/core'
+
+beforeEach(() => {
+  context.reset()
+})
+
+test('manual context setup', () => {
+  context.start(() => {
+    const counter = atom(0, 'counter')
+    const sub = vi.fn()
+    counter.subscribe(sub)
+
+    counter.set(5)
+
+    expect(sub).toHaveBeenCalledWith(5)
+  })
+})
+```
+
+**After:**
+
+```typescript
+import { test, expect, subscribe } from '@reatom/reusables/test'
+import { atom } from '@reatom/core'
+
+test('automatic context setup', () => {
+  const counter = atom(0, 'counter')
+  const sub = subscribe(counter)
+
+  counter.set(5)
+
+  expect(sub).toHaveBeenLastCalledWith(5)
+  sub.unsubscribe()
+})
+```
 
 ## Configuration
 
@@ -283,7 +312,11 @@ Note: The exact path may vary depending on your jsrepo configuration. Adjust the
 
 ## Examples
 
-The test harness is used throughout the [@reatom/reusables](https://github.com/reatom/reusables) project.
+The test harness is used throughout the [@reatom/reusables](https://github.com/reatom/reusables) project. Check out these files for real-world examples:
+
+- `src/reusables/history/with-history.test.ts`
+- `src/reusables/instance/with-instance.test.ts`
+- `src/reusables/logger/with-logger.test.ts`
 
 ## Why Use This Test Harness?
 

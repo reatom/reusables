@@ -1,10 +1,10 @@
 ---
 interface Props {
-  text: string;
-  label?: string;
+  text: string
+  label?: string
 }
 
-const { text, label = 'Copy' } = Astro.props;
+const { text, label = 'Copy' } = Astro.props
 ---
 
 <button class="copy-btn" data-copy={text} type="button">
@@ -25,7 +25,9 @@ const { text, label = 'Copy' } = Astro.props;
     padding: 0.25rem 0.625rem;
     border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: background 0.15s, color 0.15s;
+    transition:
+      background 0.15s,
+      color 0.15s;
   }
 
   .copy-btn:hover {
@@ -49,21 +51,26 @@ const { text, label = 'Copy' } = Astro.props;
 
 <script lang="ts">
   document.addEventListener('click', (e) => {
-    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.copy-btn');
-    if (!btn) return;
-    const text = btn.dataset.copy;
-    if (!text) return;
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>(
+      '.copy-btn',
+    )
+    if (!btn) return
+    const text = btn.dataset.copy
+    if (!text) return
     // Check if clipboard API is available before using it
     if (!navigator.clipboard || !navigator.clipboard.writeText) {
-      console.warn('Clipboard API not available');
-      return;
+      console.warn('Clipboard API not available')
+      return
     }
-    navigator.clipboard.writeText(text).then(() => {
-      btn.classList.add('copied');
-      setTimeout(() => btn.classList.remove('copied'), 1500);
-    }).catch(() => {
-      // Silently fail - clipboard API may not be available in all contexts
-      console.warn('Failed to copy to clipboard');
-    });
-  });
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        btn.classList.add('copied')
+        setTimeout(() => btn.classList.remove('copied'), 1500)
+      })
+      .catch(() => {
+        // Silently fail - clipboard API may not be available in all contexts
+        console.warn('Failed to copy to clipboard')
+      })
+  })
 </script>

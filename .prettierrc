@@ -3,5 +3,13 @@
   "trailingComma": "all",
   "semi": false,
   "printWidth": 80,
-  "plugins": ["prettier-plugin-jsdoc"]
+  "plugins": ["prettier-plugin-astro", "prettier-plugin-jsdoc"],
+  "overrides": [
+    {
+      "files": "*.astro",
+      "options": {
+        "parser": "astro"
+      }
+    }
+  ]
 }

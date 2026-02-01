@@ -1,9 +1,9 @@
 ---
 interface Props {
-  showTagline?: boolean;
+  showTagline?: boolean
 }
 
-const { showTagline = true } = Astro.props;
+const { showTagline = true } = Astro.props
 ---
 
 <header class="site-header">
@@ -13,7 +13,12 @@ const { showTagline = true } = Astro.props;
       {showTagline && <span class="header-tagline">jsrepo registry</span>}
     </a>
     <nav class="header-nav">
-      <a href="https://v1000.reatom.dev" class="header-link" target="_blank" rel="noopener">
+      <a
+        href="https://v1000.reatom.dev"
+        class="header-link"
+        target="_blank"
+        rel="noopener"
+      >
         Docs
       </a>
       <a

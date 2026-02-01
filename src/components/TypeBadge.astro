@@ -1,23 +1,26 @@
 ---
-import type { ReusableType } from '../lib/registry';
+import type { ReusableType } from '../lib/registry'
 
 interface Props {
-  type: ReusableType;
+  type: ReusableType
 }
 
-const { type } = Astro.props;
+const { type } = Astro.props
 
 const colorMap: Record<ReusableType, { bg: string; text: string }> = {
   extension: { bg: '#1e3a5f', text: '#7cb3f4' },
   factory: { bg: '#1a3d2e', text: '#6bcf9a' },
   utility: { bg: '#3d3520', text: '#e0c06b' },
   integration: { bg: '#2d2545', text: '#bca4e0' },
-};
+}
 
-const colors = colorMap[type];
+const colors = colorMap[type]
 ---
 
-<span class="type-badge" style={`background: ${colors.bg}; color: ${colors.text};`}>
+<span
+  class="type-badge"
+  style={`background: ${colors.bg}; color: ${colors.text};`}
+>
   {type}
 </span>
 

@@ -1,20 +1,20 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import CopyButton from '../components/CopyButton.astro';
-import ReusableCard from '../components/ReusableCard.astro';
-import { getReusablesGroupedByType } from '../lib/registry';
+import BaseLayout from '../layouts/BaseLayout.astro'
+import Header from '../components/Header.astro'
+import Footer from '../components/Footer.astro'
+import CopyButton from '../components/CopyButton.astro'
+import ReusableCard from '../components/ReusableCard.astro'
+import { getReusablesGroupedByType } from '../lib/registry'
 
-const groups = getReusablesGroupedByType();
-const totalCount = groups.reduce((sum, g) => sum + g.items.length, 0);
+const groups = getReusablesGroupedByType()
+const totalCount = groups.reduce((sum, g) => sum + g.items.length, 0)
 
 const typeLabels: Record<string, string> = {
   factory: 'Factories',
   extension: 'Extensions',
   utility: 'Utilities',
   integration: 'Integrations',
-};
+}
 ---
 
 <BaseLayout>
@@ -31,7 +31,9 @@ const typeLabels: Record<string, string> = {
           Copy-paste the pieces you need — no extra packages.
         </p>
         <div class="hero-install">
-          <code class="install-command">npx jsrepo init github/reatom/reusables</code>
+          <code class="install-command"
+            >npx jsrepo init github/reatom/reusables</code
+          >
           <CopyButton text="npx jsrepo init github/reatom/reusables" />
         </div>
       </div>
@@ -39,16 +41,20 @@ const typeLabels: Record<string, string> = {
 
     <section class="registry">
       <div class="container">
-        {groups.map((group) => (
-          <div class="registry-group">
-            <h2 class="group-heading">{typeLabels[group.type] ?? group.type}</h2>
-            <div class="registry-grid">
-              {group.items.map((item) => (
-                <ReusableCard reusable={item} />
-              ))}
+        {
+          groups.map((group) => (
+            <div class="registry-group">
+              <h2 class="group-heading">
+                {typeLabels[group.type] ?? group.type}
+              </h2>
+              <div class="registry-grid">
+                {group.items.map((item) => (
+                  <ReusableCard reusable={item} />
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        }
       </div>
     </section>
 
@@ -58,7 +64,8 @@ const typeLabels: Record<string, string> = {
           <p class="faq-eyebrow">FAQ</p>
           <h2 class="faq-title">How reusables work</h2>
           <p class="faq-intro">
-            Quick answers about the reusables pattern, jsrepo, and where new ideas belong.
+            Quick answers about the reusables pattern, jsrepo, and where new
+            ideas belong.
           </p>
         </div>
         <div class="faq-grid">
@@ -69,12 +76,15 @@ const typeLabels: Record<string, string> = {
             </summary>
             <div class="faq-answer">
               <p>
-                Instead of installing a package, you copy the source code directly into your project.
-                This is the same "open code" approach pioneered by
-                <a href="https://ui.shadcn.com" target="_blank" rel="noopener">shadcn/ui</a>:
-                you own every line, so you can read, modify, and extend it without fighting a library's API.
-                No version lock-in, no wrapping third-party components — just code that lives in your repo
-                and evolves with your project.
+                Instead of installing a package, you copy the source code
+                directly into your project. This is the same "open code"
+                approach pioneered by
+                <a href="https://ui.shadcn.com" target="_blank" rel="noopener"
+                  >shadcn/ui</a
+                >: you own every line, so you can read, modify, and extend it
+                without fighting a library's API. No version lock-in, no
+                wrapping third-party components — just code that lives in your
+                repo and evolves with your project.
               </p>
             </div>
           </details>
@@ -86,10 +96,12 @@ const typeLabels: Record<string, string> = {
             </summary>
             <div class="faq-answer">
               <p>
-                <a href="https://jsrepo.dev" target="_blank" rel="noopener">jsrepo</a> is a CLI that
-                automates copy-paste code distribution. It lets you browse a registry, pick specific items,
-                and drop them into your project — with support for updates and diffs when the upstream
-                changes. Think of it as the plumbing behind the reusables pattern.
+                <a href="https://jsrepo.dev" target="_blank" rel="noopener"
+                  >jsrepo</a
+                > is a CLI that automates copy-paste code distribution. It lets you
+                browse a registry, pick specific items, and drop them into your project
+                — with support for updates and diffs when the upstream changes. Think
+                of it as the plumbing behind the reusables pattern.
               </p>
             </div>
           </details>
@@ -101,9 +113,10 @@ const typeLabels: Record<string, string> = {
             </summary>
             <div class="faq-answer">
               <p>
-                No. Every reusable is a plain TypeScript file you can copy by hand. jsrepo just makes
-                discovery, adding, and updating easier with a single command. Use it if you want
-                convenience; skip it if you prefer to vendor files yourself.
+                No. Every reusable is a plain TypeScript file you can copy by
+                hand. jsrepo just makes discovery, adding, and updating easier
+                with a single command. Use it if you want convenience; skip it
+                if you prefer to vendor files yourself.
               </p>
             </div>
           </details>
@@ -115,36 +128,47 @@ const typeLabels: Record<string, string> = {
             </summary>
             <div class="faq-answer">
               <p>
-                A focused pattern that is useful out of the box but small enough to understand and modify.
-                Good reusables have a clear single purpose, readable code, and minimal assumptions about
-                how they'll be used. Third-party dependencies are fine when they're the point of the
-                integration (like a Tweakpane binding). The key test: would a developer benefit from owning
-                and tweaking this code rather than importing it as a fixed dependency?
+                A focused pattern that is useful out of the box but small enough
+                to understand and modify. Good reusables have a clear single
+                purpose, readable code, and minimal assumptions about how
+                they'll be used. Third-party dependencies are fine when they're
+                the point of the integration (like a Tweakpane binding). The key
+                test: would a developer benefit from owning and tweaking this
+                code rather than importing it as a fixed dependency?
               </p>
             </div>
           </details>
 
           <details class="faq-item">
             <summary>
-              <span class="faq-question">Core package, separate library, or reusable?</span>
+              <span class="faq-question"
+                >Core package, separate library, or reusable?</span
+              >
               <span class="faq-icon" aria-hidden="true"></span>
             </summary>
             <div class="faq-answer">
-              <p>Reatom distributes code three ways, each for a different kind of thing:</p>
+              <p>
+                Reatom distributes code three ways, each for a different kind of
+                thing:
+              </p>
               <ul class="faq-list">
                 <li>
-                  <strong>Core</strong> (<code>@reatom/core</code>) — stable, dependency-free primitives
-                  with broad applicability. Changes here affect everyone, so the bar is high.
+                  <strong>Core</strong> (<code>@reatom/core</code>) — stable,
+                  dependency-free primitives with broad applicability. Changes
+                  here affect everyone, so the bar is high.
                 </li>
                 <li>
-                  <strong>Separate library</strong> (e.g. <code>@reatom/zod</code>) — a complete,
-                  cohesive integration with a stable upstream API where the surface is large enough
-                  to justify a dedicated package.
+                  <strong>Separate library</strong> (e.g. <code
+                    >@reatom/zod</code
+                  >) — a complete, cohesive integration with a stable upstream
+                  API where the surface is large enough to justify a dedicated
+                  package.
                 </li>
                 <li>
-                  <strong>Reusable</strong> — smaller or opinionated pieces where users benefit from
-                  owning the code: partial integrations, niche patterns, or cases where upstream APIs
-                  shift often and you'd rather adapt locally.
+                  <strong>Reusable</strong> — smaller or opinionated pieces where
+                  users benefit from owning the code: partial integrations, niche
+                  patterns, or cases where upstream APIs shift often and you'd rather
+                  adapt locally.
                 </li>
               </ul>
             </div>
@@ -157,9 +181,10 @@ const typeLabels: Record<string, string> = {
             </summary>
             <div class="faq-answer">
               <p>
-                Yes — open a PR. If the idea is opinionated or niche, that's perfectly fine: we'll
-                either generalize it together or ship it as-is. Reusables are meant to be adapted by
-                users, so a useful starting point matters more than universal consensus.
+                Yes — open a PR. If the idea is opinionated or niche, that's
+                perfectly fine: we'll either generalize it together or ship it
+                as-is. Reusables are meant to be adapted by users, so a useful
+                starting point matters more than universal consensus.
               </p>
             </div>
           </details>
@@ -174,8 +199,11 @@ const typeLabels: Record<string, string> = {
   .hero {
     padding: var(--space-3xl) 0 var(--space-2xl);
     border-bottom: 1px solid var(--color-gray-5);
-    background:
-      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 97, 161, 0.15), transparent);
+    background: radial-gradient(
+      ellipse 80% 50% at 50% -20%,
+      rgba(99, 97, 161, 0.15),
+      transparent
+    );
   }
 
   .hero-inner {
@@ -282,7 +310,10 @@ const typeLabels: Record<string, string> = {
     border: 1px solid var(--color-gray-5);
     border-radius: var(--radius-lg);
     padding: var(--space-md) var(--space-lg);
-    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    transition:
+      border-color 0.2s,
+      background 0.2s,
+      transform 0.2s;
   }
 
   .faq-item[open] {
@@ -323,7 +354,9 @@ const typeLabels: Record<string, string> = {
     position: absolute;
     background: var(--color-accent-light);
     border-radius: 999px;
-    transition: opacity 0.2s, transform 0.2s;
+    transition:
+      opacity 0.2s,
+      transform 0.2s;
   }
 
   .faq-icon::before {

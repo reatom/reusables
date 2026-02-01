@@ -14,6 +14,7 @@ export default defineConfig({
     bugs: 'https://github.com/reatom/reusables/issues',
     items,
     outputs: [repository()],
+    excludeDeps: ['@reatom/core', '@reatom/react'],
     defaultPaths: {
       'reatom:utility': 'src/reatom',
       'reatom:factory': 'src/reatom',

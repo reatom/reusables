@@ -144,56 +144,56 @@ function getReusableLink(depName: string): string {
               <CopyButton text={installCommand} />
             </div>
 
-          {
-            reusable.devDependencies.length > 0 && (
-              <div class="deps-section">
-                <h3 class="deps-heading">Dependencies</h3>
-                <ul class="deps-list">
-                  {reusable.devDependencies.map((dep) => (
-                    <li class="dep-item">
-                      <code>{dep.name}</code>
-                      <span class="dep-version">{dep.version}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )
-          }
-
-          {
-            reusable.registryDependencies.length > 0 && (
-              <div class="deps-section">
-                <h3 class="deps-heading">Registry dependencies</h3>
-                <ul class="deps-list">
-                  {reusable.registryDependencies.map((depName) => (
-                    <li class="dep-item">
-                      <a href={getReusableLink(depName)}>{depName}</a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )
-          }
-        </div>
-
-        <div class="tab-panel" data-tab="source" hidden>
-          <p class="manual-hint">
-            Copy the source code below and save it to the specified file path in
-            your project.
-          </p>
-          {
-            reusable.sources.length > 0 ? (
-              reusable.sources.map((source) => (
-                <div class="source-file">
-                  <div class="source-filename">{source.path}</div>
-                  <Code code={source.content} lang="ts" theme="github-dark" />
+            {
+              reusable.devDependencies.length > 0 && (
+                <div class="deps-section">
+                  <h3 class="deps-heading">Dependencies</h3>
+                  <ul class="deps-list">
+                    {reusable.devDependencies.map((dep) => (
+                      <li class="dep-item">
+                        <code>{dep.name}</code>
+                        <span class="dep-version">{dep.version}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              ))
-            ) : (
-              <p class="no-source">No source available</p>
-            )
-          }
-        </div>
+              )
+            }
+
+            {
+              reusable.registryDependencies.length > 0 && (
+                <div class="deps-section">
+                  <h3 class="deps-heading">Registry dependencies</h3>
+                  <ul class="deps-list">
+                    {reusable.registryDependencies.map((depName) => (
+                      <li class="dep-item">
+                        <a href={getReusableLink(depName)}>{depName}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )
+            }
+          </div>
+
+          <div class="tab-panel" data-tab="source" hidden>
+            <p class="manual-hint">
+              Copy the source code below and save it to the specified file path
+              in your project.
+            </p>
+            {
+              reusable.sources.length > 0 ? (
+                reusable.sources.map((source) => (
+                  <div class="source-file">
+                    <div class="source-filename">{source.path}</div>
+                    <Code code={source.content} lang="ts" theme="github-dark" />
+                  </div>
+                ))
+              ) : (
+                <p class="no-source">No source available</p>
+              )
+            }
+          </div>
         </Tabs>
       </section>
 

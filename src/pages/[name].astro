@@ -7,6 +7,7 @@ import Header from '../components/Header.astro'
 import Footer from '../components/Footer.astro'
 import TypeBadge from '../components/TypeBadge.astro'
 import CopyButton from '../components/CopyButton.astro'
+import Tabs from '../components/Tabs.astro'
 import { getAllReusables, getReusableByName } from '../lib/registry'
 import type { Reusable } from '../lib/registry'
 
@@ -130,43 +131,71 @@ function getReusableLink(depName: string): string {
       </div>
 
       <section class="install-section">
-        <h2 class="section-heading">Install</h2>
-        <div class="install-row">
-          <code class="install-command">{installCommand}</code>
-          <CopyButton text={installCommand} />
-        </div>
+        <h2 class="section-heading">Installation</h2>
+        <Tabs
+          tabs={[
+            { id: 'install', label: 'CLI' },
+            { id: 'source', label: 'Manual' },
+          ]}
+        >
+          <div class="tab-panel active" data-tab="install">
+            <div class="install-row">
+              <code class="install-command">{installCommand}</code>
+              <CopyButton text={installCommand} />
+            </div>
+
+            {
+              reusable.devDependencies.length > 0 && (
+                <div class="deps-section">
+                  <h3 class="deps-heading">Dependencies</h3>
+                  <ul class="deps-list">
+                    {reusable.devDependencies.map((dep) => (
+                      <li class="dep-item">
+                        <code>{dep.name}</code>
+                        <span class="dep-version">{dep.version}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )
+            }
+
+            {
+              reusable.registryDependencies.length > 0 && (
+                <div class="deps-section">
+                  <h3 class="deps-heading">Registry dependencies</h3>
+                  <ul class="deps-list">
+                    {reusable.registryDependencies.map((depName) => (
+                      <li class="dep-item">
+                        <a href={getReusableLink(depName)}>{depName}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )
+            }
+          </div>
+
+          <div class="tab-panel" data-tab="source" hidden>
+            <p class="manual-hint">
+              Copy the source code below and save it to the specified file path
+              in your project.
+            </p>
+            {
+              reusable.sources.length > 0 ? (
+                reusable.sources.map((source) => (
+                  <div class="source-file">
+                    <div class="source-filename">{source.path}</div>
+                    <Code code={source.content} lang="ts" theme="github-dark" />
+                  </div>
+                ))
+              ) : (
+                <p class="no-source">No source available</p>
+              )
+            }
+          </div>
+        </Tabs>
       </section>
-
-      {
-        reusable.devDependencies.length > 0 && (
-          <section class="deps-section">
-            <h2 class="section-heading">Dependencies</h2>
-            <ul class="deps-list">
-              {reusable.devDependencies.map((dep) => (
-                <li class="dep-item">
-                  <code>{dep.name}</code>
-                  <span class="dep-version">{dep.version}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )
-      }
-
-      {
-        reusable.registryDependencies.length > 0 && (
-          <section class="deps-section">
-            <h2 class="section-heading">Registry dependencies</h2>
-            <ul class="deps-list">
-              {reusable.registryDependencies.map((depName) => (
-                <li class="dep-item">
-                  <a href={getReusableLink(depName)}>{depName}</a>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )
-      }
 
       {
         docHtml && (
@@ -186,20 +215,6 @@ function getReusableLink(depName: string): string {
               lang={getExampleLang(reusable)}
               theme="github-dark"
             />
-          </section>
-        )
-      }
-
-      {
-        reusable.sources.length > 0 && (
-          <section class="code-section">
-            <h2 class="section-heading">Source</h2>
-            {reusable.sources.map((source) => (
-              <details class="source-details">
-                <summary>{source.path}</summary>
-                <Code code={source.content} lang="ts" theme="github-dark" />
-              </details>
-            ))}
           </section>
         )
       }
@@ -266,7 +281,14 @@ function getReusableLink(depName: string): string {
   }
 
   .deps-section {
-    margin-bottom: var(--space-xl);
+    margin-top: var(--space-lg);
+  }
+
+  .deps-heading {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: var(--space-sm);
+    color: var(--color-gray-3);
   }
 
   .deps-list {
@@ -376,40 +398,39 @@ function getReusableLink(depName: string): string {
     margin-bottom: var(--space-xl);
   }
 
-  .source-details {
-    border: 1px solid var(--color-gray-5);
-    border-radius: var(--radius-md);
-    overflow: hidden;
+  .source-file {
     margin-bottom: var(--space-md);
   }
 
-  .source-details:last-child {
+  .source-file:last-child {
     margin-bottom: 0;
   }
 
-  .source-details summary {
-    cursor: pointer;
-    padding: var(--space-sm) var(--space-md);
+  .source-filename {
+    padding: var(--space-xs) var(--space-sm);
     background: var(--color-bg-surface);
-    color: var(--color-gray-2);
-    font-size: 0.875rem;
+    border: 1px solid var(--color-gray-5);
+    border-bottom: none;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    color: var(--color-gray-3);
+    font-size: 0.75rem;
     font-family: var(--font-mono);
-    user-select: none;
   }
 
-  .source-details summary:hover {
-    color: var(--color-white);
-    background: var(--color-bg-surface-hover);
-  }
-
-  .source-details[open] summary {
-    border-bottom: 1px solid var(--color-gray-5);
-  }
-
-  .source-details :global(pre) {
-    border: none;
-    border-radius: 0;
+  .source-file :global(pre) {
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
     margin: 0;
+  }
+
+  .no-source {
+    color: var(--color-gray-3);
+    font-size: 0.875rem;
+  }
+
+  .manual-hint {
+    color: var(--color-gray-3);
+    font-size: 0.875rem;
+    margin-bottom: var(--space-md);
   }
 
   @media (max-width: 640px) {

@@ -51,6 +51,121 @@ const typeLabels: Record<string, string> = {
         ))}
       </div>
     </section>
+
+    <section class="faq">
+      <div class="container">
+        <div class="faq-header">
+          <p class="faq-eyebrow">FAQ</p>
+          <h2 class="faq-title">How reusables work</h2>
+          <p class="faq-intro">
+            Quick answers about the reusables pattern, jsrepo, and where new ideas belong.
+          </p>
+        </div>
+        <div class="faq-grid">
+          <details class="faq-item" open>
+            <summary>
+              <span class="faq-question">What is the reusables pattern?</span>
+              <span class="faq-icon" aria-hidden="true"></span>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                Instead of installing a package, you copy the source code directly into your project.
+                This is the same "open code" approach pioneered by
+                <a href="https://ui.shadcn.com" target="_blank" rel="noopener">shadcn/ui</a>:
+                you own every line, so you can read, modify, and extend it without fighting a library's API.
+                No version lock-in, no wrapping third-party components — just code that lives in your repo
+                and evolves with your project.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <span class="faq-question">What is jsrepo?</span>
+              <span class="faq-icon" aria-hidden="true"></span>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                <a href="https://jsrepo.dev" target="_blank" rel="noopener">jsrepo</a> is a CLI that
+                automates copy-paste code distribution. It lets you browse a registry, pick specific items,
+                and drop them into your project — with support for updates and diffs when the upstream
+                changes. Think of it as the plumbing behind the reusables pattern.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <span class="faq-question">Do I have to use jsrepo?</span>
+              <span class="faq-icon" aria-hidden="true"></span>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                No. Every reusable is a plain TypeScript file you can copy by hand. jsrepo just makes
+                discovery, adding, and updating easier with a single command. Use it if you want
+                convenience; skip it if you prefer to vendor files yourself.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <span class="faq-question">What makes a good reusable?</span>
+              <span class="faq-icon" aria-hidden="true"></span>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                A focused pattern that is useful out of the box but small enough to understand and modify.
+                Good reusables have a clear single purpose, readable code, and minimal assumptions about
+                how they'll be used. Third-party dependencies are fine when they're the point of the
+                integration (like a Tweakpane binding). The key test: would a developer benefit from owning
+                and tweaking this code rather than importing it as a fixed dependency?
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <span class="faq-question">Core package, separate library, or reusable?</span>
+              <span class="faq-icon" aria-hidden="true"></span>
+            </summary>
+            <div class="faq-answer">
+              <p>Reatom distributes code three ways, each for a different kind of thing:</p>
+              <ul class="faq-list">
+                <li>
+                  <strong>Core</strong> (<code>@reatom/core</code>) — stable, dependency-free primitives
+                  with broad applicability. Changes here affect everyone, so the bar is high.
+                </li>
+                <li>
+                  <strong>Separate library</strong> (e.g. <code>@reatom/zod</code>) — a complete,
+                  cohesive integration with a stable upstream API where the surface is large enough
+                  to justify a dedicated package.
+                </li>
+                <li>
+                  <strong>Reusable</strong> — smaller or opinionated pieces where users benefit from
+                  owning the code: partial integrations, niche patterns, or cases where upstream APIs
+                  shift often and you'd rather adapt locally.
+                </li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <span class="faq-question">Can I contribute a reusable?</span>
+              <span class="faq-icon" aria-hidden="true"></span>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                Yes — open a PR. If the idea is opinionated or niche, that's perfectly fine: we'll
+                either generalize it together or ship it as-is. Reusables are meant to be adapted by
+                users, so a useful starting point matters more than universal consensus.
+              </p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
   </main>
   <Footer />
 </BaseLayout>
@@ -127,9 +242,143 @@ const typeLabels: Record<string, string> = {
     grid-template-columns: 1fr;
   }
 
+  .faq {
+    padding: var(--space-2xl) 0 var(--space-3xl);
+    border-top: 1px solid var(--color-gray-5);
+    background:
+      linear-gradient(180deg, rgba(99, 97, 161, 0.15), transparent 65%),
+      radial-gradient(circle at 0% 0%, rgba(99, 97, 161, 0.1), transparent 45%);
+  }
+
+  .faq-header {
+    max-width: 680px;
+    margin-bottom: var(--space-xl);
+  }
+
+  .faq-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-size: 0.7rem;
+    color: var(--color-gray-3);
+    margin-bottom: var(--space-sm);
+  }
+
+  .faq-title {
+    font-size: 1.75rem;
+    margin-bottom: var(--space-sm);
+  }
+
+  .faq-intro {
+    color: var(--color-gray-2);
+  }
+
+  .faq-grid {
+    display: grid;
+    gap: var(--space-md);
+  }
+
+  .faq-item {
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-gray-5);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md) var(--space-lg);
+    transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  }
+
+  .faq-item[open] {
+    border-color: rgba(188, 164, 224, 0.6);
+    background: rgba(36, 36, 58, 0.9);
+    transform: translateY(-2px);
+  }
+
+  .faq-item summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+  }
+
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-question {
+    font-weight: 600;
+    color: var(--color-white);
+    font-size: 1rem;
+  }
+
+  .faq-icon {
+    position: relative;
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+
+  .faq-icon::before,
+  .faq-icon::after {
+    content: '';
+    position: absolute;
+    background: var(--color-accent-light);
+    border-radius: 999px;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .faq-icon::before {
+    width: 100%;
+    height: 2px;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+  }
+
+  .faq-icon::after {
+    height: 100%;
+    width: 2px;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+  }
+
+  .faq-item[open] .faq-icon::after {
+    opacity: 0;
+  }
+
+  .faq-answer {
+    margin-top: var(--space-sm);
+    color: var(--color-gray-2);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .faq-answer a {
+    color: var(--color-accent-light);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .faq-list {
+    margin: var(--space-xs) 0 0;
+    padding-left: 1.25em;
+  }
+
+  .faq-list li {
+    margin-bottom: var(--space-xs);
+  }
+
+  .faq-list li:last-child {
+    margin-bottom: 0;
+  }
+
   @media (min-width: 640px) {
     .registry-grid {
       grid-template-columns: repeat(2, 1fr);
+    }
+
+    .faq-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 

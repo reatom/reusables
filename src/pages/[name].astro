@@ -8,6 +8,7 @@ import Footer from '../components/Footer.astro'
 import TypeBadge from '../components/TypeBadge.astro'
 import CopyButton from '../components/CopyButton.astro'
 import Tabs from '../components/Tabs.astro'
+import CollapsibleCode from '../components/CollapsibleCode.astro'
 import { getAllReusables, getReusableByName } from '../lib/registry'
 import type { Reusable } from '../lib/registry'
 
@@ -41,18 +42,29 @@ const installCommand = `npx jsrepo add github/reatom/reusables ${reusable.name}`
 const renderer = new marked.Renderer()
 renderer.code = function ({ text, lang }) {
   const language = lang || 'text'
+  let codeHtml: string
   try {
-    return highlighter.codeToHtml(text, {
+    codeHtml = highlighter.codeToHtml(text, {
       lang: language,
       theme: 'github-dark',
     })
   } catch {
     // Fallback if language is not supported
-    return highlighter.codeToHtml(text, {
+    codeHtml = highlighter.codeToHtml(text, {
       lang: 'text',
       theme: 'github-dark',
     })
   }
+  return `<div class="collapsible-code">
+    <div class="code-wrapper">
+      ${codeHtml}
+      <div class="fade-overlay"></div>
+      <button class="expand-button">
+        <span class="expand-text">Show more</span>
+        <span class="collapse-text">Show less</span>
+      </button>
+    </div>
+  </div>`
 }
 
 marked.use({ renderer })
@@ -98,9 +110,9 @@ if (reusable.doc) {
 }
 
 // Determine language for example code
-function getExampleLang(reusable: Reusable): string {
-  if (reusable.examplePath?.endsWith('.tsx')) return 'tsx'
-  return 'ts'
+function getExampleLang(reusable: Reusable) {
+  if (reusable.examplePath?.endsWith('.tsx')) return 'tsx' as const
+  return 'ts' as const
 }
 
 // For tweakpane (multi-file source), the source field contains the index.ts
@@ -186,7 +198,7 @@ function getReusableLink(depName: string): string {
                 reusable.sources.map((source) => (
                   <div class="source-file">
                     <div class="source-filename">{source.path}</div>
-                    <Code code={source.content} lang="ts" theme="github-dark" />
+                    <CollapsibleCode code={source.content} lang="ts" />
                   </div>
                 ))
               ) : (
@@ -210,10 +222,9 @@ function getReusableLink(depName: string): string {
         reusable.example && (
           <section class="code-section">
             <h2 class="section-heading">Example</h2>
-            <Code
+            <CollapsibleCode
               code={reusable.example}
               lang={getExampleLang(reusable)}
-              theme="github-dark"
             />
           </section>
         )
@@ -418,8 +429,16 @@ function getReusableLink(depName: string): string {
   }
 
   .source-file :global(pre) {
-    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+    border-radius: 0 !important;
     margin: 0;
+  }
+
+  .source-file :global(.collapsible-code.no-collapse pre) {
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm) !important;
+  }
+
+  .source-file :global(.collapsible-code .expand-button) {
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
   }
 
   .no-source {

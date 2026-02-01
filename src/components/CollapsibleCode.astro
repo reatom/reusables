@@ -1,0 +1,23 @@
+---
+import { Code } from 'astro:components'
+import type { BundledLanguage, BundledTheme } from 'shiki'
+
+interface Props {
+  code: string
+  lang?: BundledLanguage
+  theme?: BundledTheme
+}
+
+const { code, lang = 'ts', theme = 'github-dark' } = Astro.props
+---
+
+<div class="collapsible-code">
+  <div class="code-wrapper">
+    <Code code={code} lang={lang} theme={theme} />
+    <div class="fade-overlay"></div>
+    <button class="expand-button">
+      <span class="expand-text">Show more</span>
+      <span class="collapse-text">Show less</span>
+    </button>
+  </div>
+</div>

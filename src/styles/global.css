@@ -157,6 +157,108 @@ pre code {
   color: inherit;
 }
 
+/* Collapsible code blocks */
+.collapsible-code {
+  --collapse-threshold: 16;
+  --collapse-visible-lines: 8;
+  position: relative;
+}
+
+.collapsible-code pre {
+  border-radius: 0 !important;
+  margin: 0;
+}
+
+.collapsible-code.no-collapse pre {
+  border-radius: var(--radius-md) !important;
+}
+
+.collapsible-code .code-wrapper {
+  position: relative;
+  max-height: calc(
+    var(--collapse-visible-lines) * 1.7 * 0.875rem + 2 * var(--space-md) + 2rem
+  );
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.collapsible-code.expanded .code-wrapper,
+.collapsible-code.no-collapse .code-wrapper {
+  max-height: none;
+}
+
+.collapsible-code .fade-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 1px;
+  right: 1px;
+  height: 60px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    transparent,
+    var(--color-bg)
+  );
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.collapsible-code.expanded .fade-overlay,
+.collapsible-code.no-collapse .fade-overlay {
+  opacity: 0;
+}
+
+.collapsible-code .expand-button {
+  position: absolute;
+  bottom: 0;
+  left: 1px;
+  right: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md) var(--space-md);
+  background: transparent;
+  border: none;
+  color: var(--color-gray-2);
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    background-color 0.2s;
+  z-index: 2;
+}
+
+.collapsible-code.no-collapse .expand-button {
+  display: none;
+}
+
+.collapsible-code .expand-button:hover {
+  color: var(--color-white);
+  background-color: #5050501a;
+}
+
+.collapsible-code .expand-text {
+  display: inline;
+}
+
+.collapsible-code .collapse-text {
+  display: none;
+}
+
+.collapsible-code.expanded .expand-text {
+  display: none;
+}
+
+.collapsible-code.expanded .collapse-text {
+  display: inline;
+}
+
+.collapsible-code.expanded pre {
+  padding-bottom: 60px;
+}
+
 /* Container utility */
 .container {
   max-width: var(--container-max);

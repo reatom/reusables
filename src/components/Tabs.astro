@@ -53,6 +53,14 @@ const activeTab = defaultTab || tabs[0]?.id
           if (panel.dataset.tab === tabId) {
             panel.classList.add('active')
             panel.removeAttribute('hidden')
+            // Re-init collapsible code blocks that were hidden
+            panel
+              .querySelectorAll('.collapsible-code[data-initialized]')
+              .forEach((el) => {
+                el.removeAttribute('data-initialized')
+                el.classList.remove('no-collapse', 'expanded')
+              })
+            window.dispatchEvent(new CustomEvent('tab-change'))
           } else {
             panel.classList.remove('active')
             panel.setAttribute('hidden', '')

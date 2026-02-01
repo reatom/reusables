@@ -1,0 +1,118 @@
+---
+interface Tab {
+  id: string
+  label: string
+}
+
+interface Props {
+  tabs: Tab[]
+  defaultTab?: string
+}
+
+const { tabs, defaultTab } = Astro.props
+const activeTab = defaultTab || tabs[0]?.id
+---
+
+<div class="tabs-container">
+  <div class="tabs-header" role="tablist">
+    {
+      tabs.map((tab) => (
+        <button
+          role="tab"
+          class={`tab-button ${tab.id === activeTab ? 'active' : ''}`}
+          data-tab={tab.id}
+          aria-selected={tab.id === activeTab}
+        >
+          {tab.label}
+        </button>
+      ))
+    }
+  </div>
+  <div class="tabs-content">
+    <slot />
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.tabs-container').forEach((container) => {
+    const buttons = container.querySelectorAll<HTMLButtonElement>('.tab-button')
+    const panels = container.querySelectorAll<HTMLElement>('.tab-panel')
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const tabId = button.dataset.tab
+
+        buttons.forEach((b) => {
+          b.classList.remove('active')
+          b.setAttribute('aria-selected', 'false')
+        })
+        button.classList.add('active')
+        button.setAttribute('aria-selected', 'true')
+
+        panels.forEach((panel) => {
+          if (panel.dataset.tab === tabId) {
+            panel.classList.add('active')
+            panel.removeAttribute('hidden')
+          } else {
+            panel.classList.remove('active')
+            panel.setAttribute('hidden', '')
+          }
+        })
+      })
+    })
+  })
+</script>
+
+<style>
+  .tabs-container {
+  }
+
+  .tabs-header {
+    display: flex;
+    border-bottom: 1px solid var(--color-gray-5);
+    margin-bottom: var(--space-lg);
+  }
+
+  .tab-button {
+    min-width: 5rem;
+    padding: var(--space-sm);
+    background: none;
+    border: none;
+    color: var(--color-gray-3);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.15s;
+    position: relative;
+    text-align: center;
+  }
+
+  .tab-button:hover {
+    color: var(--color-gray-1);
+  }
+
+  .tab-button.active {
+    color: var(--color-white);
+  }
+
+  .tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--color-white);
+  }
+
+  .tabs-content :global(.tab-panel) {
+  }
+
+  .tabs-content :global(.tab-panel[hidden]) {
+    display: none;
+  }
+
+  .tabs-content :global(.tab-panel pre) {
+    margin: 0;
+  }
+</style>

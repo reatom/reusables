@@ -54,3 +54,42 @@ const pageTitle =
 <style is:global>
   @import '../styles/global.css';
 </style>
+
+<script>
+  function addCopyButtons() {
+    document.querySelectorAll('pre').forEach((pre) => {
+      if (pre.querySelector('.copy-button')) return
+
+      const button = document.createElement('button')
+      button.className = 'copy-button'
+      button.textContent = 'Copy'
+      button.setAttribute('aria-label', 'Copy code to clipboard')
+
+      button.addEventListener('click', async () => {
+        const code = pre.querySelector('code')
+        const text = code?.textContent ?? ''
+
+        try {
+          await navigator.clipboard.writeText(text)
+          button.textContent = 'Copied!'
+          button.classList.add('copied')
+
+          setTimeout(() => {
+            button.textContent = 'Copy'
+            button.classList.remove('copied')
+          }, 2000)
+        } catch {
+          button.textContent = 'Error'
+          setTimeout(() => {
+            button.textContent = 'Copy'
+          }, 2000)
+        }
+      })
+
+      pre.appendChild(button)
+    })
+  }
+
+  addCopyButtons()
+  document.addEventListener('astro:after-swap', addCopyButtons)
+</script>

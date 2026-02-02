@@ -238,6 +238,8 @@ If you're migrating existing tests, the main changes are:
 3. Remove manual `context.reset()` from `beforeEach` hooks (handled automatically)
 4. Use `subscribe()` helper instead of manual atom subscription + vi.fn()
 
+> It your application entripoint started with reatom routing system, you can run it just with the url atom reading - `urlAtom()`
+
 **Before:**
 
 ```typescript

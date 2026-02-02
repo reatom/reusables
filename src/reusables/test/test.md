@@ -1,6 +1,6 @@
 # Test Harness
 
-A reusable testing utility for Reatom applications that provides enhanced testing capabilities with automatic context management and subscription mocking.
+A reusable testing utilities on top of Vitest API for Reatom applications that provides enhanced testing capabilities with automatic context management and subscription mocking.
 
 ## Usage
 

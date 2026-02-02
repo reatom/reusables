@@ -29,6 +29,8 @@ import { test, expect, subscribe } from 'test'
 
 Enhanced version of Vitest's `test` function that automatically wraps test callbacks in Reatom's context.
 
+> **NOTE**: the test methods (`test.skip`, `test.each` and so on) are not supported, use `viTest` export for this cases (`viTest.skip`, `viTest.each` and so on)
+
 **Signature:**
 
 ```typescript

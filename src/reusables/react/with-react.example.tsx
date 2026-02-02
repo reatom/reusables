@@ -9,7 +9,7 @@ const increment = action(() => count.set(count() + 1), 'increment').extend(
 )
 
 export const Counter = reatomComponent(() => {
-  const countValue = count.useReact()
+  const [countValue] = count.useReact()
   const incrementClick = increment.useReact()
 
   return <button onClick={incrementClick}>{countValue}</button>

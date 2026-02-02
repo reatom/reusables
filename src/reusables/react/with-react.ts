@@ -2,23 +2,35 @@ import {
   isAction,
   type Action,
   type Atom,
-  type AtomState,
+  type Computed,
   type Ext,
 } from '@reatom/core'
 import { useAction, useAtom } from '@reatom/react'
 
-type ActionParams<T> = T extends Action<infer Params, unknown> ? Params : never
-
-type ActionResult<T> = T extends Action<unknown, infer Result> ? Result : never
-
-export type ReactAtomExt<T> = T extends Atom ? { useReact: () => AtomState<T> } : never
-
-export type ReactActionExt<T> = T extends Action
-  ? { useReact: () => (...params: ActionParams<T>) => ActionResult<T> }
+type UseAtomResult<T extends Atom> = typeof useAtom extends (
+  atom: T,
+  ...args: unknown[]
+) => infer Result
+  ? Result
   : never
 
-function buildReactExt<T extends Atom>(target: T): ReactAtomExt<T>
+type UseActionResult<T extends Action> = typeof useAction extends (
+  action: T,
+  ...args: unknown[]
+) => infer Result
+  ? Result
+  : never
+
+export type ReactAtomExt<T extends Atom> = {
+  useReact: () => UseAtomResult<T>
+}
+
+export type ReactActionExt<T extends Action> = {
+  useReact: () => UseActionResult<T>
+}
+
 function buildReactExt<T extends Action>(target: T): ReactActionExt<T>
+function buildReactExt<T extends Atom>(target: T): ReactAtomExt<T>
 function buildReactExt(target: Atom | Action) {
   if (isAction(target)) {
     const useReact = () => useAction(target)
@@ -29,8 +41,12 @@ function buildReactExt(target: Atom | Action) {
   return { useReact }
 }
 
+export function withReact<Params extends unknown[], Payload>(): Ext<
+  Action<Params, Payload>,
+  ReactActionExt<Action<Params, Payload>>
+>
+export function withReact<T extends Computed>(): Ext<T, ReactAtomExt<T>>
 export function withReact<T extends Atom>(): Ext<T, ReactAtomExt<T>>
-export function withReact<T extends Action>(): Ext<T, ReactActionExt<T>>
 export function withReact<T extends Atom | Action>(): Ext<
   T,
   ReactAtomExt<T> | ReactActionExt<T>

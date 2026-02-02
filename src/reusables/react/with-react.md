@@ -14,8 +14,11 @@ Extension that adds:
 
 | Target  | Property   | Type |
 | ------- | ---------- | ---- |
-| Atom    | `useReact` | `() => State` |
+| Atom    | `useReact` | `() => [State, Update]` |
+| Computed | `useReact` | `() => [State, undefined]` |
 | Action  | `useReact` | `() => (...params: Params) => Result` |
+
+`useReact` returns the same tuple as `useAtom`.
 
 ### Example
 
@@ -30,7 +33,7 @@ const increment = action(() => count.set(count() + 1), 'increment').extend(
 )
 
 export const Counter = reatomComponent(() => {
-  const countValue = count.useReact()
+  const [countValue] = count.useReact()
   const incrementClick = increment.useReact()
 
   return <button onClick={incrementClick}>{countValue}</button>
@@ -44,6 +47,8 @@ This gives you a zustand-like experience where each atom acts like a store with
 a built-in hook, while keeping Reatom's perfect logging, composable atoms, and
 the rest of the ecosystem.
 
+Do this in `setup.ts` as described in https://v1000.reatom.dev/start/tooling/
+
 ```ts
 import { addGlobalExtension } from '@reatom/core'
 import { withReact } from '#reatom/extension/with-react'
@@ -55,11 +60,18 @@ To make TypeScript aware of the global extension, add module augmentation:
 
 ```ts
 declare module '@reatom/core' {
-  interface AtomExt<State> {
-    useReact: () => State
+  interface Atom<State> {
+    useReact: () => [
+      State,
+      (update: State | ((state: State) => State)) => State,
+    ]
   }
 
-  interface ActionExt<Params extends unknown[], Result> {
+  interface Computed<State> {
+    useReact: () => [State, undefined]
+  }
+
+  interface Action<Params extends unknown[], Result> {
     useReact: () => (...params: Params) => Result
   }
 }
@@ -74,7 +86,7 @@ const count = atom(0, 'count')
 const increment = action(() => count.set(count() + 1), 'increment')
 
 export const Counter = () => {
-  const countValue = count.useReact()
+  const [countValue] = count.useReact()
   const incrementClick = increment.useReact()
 
   return <button onClick={incrementClick}>{countValue}</button>

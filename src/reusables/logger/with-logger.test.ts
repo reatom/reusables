@@ -1,11 +1,7 @@
-import { atom, action, context } from '@reatom/core'
-import { describe, test, beforeEach, expect, vi } from 'vitest'
+import { atom, action } from '@reatom/core'
+import { describe, test, expect, vi } from 'test'
 
 import { withLogger, type LogEntry } from './with-logger'
-
-beforeEach(() => {
-  context.reset()
-})
 
 describe('withLogger', () => {
   test('adds logging middleware to atom', () => {

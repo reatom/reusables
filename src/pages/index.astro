@@ -123,6 +123,60 @@ const typeLabels: Record<string, string> = {
 
           <details class="faq-item">
             <summary>
+              <span class="faq-question">How do I test Reatom code?</span>
+              <span class="faq-icon" aria-hidden="true"></span>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                Add the test harness utility with <code
+                  >npx jsrepo add test</code
+                >. It provides automatic Reatom context management and mock
+                subscription utilities for Vitest tests.
+              </p>
+              <p style="margin-top: var(--space-sm);">
+                The test harness is also automatically included when you add any
+                reusable with the <code>--with-tests</code> flag:
+                <code>npx jsrepo add withHistory --with-tests</code>
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <span class="faq-question"
+                >Can I include tests, docs, and examples?</span
+              >
+              <span class="faq-icon" aria-hidden="true"></span>
+            </summary>
+            <div class="faq-answer">
+              <p>
+                Yes. Use flags to include additional files when adding a
+                reusable:
+              </p>
+              <ul class="faq-list">
+                <li>
+                  <strong>--with-tests</strong> — includes test files and the test
+                  harness utility
+                </li>
+                <li>
+                  <strong>--with-docs</strong> — includes documentation files (like
+                  detailed API docs)
+                </li>
+                <li>
+                  <strong>--with-examples</strong> — includes example usage files
+                  when available
+                </li>
+              </ul>
+              <p style="margin-top: var(--space-sm);">
+                Combine multiple flags: <code
+                  >npx jsrepo add withLogger --with-tests --with-docs</code
+                >
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary>
               <span class="faq-question">What makes a good reusable?</span>
               <span class="faq-icon" aria-hidden="true"></span>
             </summary>

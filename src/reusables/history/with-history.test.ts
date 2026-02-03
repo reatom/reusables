@@ -1,11 +1,7 @@
-import { atom, context } from '@reatom/core'
-import { describe, test, beforeEach, expect } from 'vitest'
+import { atom } from '@reatom/core'
+import { describe, test, expect } from 'test'
 
 import { withHistory } from './with-history'
-
-beforeEach(() => {
-  context.reset()
-})
 
 describe('withHistory', () => {
   test('adds .history computed to atom', () => {

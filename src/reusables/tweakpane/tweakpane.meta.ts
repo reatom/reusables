@@ -13,7 +13,7 @@ export const tweakpane = {
         { path: 'blades.ts' },
         { path: 'essentials.ts' },
         { path: 'tweakpane.md', role: 'doc' },
-        { path: 'tweakpane.test.ts', role: 'test' },
+        { path: 'tweakpane.browser.test.ts', role: 'test' },
         { path: 'tweakpane.example.tsx', role: 'example' },
       ],
     },

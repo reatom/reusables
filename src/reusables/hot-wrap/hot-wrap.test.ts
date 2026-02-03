@@ -1,11 +1,7 @@
-import { atom, action, context } from '@reatom/core'
-import { describe, test, beforeEach, expect } from 'vitest'
+import { atom, action } from '@reatom/core'
+import { describe, test, expect } from 'test'
 
 import { hotWrap } from './hot-wrap'
-
-beforeEach(() => {
-  context.reset()
-})
 
 describe('hotWrap', () => {
   test('wraps atom and maintains value access', () => {

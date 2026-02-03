@@ -247,6 +247,9 @@ If you're migrating existing tests, the main changes are:
 3. Remove manual `context.reset()` from `beforeEach` hooks (if used)
 4. Use `subscribe()` helper instead of manual atom subscription + vi.fn()
 
+> It your application entrypoint started with reatom routing system, you can run it just with the url atom reading - `urlAtom()`  
+
+
 ## Configuration
 
 To set up the `test` alias in your project (optional but recommended):
@@ -285,8 +288,10 @@ The test harness is used throughout the [@reatom/reusables](https://github.com/r
 
 ## Why Use This Test Harness?
 
-1. **Reduces Boilerplate**: No need to manually manage context in every test
-2. **Prevents Common Errors**: Eliminates "missed context" errors that are common in Reatom testing
-3. **Better Debugging**: Mock subscriptions provide clear visibility into atom updates
-4. **Isolation Guarantee**: Each test runs in a fresh context, preventing flaky tests
-5. **Follows Core Patterns**: Aligned with testing patterns used in `@reatom/core`
+
+1. **Universal implementation**: Easy to change Vitest to any other test runner
+2. **Reduces Boilerplate**: No need to manually manage context in every test
+3. **Prevents Common Errors**: Eliminates "missed context" errors that are common in Reatom testing
+4. **Better Debugging**: Mock subscriptions provide clear visibility into atom updates
+5. **Isolation Guarantee**: Each test runs in a fresh context, preventing flaky tests
+6. **Follows Core Patterns**: Aligned with testing patterns used in `@reatom/core`

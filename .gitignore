@@ -2,5 +2,10 @@ node_modules
 dist
 .astro
 
+debug*
+
 # ralphex progress logs
 progress*.txt
+
+*storybook.log
+storybook-static

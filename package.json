@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "A collection of reusable reatom extensions, utilities and integrations",
   "private": true,
+  "imports": {
+    "#storybook/*": "./.storybook/*"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -12,7 +15,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "jsrepo:build": "jsrepo build",
-    "prepare": "husky"
+    "prepare": "husky",
+    "storybook": "storybook dev -p 6006 -c ./src/reusables/reatom-jsx-storybook",
+    "build-storybook": "storybook build -c ./src/reusables/reatom-jsx-storybook"
   },
   "keywords": [
     "jsrepo",
@@ -26,18 +31,24 @@
   "packageManager": "pnpm@10.28.1",
   "dependencies": {
     "@reatom/core": "^1000.*",
+    "@reatom/jsx": "^1000.*",
     "@reatom/react": "^1000.*",
     "@tweakpane/core": "^2.0.5",
     "@tweakpane/plugin-essentials": "^0.2.1",
     "tweakpane": "^4.0.5"
   },
   "devDependencies": {
+    "@storybook/addon-a11y": "^10.2.6",
+    "@storybook/addon-docs": "^10.2.6",
+    "@storybook/addon-vitest": "^10.2.6",
+    "@storybook/html-vite": "^10.2.6",
     "@types/node": "^25.1.0",
     "@types/react": "^19.2.10",
     "@vitest/browser": "^4.0.18",
     "@vitest/browser-playwright": "^4.0.18",
     "add": "^2.0.6",
     "astro": "^5.17.1",
+    "htm": "^3.1.1",
     "husky": "^9.1.7",
     "jsrepo": "^3.1.1",
     "lint-staged": "^16.2.7",
@@ -47,6 +58,7 @@
     "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-jsdoc": "^1.8.0",
     "shiki": "^3.22.0",
+    "storybook": "^10.2.6",
     "vitest": "^4.0.18"
   },
   "lint-staged": {

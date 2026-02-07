@@ -3,7 +3,8 @@
   "compilerOptions": {
     "types": ["node"],
     "paths": {
-      "test": ["./src/reusables/test/test.ts"]
+      "test": ["./src/reusables/test/test.ts"],
+      "#storybook/*": ["./.storybook/*"]
     }
   },
   "include": [".astro/types.d.ts", "**/*"],

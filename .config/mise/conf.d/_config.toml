@@ -1,0 +1,9 @@
+[task_config]
+dir = "{{ config_root }}"
+
+[env]
+"_".path = { path = "./node_modules/.bin" }
+STORYBOOK_ENABLE_CRASH_REPORTS = 1
+
+[shell_alias]
+mr = "mise run"

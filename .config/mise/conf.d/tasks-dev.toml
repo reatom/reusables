@@ -1,0 +1,32 @@
+[vars]
+astro_port = "4321"
+storybook_port = "6006"
+preview_port = "4321"
+
+[tasks.dev]
+description = "Start Astro dev server"
+usage = '''
+flag "-p --port <port>" env="ASTRO_PORT" default="{{ vars.astro_port }}" help="Port for Astro dev server"
+arg "[rest]" help="Additional arguments to pass to Astro dev"
+'''
+run = "pnpm exec astro dev --port ${usage_port?} ${usage_rest}"
+
+[tasks.storybook]
+description = "Start Storybook dev server"
+alias = "sb"
+usage = '''
+flag "-p --port <port>" env="STORYBOOK_PORT" default="{{ vars.storybook_port }}" help="Port for Storybook dev server"
+'''
+run = "pnpm exec storybook dev -p ${usage_port?} -c ./src/reusables/reatom-jsx-storybook"
+
+[tasks.preview]
+description = "Preview production build"
+depends = ["build:webapp"]
+usage = '''
+flag "-p --port <port>" env="PREVIEW_PORT" default="{{ vars.preview_port }}" help="Port for Astro preview server"
+'''
+run = "pnpm exec astro preview --port ${usage_port?}"
+
+[tasks.clean]
+description = "Clean build artifacts and caches"
+run = ["rm -rf .var", "rm -rf dist", "rm -rf storybook-static", "rm -rf .astro", "rm -rf coverage"]

@@ -1,0 +1,31 @@
+[tasks.format]
+description = "Format code with Prettier"
+alias = "fmt"
+run = "pnpm run format"
+
+[tasks."format:check"]
+description = "Check code formatting"
+alias = "fmt:check"
+run = "pnpm run format:check"
+
+[tasks.typecheck]
+description = "Type check with TypeScript"
+alias = "tc"
+run = "pnpm exec tsc -b"
+
+[tasks.validate]
+description = "Run default local validation checks"
+run = [ #
+  { task = "prepare" },
+  { task = "format" },
+  { tasks = ["typecheck", "test:run"] },
+]
+
+[tasks.ci]
+description = "Run CI checks"
+run = [
+  { task = "format:check" },
+  { task = "typecheck" },
+  { task = "test:coverage" },
+  { task = "build" },
+]

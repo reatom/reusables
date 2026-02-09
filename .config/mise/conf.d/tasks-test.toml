@@ -1,0 +1,25 @@
+[vars]
+test_timeout = "10000"
+
+[env]
+TEST_TIMEOUT = "{{ vars.test_timeout }}"
+
+[tasks.test]
+description = "Run tests in watch mode"
+alias = "t"
+run = "pnpm exec vitest --testTimeout ${TEST_TIMEOUT}"
+
+[tasks."test:run"]
+description = "Run tests once"
+alias = "tr"
+run = "pnpm exec vitest run --testTimeout ${TEST_TIMEOUT}"
+
+[tasks."test:coverage"]
+description = "Run tests with coverage"
+alias = "tcov"
+run = "pnpm exec vitest run --coverage --testTimeout ${TEST_TIMEOUT}"
+
+[tasks."test:browser"]
+description = "Run tests in browser mode"
+alias = "tb"
+run = "pnpm run test:browser"

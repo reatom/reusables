@@ -1,0 +1,55 @@
+[vars]
+build_dir = ".var/dist"
+webapp_out_dir = "{{ vars.build_dir }}/webapp"
+storybook_out_dir = "{{ vars.build_dir }}/storybook"
+gh_pages_out_dir = "{{ vars.build_dir }}/gh-pages"
+gh_pages_base_url = "/reusables/"
+
+# exposing defaults to terminal so that direct commands can be run
+# consistently with tasks
+[env]
+WEBAPP_OUT_DIR = "{{ vars.webapp_out_dir }}"
+WEBAPP_BASE_URL = "/"
+STORYBOOK_BASE_URL = "/"
+GH_PAGES_OUT_DIR = "{{ vars.gh_pages_out_dir }}"
+
+[tasks."build:webapp:base"]
+hide = true
+usage = '''
+arg "<dir>" env="WEBAPP_OUT_DIR" default="{{ vars.webapp_out_dir }}" help="Output directory for the Astro build"
+arg "<base>" env="WEBAPP_BASE_URL" default="/" help="Base URL for the Astro build"
+'''
+run = "pnpm exec astro --base ${usage_base?} build --outDir ${usage_dir?}"
+
+[tasks."build:webapp"]
+description = "Build Astro app"
+run = "mise run build:webapp:base"
+sources = ["src/**/*", "public/**/*", "astro.config.mjs", "package.json", "tsconfig.json"]
+outputs = ["{{ vars.webapp_out_dir }}/**/*"]
+
+[tasks."build:storybook:base"]
+hide = true
+usage = '''
+arg "<dir>" env="STORYBOOK_OUT_DIR" default="{{ vars.storybook_out_dir }}" help="Output directory for the Storybook build"
+arg "<base>" env="STORYBOOK_BASE_URL" default="/" help="Base URL for Storybook assets"
+'''
+run = "STORYBOOK_BASE_URL=${usage_base?} pnpm exec storybook build -c ./src/reusables/reatom-jsx-storybook -o ${usage_dir?}"
+
+[tasks."build:storybook"]
+description = "Build Storybook"
+run = "mise run build:storybook:base"
+sources = ["src/**/*.{js,jsx,ts,tsx,mjs,cjs}", "src/reusables/reatom-jsx-storybook/**/*", "package.json"]
+outputs = ["{{ vars.storybook_out_dir }}/**/*"]
+
+[tasks.build]
+description = "Run all build tasks"
+run = [{ task = "build:webapp" }, { task = "build:storybook" }]
+
+[tasks."build:gh-pages"]
+description = "Prepare deployment artifacts for GitHub Pages"
+run = [
+  "mise run build:webapp:base {{ vars.gh_pages_out_dir }} {{ vars.gh_pages_base_url }}",
+  "mise run build:storybook:base {{ vars.gh_pages_out_dir }}/storybook {{ vars.gh_pages_base_url }}storybook/",
+]
+sources = ["src/**/*", "public/**/*", "astro.config.mjs", "src/reusables/reatom-jsx-storybook/**/*", "package.json"]
+outputs = ["{{ vars.gh_pages_out_dir }}/**/*"]

@@ -59,8 +59,9 @@ export const silentQueuesErrors = () => {
 // Create the wrapped test function
 const test = ((name: string, fn: () => void | Promise<void>) =>
   viTest(name, () => {
+    context.reset()
     Reflect.defineProperty(fn, 'name', { value: name })
-    return context.start(fn)
+    return fn()
   })) as typeof viTest
 
 export { test, viTest, notify }

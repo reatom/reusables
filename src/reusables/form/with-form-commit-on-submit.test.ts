@@ -1,11 +1,7 @@
-import { context, reatomForm, sleep } from '@reatom/core'
-import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { reatomForm, sleep } from '@reatom/core'
+import { describe, expect, test, vi } from 'test'
 
 import { withFormCommitOnSubmit } from './with-form-commit-on-submit'
-
-beforeEach(() => {
-  context.reset()
-})
 
 describe('withFormCommitOnSubmit', () => {
   test('resets dirty state after successful submit while keeping values', async () => {

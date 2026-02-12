@@ -16,13 +16,12 @@ export const silentQueuesErrors = () => {
 }
 
 /**
- * Enhanced version of Vitest's test function that automatically wraps test
- * callbacks in Reatom's context to ensure proper atom tracking and execution
- * within Reatom's reactive system.
+ * Enhanced version of Vitest's test function that resets Reatom's context
+ * before each test to ensure clean state isolation between tests.
  *
- * This wrapper preserves all functionality from Vitest while adding
- * Reatom-specific context handling, which prevents "missed context" errors when
- * testing Reatom atoms and actions.
+ * Uses `context.reset()` rather than `context.start()` so the root context
+ * stays on the stack across async boundaries, making it safe for tests with
+ * `await`.
  *
  * All Vitest test modifiers (skip, only, concurrent, each, todo, etc.) are
  * available on the exported test function.
@@ -44,8 +43,9 @@ export const silentQueuesErrors = () => {
 // Create the wrapped test function
 const test = ((name: string, fn: () => void | Promise<void>) =>
   viTest(name, () => {
+    context.reset()
     Reflect.defineProperty(fn, 'name', { value: name })
-    return context.start(fn)
+    return fn()
   })) as typeof viTest
 
 // Copy all static properties from viTest to maintain full Vitest API

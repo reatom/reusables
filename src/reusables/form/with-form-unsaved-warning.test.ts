@@ -1,12 +1,7 @@
-import { context, reatomForm, sleep } from '@reatom/core'
-import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { reatomForm, sleep } from '@reatom/core'
+import { describe, expect, test, vi } from 'test'
 
 import { withFormUnsavedWarning } from './with-form-unsaved-warning'
-
-beforeEach(async () => {
-  context.reset()
-  await sleep()
-})
 
 describe('withFormUnsavedWarning', () => {
   test('manages beforeunload listener based on dirty state', async () => {

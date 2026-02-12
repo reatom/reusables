@@ -1,10 +1,9 @@
-import { context, reatomForm } from '@reatom/core'
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
+import { reatomForm } from '@reatom/core'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'test'
 
 import { withFormAutoSubmit } from './with-form-auto-submit'
 
 beforeEach(() => {
-  context.reset()
   vi.useFakeTimers()
 })
 

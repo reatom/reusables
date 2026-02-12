@@ -1,11 +1,7 @@
-import { context, reatomForm } from '@reatom/core'
-import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { reatomForm } from '@reatom/core'
+import { describe, expect, test, vi } from 'test'
 
 import { withFormAutoFocusOnError } from './with-form-auto-focus-on-error'
-
-beforeEach(() => {
-  context.reset()
-})
 
 describe('withFormAutoFocusOnError', () => {
   test('focuses the first field with a validation error on submit rejection', async () => {

@@ -3,7 +3,7 @@ import { reatomForm } from '@reatom/core'
 import { withFormUnsavedWarning } from './with-form-unsaved-warning'
 
 // Basic: browser "Leave site?" dialog when form is dirty
-const settingsForm = reatomForm(
+export const settingsForm = reatomForm(
   { name: '', email: '' },
   {
     onSubmit: async (state) => {
@@ -13,7 +13,7 @@ const settingsForm = reatomForm(
 ).extend(withFormUnsavedWarning())
 
 // With callback: integrate with SPA router navigation guards
-const profileForm = reatomForm(
+export const profileForm = reatomForm(
   { bio: '' },
   {
     onSubmit: async (state) => {

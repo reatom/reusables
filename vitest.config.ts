@@ -14,7 +14,7 @@ export default defineConfig({
       {
         extends: true,
         test: {
-          name: 'unit',
+          name: 'node',
           exclude: ['src/**/*.browser.test.ts'],
         },
       },
@@ -22,6 +22,7 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'browser',
+          exclude: ['src/**/*.node.test.ts'],
           browser: {
             headless: true,
             enabled: true,

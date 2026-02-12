@@ -2,5 +2,7 @@ node_modules
 dist
 .astro
 
+__screenshots__
+
 # ralphex progress logs
 progress*.txt

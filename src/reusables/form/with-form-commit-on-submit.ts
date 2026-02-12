@@ -1,10 +1,11 @@
 import { withCallHook, type Form } from '@reatom/core'
 
 /**
- * Form extension that resets the form to the submitted state after a successful
- * submit, so that `dirty` becomes `false` while keeping the new values.
+ * Form extension that commits the submitted state as the new baseline after a
+ * successful submit, so that `dirty` becomes `false` while keeping the new
+ * values.
  */
-export const withFormResetOnSubmit =
+export const withFormCommitOnSubmit =
   () =>
   <T extends Form<any>>(form: T): T => {
     form.submit.onFulfill.extend(

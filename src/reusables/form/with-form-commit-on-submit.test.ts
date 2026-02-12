@@ -1,18 +1,18 @@
 import { context, reatomForm, sleep } from '@reatom/core'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
-import { withFormResetOnSubmit } from './with-form-reset-on-submit'
+import { withFormCommitOnSubmit } from './with-form-commit-on-submit'
 
 beforeEach(() => {
   context.reset()
 })
 
-describe('withFormResetOnSubmit', () => {
+describe('withFormCommitOnSubmit', () => {
   test('resets dirty state after successful submit while keeping values', async () => {
     const submitSpy = vi.fn(async (state: { name: string }) => state)
 
     const form = reatomForm({ name: '' }, { onSubmit: submitSpy }).extend(
-      withFormResetOnSubmit(),
+      withFormCommitOnSubmit(),
     )
 
     form.fields.name.change('Ada')

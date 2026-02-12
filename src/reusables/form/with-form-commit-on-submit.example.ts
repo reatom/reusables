@@ -1,6 +1,6 @@
 import { reatomForm } from '@reatom/core'
 
-import { withFormResetOnSubmit } from './with-form-reset-on-submit'
+import { withFormCommitOnSubmit } from './with-form-commit-on-submit'
 
 const settingsForm = reatomForm(
   { name: '', email: '' },
@@ -9,7 +9,7 @@ const settingsForm = reatomForm(
       console.log('Saved', state)
     },
   },
-).extend(withFormResetOnSubmit())
+).extend(withFormCommitOnSubmit())
 
 // Edit and submit
 settingsForm.fields.name.change('Ada')

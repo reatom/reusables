@@ -2,5 +2,8 @@ node_modules
 dist
 .astro
 
+# vitest browser test screenshots
+__screenshots__
+
 # ralphex progress logs
 progress*.txt

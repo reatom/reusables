@@ -20,6 +20,7 @@ export const withFormUnsavedWarning =
       if (dirty) {
         onEvent(window, 'beforeunload', (event: BeforeUnloadEvent) => {
           event.preventDefault()
+          event.returnValue = ''
         })
       }
     })

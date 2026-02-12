@@ -14,18 +14,36 @@ describe('withFormUnsavedWarning', () => {
     form.fields.name.change('Ada')
     await sleep()
 
-    const dirty = new Event('beforeunload', { cancelable: true })
+    const dirty = new Event('beforeunload', {
+      cancelable: true,
+    }) as BeforeUnloadEvent
     const dirtySpy = vi.spyOn(dirty, 'preventDefault')
+    const dirtyReturnValueSetter = vi.fn()
+    Object.defineProperty(dirty, 'returnValue', {
+      get: () => '',
+      set: dirtyReturnValueSetter,
+      configurable: true,
+    })
     window.dispatchEvent(dirty)
     expect(dirtySpy).toHaveBeenCalled()
+    expect(dirtyReturnValueSetter).toHaveBeenCalledWith('')
 
     form.reset()
     await sleep()
 
-    const clean = new Event('beforeunload', { cancelable: true })
+    const clean = new Event('beforeunload', {
+      cancelable: true,
+    }) as BeforeUnloadEvent
     const cleanSpy = vi.spyOn(clean, 'preventDefault')
+    const cleanReturnValueSetter = vi.fn()
+    Object.defineProperty(clean, 'returnValue', {
+      get: () => false,
+      set: cleanReturnValueSetter,
+      configurable: true,
+    })
     window.dispatchEvent(clean)
     expect(cleanSpy).not.toHaveBeenCalled()
+    expect(cleanReturnValueSetter).not.toHaveBeenCalled()
   })
 
   test('calls callback on dirty state changes', async () => {

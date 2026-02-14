@@ -1,0 +1,24 @@
+{
+  "name": "reatom-reusables-promo",
+  "version": "1.0.0",
+  "description": "Remotion promo video for Reatom reusables registry",
+  "scripts": {
+    "dev": "remotion studio",
+    "start": "remotion studio",
+    "build": "remotion render src/index.ts ReatomPromo out/promo.mp4",
+    "upgrade": "remotion upgrade"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.0",
+    "@remotion/bundler": "^4.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "remotion": "^4.0.0"
+  },
+  "devDependencies": {
+    "@remotion/eslint-config": "^4.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "typescript": "^5.0.0"
+  }
+}

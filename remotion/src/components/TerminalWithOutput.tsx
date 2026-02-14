@@ -42,7 +42,7 @@ export const TerminalWithOutput: React.FC<TerminalWithOutputProps> = ({
   const visibleLines = showOutput
     ? Math.min(
         Math.floor((frame - outputStartFrame) / outputLineDelay),
-        output.length
+        output.length,
       )
     : 0
 

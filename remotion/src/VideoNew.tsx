@@ -43,7 +43,7 @@ const OpeningScene: React.FC = () => {
   const glowIntensity = interpolate(
     Math.sin((frame / fps) * Math.PI * 2),
     [-1, 1],
-    [0.5, 1]
+    [0.5, 1],
   )
 
   // Particle effect
@@ -425,7 +425,7 @@ const ClosingScene: React.FC = () => {
   const glow = interpolate(
     Math.sin((frame / fps) * Math.PI * 1.8),
     [-1, 1],
-    [0.6, 1]
+    [0.6, 1],
   )
 
   return (

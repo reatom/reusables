@@ -10,13 +10,13 @@ importers:
     dependencies:
       '@reatom/core':
         specifier: ^1000.*
-        version: 1000.10.0
+        version: 1000.15.1
       '@reatom/jsx':
         specifier: ^1000.*
-        version: 1000.1.0(@reatom/core@1000.10.0)
+        version: 1000.1.0(@reatom/core@1000.15.1)
       '@reatom/react':
         specifier: ^1000.*
-        version: 1000.2.2(@reatom/core@1000.10.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 1000.2.2(@reatom/core@1000.15.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@tweakpane/core':
         specifier: ^2.0.5
         version: 2.0.5
@@ -759,8 +759,8 @@ packages:
   '@quansync/fs@1.0.0':
     resolution: {integrity: sha512-4TJ3DFtlf1L5LDMaM6CanJ/0lckGNtJcMjQ1NAV6zDmA0tEHKZtxNKin8EgPaVX1YzljbxckyT2tJrpQKAtngQ==}
 
-  '@reatom/core@1000.10.0':
-    resolution: {integrity: sha512-q3j7k3OnqHkQYsTcLPJ0Ars7qiahXsl3gsHV15a92nhhlFwjVNMvr1gZXO1rjm9HXHgAgog6tuxSGQcSPHD6bw==}
+  '@reatom/core@1000.15.1':
+    resolution: {integrity: sha512-5KKwjD7teOfHNXUj9aJxFYR+DLWiaE0xZwy1tpWlSE+cx3VI5VwJZJuhvZ887pdrMbgwyOypcz/V9p1v3YSWPg==}
 
   '@reatom/jsx@1000.1.0':
     resolution: {integrity: sha512-WgQoJJQyw30GltqicaJUH33Xr0bfpSl3DGU7EQdBDiHEh6GiXqlhTq7ea0g4vAWRDogm9/akGTKHGs6CebKJbQ==}
@@ -3042,20 +3042,20 @@ snapshots:
     dependencies:
       quansync: 1.0.0
 
-  '@reatom/core@1000.10.0':
+  '@reatom/core@1000.15.1':
     dependencies:
       '@standard-schema/spec': 1.1.0
     optionalDependencies:
       idb-keyval: 6.2.2
 
-  '@reatom/jsx@1000.1.0(@reatom/core@1000.10.0)':
+  '@reatom/jsx@1000.1.0(@reatom/core@1000.15.1)':
     dependencies:
-      '@reatom/core': 1000.10.0
+      '@reatom/core': 1000.15.1
       csstype: 3.2.3
 
-  '@reatom/react@1000.2.2(@reatom/core@1000.10.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@reatom/react@1000.2.2(@reatom/core@1000.15.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
-      '@reatom/core': 1000.10.0
+      '@reatom/core': 1000.15.1
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
 

@@ -15,6 +15,7 @@ describe('withFormUnsavedWarning', () => {
       withFormUnsavedWarning(),
     )
 
+    form.waitUnsavedWarning()
     form.fields.name.change('Ada')
 
     expect(form.focus().dirty).toBe(true)

@@ -1,11 +1,9 @@
 import { action, type Action, type Form } from '@reatom/core'
 
-/** Event-like object with a `preventDefault` method (DOM, React, Svelte, etc.). */
 interface PreventableEvent {
   preventDefault(): void
 }
 
-/** Configuration for {@link withFormSubmitHandler}. */
 interface FormSubmitHandlerConfig {
   /**
    * Skip submission when the form is not dirty.
@@ -16,7 +14,6 @@ interface FormSubmitHandlerConfig {
   requireDirty?: true | string
 }
 
-/** Extension object added to the form by {@link withFormSubmitHandler}. */
 interface FormSubmitHandlerExt {
   handleSubmit: Action<[event?: PreventableEvent], void>
 }

@@ -11,6 +11,8 @@ describe('withFormUnsavedWarning', () => {
       withFormUnsavedWarning(),
     )
 
+    form.waitUnsavedWarning()
+
     const clean = new Event('beforeunload', { cancelable: true })
     const cleanSpy = vi.spyOn(clean, 'preventDefault')
     window.dispatchEvent(clean)
@@ -31,6 +33,8 @@ describe('withFormUnsavedWarning', () => {
       withFormUnsavedWarning(checkUnsaved),
     )
 
+    form.waitUnsavedWarning()
+
     const event = new Event('beforeunload', { cancelable: true })
     window.dispatchEvent(event)
 
@@ -41,6 +45,8 @@ describe('withFormUnsavedWarning', () => {
     const form = reatomForm({ name: '' }, { onSubmit: noop }).extend(
       withFormUnsavedWarning(),
     )
+
+    form.waitUnsavedWarning()
 
     const event = new Event('beforeunload', { cancelable: true })
     window.dispatchEvent(event)

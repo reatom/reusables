@@ -1,25 +1,36 @@
-import { action, onEvent, type Form } from '@reatom/core'
+import { action, onEvent, type Action, type Form } from '@reatom/core'
+
+interface FormUnsavedWarningExt {
+  preventNavigation: Action<[BeforeUnloadEvent], void>
+  waitUnsavedWarning: Action<[], void>
+}
 
 /**
  * Form extension that warns the user before leaving the page when the form has
  * unsaved changes, using the browser's `beforeunload` event.
  *
- * Accepts an optional callback that fires on every dirty state change, useful
- * for integrating with SPA router navigation guards.
+ * Returns a `waitUnsavedWarning` action that should be called in
+ * `reatomFactoryComponent` or a route loader to register the listener.
+ *
+ * Also exposes `preventNavigation` for SPA router integration via
+ * `withCallHook`.
  */
 export const withFormUnsavedWarning =
   <Target extends Form<any>>(
     checkUnsaved: (form: Target) => boolean = (form) => form.focus().dirty,
   ) =>
-  (target: Target) => {
+  (target: Target): FormUnsavedWarningExt => {
     const preventNavigation = action((event: BeforeUnloadEvent) => {
       if (checkUnsaved(target)) {
         event.preventDefault()
       }
-    })
+    }, `${target.name}.preventNavigation`)
 
-    if (typeof window !== 'undefined') {
-      onEvent(window, 'beforeunload', preventNavigation)
-    }
-    return { preventNavigation }
+    const waitUnsavedWarning = action(() => {
+      if (typeof window !== 'undefined') {
+        onEvent(window, 'beforeunload', preventNavigation)
+      }
+    }, `${target.name}.waitUnsavedWarning`)
+
+    return { preventNavigation, waitUnsavedWarning }
   }

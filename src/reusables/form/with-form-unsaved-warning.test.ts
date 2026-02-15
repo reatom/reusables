@@ -11,6 +11,8 @@ describe('withFormUnsavedWarning', () => {
       withFormUnsavedWarning(),
     )
 
+    form.waitUnsavedWarning()
+
     const clean = new Event('beforeunload', { cancelable: true })
     const cleanSpy = vi.spyOn(clean, 'preventDefault')
     window.dispatchEvent(clean)
@@ -33,6 +35,8 @@ describe('withFormUnsavedWarning', () => {
       withFormUnsavedWarning(checkUnsaved),
     )
 
+    form.waitUnsavedWarning()
+
     const event = new Event('beforeunload', { cancelable: true })
     const spy = vi.spyOn(event, 'preventDefault')
     window.dispatchEvent(event)
@@ -50,6 +54,7 @@ describe('withFormUnsavedWarning', () => {
       withFormUnsavedWarning(),
     )
 
+    form.waitUnsavedWarning()
     form.preventNavigation.extend(withCallHook(hook))
 
     form.fields.name.change('Ada')
@@ -68,6 +73,7 @@ describe('withFormUnsavedWarning', () => {
       withFormUnsavedWarning(),
     )
 
+    form.waitUnsavedWarning()
     form.fields.name.change('Ada')
 
     expect(form.focus().dirty).toBe(true)

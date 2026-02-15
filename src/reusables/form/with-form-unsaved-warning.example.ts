@@ -12,6 +12,9 @@ export const settingsForm = reatomForm(
   },
 ).extend(withFormUnsavedWarning())
 
+// Call in reatomFactoryComponent or a route loader:
+settingsForm.waitUnsavedWarning()
+
 // With custom predicate: only warn for specific fields
 export const profileForm = reatomForm(
   { bio: '', avatar: '' },
@@ -21,6 +24,9 @@ export const profileForm = reatomForm(
     },
   },
 ).extend(withFormUnsavedWarning((form) => form.fields.bio.focus().dirty))
+
+// Call in reatomFactoryComponent or a route loader:
+profileForm.waitUnsavedWarning()
 
 // Hook into preventNavigation for SPA router integration
 profileForm.preventNavigation.extend(

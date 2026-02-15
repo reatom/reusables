@@ -1,4 +1,4 @@
-import { reatomForm, effect } from '@reatom/core'
+import { reatomForm } from '@reatom/core'
 
 import { withFormAutoSubmit } from './with-form-auto-submit'
 
@@ -12,10 +12,5 @@ const profileForm = reatomForm(
   },
 ).extend(withFormAutoSubmit({ debounceMs: 400 }))
 
-effect(() => {
-  console.log('Dirty:', profileForm.focus().dirty)
-})
-
-// Simulate user input
-profileForm.fields.name.change('Ada')
-profileForm.fields.email.change('ada@example.com')
+// Call in reatomFactoryComponent or a route loader:
+profileForm.waitAutoSubmit()

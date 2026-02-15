@@ -4,15 +4,9 @@ Auto-submits a Reatom form after the user stops changing fields for a short time
 
 ## `withFormAutoSubmit(options?)`
 
-Creates a form extension that:
-
-- watches form state and `form.focus().dirty`
-- waits `debounceMs`
-- calls `form.submit()`
-- re-initializes the form with the latest values via `form.init()`
-
-If the form changes again before the debounce delay, the previous submit is
-aborted and only the latest change is submitted.
+Creates a form extension that returns a `waitAutoSubmit` action. Call it in
+`reatomFactoryComponent` or a route loader — it loops forever, watching for
+form changes with `take`, debouncing, and submitting.
 
 ### Parameters
 
@@ -22,7 +16,9 @@ aborted and only the latest change is submitted.
 
 ### Returns
 
-Form extension that can be used with `.extend()` and returns the original form.
+Extension object with:
+
+- `waitAutoSubmit`: `Action<[], Promise<void>>` — starts the auto-submit loop. Call in `reatomFactoryComponent` or a route loader.
 
 ### Example
 
@@ -38,4 +34,7 @@ const profileForm = reatomForm(
     },
   },
 ).extend(withFormAutoSubmit({ debounceMs: 500 }))
+
+// in reatomFactoryComponent or route loader:
+profileForm.waitAutoSubmit()
 ```

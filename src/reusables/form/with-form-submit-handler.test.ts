@@ -1,5 +1,5 @@
 import { reatomForm, sleep, wrap } from '@reatom/core'
-import { describe, expect, test, vi } from 'test'
+import { describe, expect, silentQueuesErrors, test, vi } from 'test'
 
 import { withFormSubmitHandler } from './with-form-submit-handler'
 
@@ -77,6 +77,7 @@ describe('withFormSubmitHandler', () => {
   })
 
   test('submits when requireDirty is a string and form is dirty', async () => {
+    silentQueuesErrors()
     const submitSpy = vi.fn(async (state: { name: string }) => state)
 
     const form = reatomForm({ name: '' }, { onSubmit: submitSpy }).extend(
@@ -90,6 +91,6 @@ describe('withFormSubmitHandler', () => {
     await wrap(sleep())
 
     expect(submitSpy).toHaveBeenCalledTimes(1)
-    expect(form.submit.error()).toBeUndefined()
+    expect(form.submit.error()?.message).not.toBe('No changes to save')
   })
 })

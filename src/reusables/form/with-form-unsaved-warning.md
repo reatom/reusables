@@ -10,11 +10,11 @@ When a user edits a form and accidentally closes the tab or navigates away, thei
 
 ## `withFormUnsavedWarning(checkUnsaved?)`
 
-Creates a form extension that:
+Creates a form extension that returns:
 
-- exposes a `preventNavigation` action that calls `event.preventDefault()` when `checkUnsaved(form)` returns `true`
-- registers a `beforeunload` event listener via `onEvent` that triggers `preventNavigation` (automatically cleaned up by reatom's lifecycle)
-- SSR-safe: skips the listener when `window` is not available
+- `preventNavigation` action that calls `event.preventDefault()` when `checkUnsaved(form)` returns `true`
+- `waitUnsavedWarning` action that registers the `beforeunload` listener via `onEvent`. Call in `reatomFactoryComponent` or a route loader.
+- SSR-safe: `waitUnsavedWarning` skips the listener when `window` is not available
 
 ### Parameters
 
@@ -25,6 +25,7 @@ Creates a form extension that:
 Extension object with:
 
 - `preventNavigation`: `Action<[BeforeUnloadEvent], void>` — action that prevents navigation when the form has unsaved changes. Can be extended with `withCallHook` to add custom side effects (e.g. SPA router navigation guards).
+- `waitUnsavedWarning`: `Action<[], void>` — registers the `beforeunload` listener. Call in `reatomFactoryComponent` or a route loader.
 
 ### Example
 
@@ -41,11 +42,17 @@ const settingsForm = reatomForm(
   },
 ).extend(withFormUnsavedWarning())
 
+// in reatomFactoryComponent or route loader:
+settingsForm.waitUnsavedWarning()
+
 // With custom check:
 const profileForm = reatomForm(
   { bio: '' },
   { onSubmit: async (state) => await api.saveProfile(state) },
 ).extend(withFormUnsavedWarning((form) => form.fields.bio.focus().dirty))
+
+// in reatomFactoryComponent or route loader:
+profileForm.waitUnsavedWarning()
 ```
 
 ### Hooking into navigation prevention

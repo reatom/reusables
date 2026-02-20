@@ -22,7 +22,7 @@ import { test, expect, subscribe } from 'test'
 
 - **Automatic Context Management**: Test functions are automatically wrapped in `context.start()`, eliminating "missed context" errors
 - **Context Isolation**: Each test runs in a fresh context, preventing state leakage between tests
-- **Mock Subscriptions**: Track atom updates using Vitest's mock functionality
+- **Mock Subscriptions**: Track atom updates and action calls using Vitest's mock functionality
 - **Full Vitest Compatibility**: All standard Vitest utilities are re-exported for convenience
 
 ## API Reference
@@ -61,12 +61,21 @@ test('atom updates correctly', () => {
 
 ### subscribe()
 
-Creates a mock subscriber for an atom that tracks all updates using Vitest's mock functionality.
-Listeners are called on the next tick after the atom is updated, capturing batched updates.
+Creates a mock subscriber for an atom or action that tracks all updates using Vitest's mock functionality.
 
-**Signature:**
+For **atoms**, the mock is called with each new state value.
+For **actions**, the mock is called with the action's params (not the `ActionState` array) and returns the payload, making it easy to test action results.
+
+**Signatures:**
 
 ```typescript
+// For actions — mock receives params, returns payload
+subscribe<Params extends any[], Payload>(
+  target: Action<Params, Payload>,
+  cb?: (...params: Params) => Payload
+): Mock<(...params: Params) => Payload> & { unsubscribe: Unsubscribe }
+
+// For atoms — mock receives state
 subscribe<State, T extends (state: State) => any>(
   target: AtomLike<State>,
   cb?: T
@@ -75,13 +84,13 @@ subscribe<State, T extends (state: State) => any>(
 
 **Parameters:**
 
-- `target`: The Reatom atom or computed value to subscribe to
+- `target`: A Reatom atom, computed value, or action to subscribe to
 - `cb`: Optional callback function to execute on each update (defaults to `noop`)
 
 **Returns:**
 A Vitest mock function with an attached `unsubscribe` method
 
-**Example:**
+#### Atom example
 
 ```typescript
 import { test, expect, subscribe } from 'test'
@@ -103,11 +112,11 @@ test('subscribe captures batched updates', async () => {
   expect(sub).toHaveBeenLastCalledWith(4)
   expect(sub.mock.calls).toEqual([[0], [1], [2], [4]])
 
-  sub.unsubscribe() // Stop listening to updates
+  sub.unsubscribe()
 })
 ```
 
-**With Custom Callback:**
+#### Atom with custom callback
 
 ```typescript
 test('subscribe with custom callback', () => {
@@ -122,6 +131,48 @@ test('subscribe with custom callback', () => {
   counter.set(10)
 
   expect(results).toEqual([0, 10, 20])
+  sub.unsubscribe()
+})
+```
+
+#### Action example
+
+```typescript
+import { test, expect, subscribe } from 'test'
+import { action } from '@reatom/core'
+
+test('subscribe tracks action calls with params and payload', () => {
+  const double = action((x: number) => x * 2, 'double')
+  const sub = subscribe(double)
+
+  double(5)
+  double(10)
+
+  expect(sub).toHaveBeenCalledTimes(2)
+  expect(sub).toHaveBeenCalledWith(5)
+  expect(sub).toHaveBeenLastCalledWith(10)
+  expect(sub).toHaveLastReturnedWith(20)
+  expect(sub.mock.results).toEqual([
+    { type: 'return', value: 10 },
+    { type: 'return', value: 20 },
+  ])
+
+  sub.unsubscribe()
+})
+```
+
+#### Action with multiple params
+
+```typescript
+test('subscribe tracks multi-param actions', () => {
+  const add = action((a: number, b: number) => a + b, 'add')
+  const sub = subscribe(add)
+
+  add(2, 3)
+
+  expect(sub).toHaveBeenCalledWith(2, 3)
+  expect(sub).toHaveLastReturnedWith(5)
+
   sub.unsubscribe()
 })
 ```
@@ -218,6 +269,27 @@ test('tracks all updates in order', () => {
   counter.set(3)
 
   expect(sub.mock.calls).toEqual([[0], [1], [2], [3]])
+  sub.unsubscribe()
+})
+```
+
+### Action Testing
+
+```typescript
+import { test, expect, subscribe } from 'test'
+import { action } from '@reatom/core'
+
+test('action payload tracking', () => {
+  const fetchUser = action((id: string) => ({ id, name: 'User' }), 'fetchUser')
+  const sub = subscribe(fetchUser)
+
+  const result = fetchUser('123')
+
+  // verify the action was called with correct params
+  expect(sub).toHaveBeenCalledWith('123')
+  // verify the returned payload
+  expect(sub).toHaveLastReturnedWith({ id: '123', name: 'User' })
+
   sub.unsubscribe()
 })
 ```

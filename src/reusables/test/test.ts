@@ -1,7 +1,11 @@
-import { type Mock, test as viTest, vi } from 'vitest'
+import { type Mock, test as viTest, vi, beforeAll } from 'vitest'
 
-import type { AtomLike, Unsubscribe } from '@reatom/core'
-import { context, noop, notify, top } from '@reatom/core'
+import type { Action, AtomLike, Unsubscribe } from '@reatom/core'
+import { clearStack, context, isAction, noop, notify, top } from '@reatom/core'
+
+beforeAll(() => {
+  clearStack()
+})
 
 /**
  * Silences unhandled errors in Reatom's queues to prevent console noise during
@@ -66,19 +70,18 @@ const test = ((name: string, fn: () => void | Promise<void>) =>
 export { test, viTest, notify }
 
 /**
- * Creates a mock subscriber for an atom that tracks all atom updates using
+ * Creates a mock subscriber for an atom or action that tracks all updates using
  * Vitest's mock functionality.
  *
- * This utility combines Reatom's subscription mechanism with Vitest's mocking
- * capabilities, providing an easy way to verify atom updates during tests. The
- * returned object is both a Vitest mock function (with call tracking) and has
- * an attached unsubscribe method.
+ * For atoms, the mock is called with each new state value. For actions, the
+ * mock is called with the action's params and returns the payload, making it
+ * easy to test action results.
  *
  * @example
  *   import { test, expect, subscribe } from 'test'
- *   import { atom } from '@reatom/core'
+ *   import { atom, action } from '@reatom/core'
  *
- *   test('subscribe captures all updates', () => {
+ *   test('subscribe captures atom updates', () => {
  *     const counter = atom(0, 'counter')
  *     const sub = subscribe(counter)
  *
@@ -88,20 +91,47 @@ export { test, viTest, notify }
  *     expect(sub).toHaveBeenCalledTimes(3) // Initial + 2 updates
  *     expect(sub).toHaveBeenLastCalledWith(2)
  *
- *     sub.unsubscribe() // Stop listening to updates
+ *     sub.unsubscribe()
  *   })
  *
- * @param target - The Reatom atom or computed value to subscribe to
- * @param cb - Optional callback function to execute on each atom update
- * @returns A Vitest mock function with unsubscribe method attached
+ * @example
+ *   test('subscribe captures action calls', () => {
+ *     const doSomething = action((x: number) => x * 2, 'doSomething')
+ *     const sub = subscribe(doSomething)
+ *
+ *     doSomething(5)
+ *
+ *     expect(sub).toHaveBeenCalledWith(5)
+ *     expect(sub).toHaveLastReturnedWith(10)
+ *
+ *     sub.unsubscribe()
+ *   })
  */
+export function subscribe<Params extends any[], Payload>(
+  target: Action<Params, Payload>,
+  cb?: (...params: Params) => Payload,
+): Mock<(...params: Params) => Payload> & { unsubscribe: Unsubscribe }
 export function subscribe<State, T extends (state: State) => any>(
   target: AtomLike<State>,
-  cb: T = noop as T,
-): Mock<T> & { unsubscribe: Unsubscribe } {
+  cb?: T,
+): Mock<T> & { unsubscribe: Unsubscribe }
+export function subscribe(
+  target: AtomLike,
+  cb: (...args: any[]) => any = noop,
+): Mock & { unsubscribe: Unsubscribe } {
   const mock = vi.fn(cb)
-  // Cast mock to subscription callback type - Vitest's Mock is compatible at runtime
-  const unsubscribe = target.subscribe(mock as unknown as (state: State) => any)
+
+  if (isAction(target)) {
+    const unsubscribe = target.subscribe((calls) => {
+      for (const { params, payload } of calls) {
+        mock.mockReturnValueOnce(payload)
+        mock(...params)
+      }
+    })
+    return Object.assign(mock, { unsubscribe })
+  }
+
+  const unsubscribe = target.subscribe(mock as any)
   return Object.assign(mock, { unsubscribe })
 }
 

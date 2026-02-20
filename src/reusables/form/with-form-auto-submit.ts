@@ -38,8 +38,7 @@ export const withFormAutoSubmit =
       waitAutoSubmit: action(async () => {
         try {
           while (true) {
-            await wrap(take(form))
-            if (!form.focus().dirty) continue
+            await wrap(take(form, () => form.focus().dirty || throwAbort()))
 
             await wrap(sleep(debounceMs))
             if (!form.focus().dirty) continue

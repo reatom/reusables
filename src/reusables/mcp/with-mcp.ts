@@ -1,7 +1,17 @@
-import type { Action, AtomLike } from '@reatom/core'
-import { isAction, ReatomError, withInitHook, wrap } from '@reatom/core'
-import type { OverloadParameters, Unsubscribe } from '@reatom/core'
-import { isObject, noop } from '@reatom/core'
+import type {
+  Action,
+  AtomLike,
+  OverloadParameters,
+  Unsubscribe,
+} from '@reatom/core'
+import {
+  isAction,
+  isObject,
+  noop,
+  ReatomError,
+  withInitHook,
+  wrap,
+} from '@reatom/core'
 
 export interface MCPToolAnnotations {
   readOnlyHint?: boolean
@@ -87,12 +97,11 @@ export interface WithMCPOptions<
    */
   autoRegister?: boolean
   /**
-   * Optional input-to-target args mapper.
+   * Optional input-to-target args mapper. Applies to actions only.
    *
-   * Defaults:
-   *
-   * - Action: call target with `input` as first argument
-   * - Atom: call target with no arguments (read current state)
+   * Defaults to calling the action with `input` as the first argument. Use this
+   * to remap a tool input object to multi-argument actions. Ignored for atoms,
+   * which always read current state via `target()`.
    */
   params?: (
     input: Input,
@@ -170,8 +179,10 @@ const getDefaultDescription = (target: AtomLike): string =>
  * ## Atoms
  *
  * Atoms represent **readable state snapshots**. No `registerMCP` method is
- * added; instead the tool is registered automatically the first time the atom
- * is initialised (via `withInitHook`).
+ * added; instead the tool is registered automatically when the atom is first
+ * initialized (via `withInitHook`). This registration is page-level — there is
+ * no teardown path because `withInitHook` does not provide a cleanup
+ * mechanism.
  *
  * ## Reactive context
  *
@@ -213,7 +224,7 @@ const getDefaultDescription = (target: AtomLike): string =>
  *     'addToCard',
  *   ).extend(
  *     withMCP({
- *       description: 'Add a goods item to the shopping card.',
+ *       description: 'Add a goods item to the shopping cart.',
  *       inputSchema: {
  *         type: 'object',
  *         properties: {
@@ -264,8 +275,10 @@ export function withMCP<
 
     const registerTool = (registrationModelContext: MCPModelContext) => {
       const execute = wrap((input: Input, client: MCPModelContextClient) => {
-        if (params) return target(...params(input, client, target))
-        if (isAction(target)) return target(input)
+        if (isAction(target)) {
+          if (params) return target(...params(input, client, target))
+          return target(input)
+        }
         return target()
       })
 
@@ -291,6 +304,7 @@ export function withMCP<
 
       if (autoRegister) registerMCP()
 
+      // Intentional cast: T extends Action discriminates MCPExt vs. atom passthrough
       return { registerMCP } as T extends Action ? MCPExt : T
     }
 
@@ -300,6 +314,7 @@ export function withMCP<
         if (ctx === undefined) return
         registerTool(ctx)
       }),
+      // Intentional cast: atom targets pass through; T extends Action is false here
     ) as T extends Action ? MCPExt : T
   }) as WithMCPExt<Target>
 }

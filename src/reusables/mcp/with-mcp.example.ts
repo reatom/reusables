@@ -27,7 +27,7 @@ const addToCard = action((input: { goodsId: string; quantity: number }) => {
   return { ok: true, cartSize: cartAtom().length }
 }, 'addToCard').extend(
   withMCP({
-    description: 'Add a goods item to the shopping card.',
+    description: 'Add a goods item to the shopping cart.',
     inputSchema: {
       type: 'object',
       properties: {

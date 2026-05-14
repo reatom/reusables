@@ -6,7 +6,7 @@ import type {
   MCPModelContextClient,
   MCPModelContextTool,
 } from './with-mcp'
-import { withMCP } from './with-mcp'
+import { getMCPModelContext, withMCP } from './with-mcp'
 
 const client: MCPModelContextClient = {
   requestUserInteraction: async (callback) => callback(),
@@ -37,7 +37,7 @@ const createModelContext = () => {
   }
 }
 
-describe('withMCP – actions', () => {
+describe('withMCP - actions', () => {
   test('registers tool and bridges execution to action', async () => {
     const { modelContext, tools, registerToolSpy, unregisterToolSpy } =
       createModelContext()
@@ -127,14 +127,48 @@ describe('withMCP – actions', () => {
     )
     unregister()
   })
+
+  test('annotations are forwarded to registerTool', () => {
+    const { modelContext, registerToolSpy } = createModelContext()
+    const ping = action(() => 'pong', 'ping').extend(
+      withMCP({ modelContext, annotations: { readOnlyHint: true } }),
+    )
+    const unregister = ping.registerMCP()
+    expect(registerToolSpy).toBeCalledWith(
+      expect.objectContaining({ annotations: { readOnlyHint: true } }),
+    )
+    unregister()
+  })
+
+  test('client is passed through to params mapper', async () => {
+    const { modelContext, tools } = createModelContext()
+    let capturedClient: MCPModelContextClient | undefined
+    const ping = action(() => 'pong', 'ping').extend(
+      withMCP({
+        modelContext,
+        params: (
+          _input: Record<string, unknown>,
+          receivedClient: MCPModelContextClient,
+        ) => {
+          capturedClient = receivedClient
+          return []
+        },
+      }),
+    )
+    const unregister = ping.registerMCP()
+    await tools.get('ping')!.execute({}, client)
+    expect(capturedClient).toBe(client)
+    unregister()
+  })
 })
 
-describe('withMCP – atoms', () => {
-  test('registers tool on first init and reads current state', async () => {
+describe('withMCP - atoms', () => {
+  test('registers tool on first initialization and reads current state', async () => {
     const { modelContext, tools, registerToolSpy } = createModelContext()
     const user = atom({ id: 'u1', role: 'admin' }, 'user').extend(
       withMCP({ modelContext, annotations: { readOnlyHint: true } }),
     )
+    // withInitHook fires asynchronously after the first atom access
     user()
     await Promise.resolve()
     expect(registerToolSpy).toBeCalledTimes(1)
@@ -155,9 +189,81 @@ describe('withMCP – atoms', () => {
       'Use this tool to interact with "stateAtom".',
     )
   })
+
+  test('annotations are forwarded to registerTool', async () => {
+    const { modelContext, registerToolSpy } = createModelContext()
+    const flagAtom = atom(true, 'flagAtom').extend(
+      withMCP({ modelContext, annotations: { readOnlyHint: true } }),
+    )
+    flagAtom()
+    await Promise.resolve()
+    expect(registerToolSpy).toBeCalledWith(
+      expect.objectContaining({ annotations: { readOnlyHint: true } }),
+    )
+  })
+
+  test('skips registration silently when no modelContext available', async () => {
+    const noop = atom(0, 'noop').extend(withMCP({}))
+    expect(() => {
+      noop()
+    }).not.toThrow()
+    await Promise.resolve()
+  })
+
+  test('params is ignored - always reads state via target()', async () => {
+    const { modelContext, tools } = createModelContext()
+    const counter = atom(42, 'counter').extend(
+      withMCP({
+        modelContext,
+        // params provided but must be ignored for atoms
+        params: () => [999] as Parameters<typeof counter>,
+      }),
+    )
+    counter()
+    await Promise.resolve()
+    expect(await tools.get('counter')!.execute({}, client)).toBe(42)
+  })
 })
 
-describe('withMCP – types', () => {
+describe('withMCP - getMCPModelContext', () => {
+  test('returns undefined in Node.js where navigator is not defined', () => {
+    expect(getMCPModelContext()).toBeUndefined()
+  })
+
+  test('returns undefined when navigator.modelContext is missing', () => {
+    const nav = { modelContext: undefined }
+    vi.stubGlobal('navigator', nav)
+    expect(getMCPModelContext()).toBeUndefined()
+    vi.unstubAllGlobals()
+  })
+
+  test('returns undefined when modelContext has missing methods', () => {
+    vi.stubGlobal('navigator', {
+      modelContext: { provideContext: () => {}, registerTool: () => {} },
+    })
+    expect(getMCPModelContext()).toBeUndefined()
+    vi.unstubAllGlobals()
+  })
+
+  test('returns undefined when modelContext is a non-object', () => {
+    vi.stubGlobal('navigator', { modelContext: 42 })
+    expect(getMCPModelContext()).toBeUndefined()
+    vi.unstubAllGlobals()
+  })
+
+  test('returns context when all three methods are present', () => {
+    const ctx = {
+      provideContext: () => {},
+      registerTool: () => {},
+      unregisterTool: () => {},
+    }
+    vi.stubGlobal('navigator', { modelContext: ctx })
+    expect(getMCPModelContext()).toBe(ctx)
+    vi.unstubAllGlobals()
+  })
+})
+
+describe('withMCP - types', () => {
   test('action type exposes registerMCP', () => {
     const addToCard = action(
       (input: { goodsId: string; quantity: number }) => input.quantity,

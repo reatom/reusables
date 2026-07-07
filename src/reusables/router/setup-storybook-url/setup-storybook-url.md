@@ -4,15 +4,16 @@ Configures `urlAtom` for Storybook: disables History API sync and restores the o
 
 Returns a context frame suitable for passing to `reatomContext.Provider`, isolating each story's routing state.
 
-## `setupStorybookUrl(initialPath?)`
+## `setupStorybookUrl(initialPath?, beforeNavigate?)`
 
 Call in a Storybook decorator to set up routing per story.
 
 ### Parameters
 
-| Parameter     | Type     | Default | Description                              |
-| ------------- | -------- | ------- | ---------------------------------------- |
-| `initialPath` | `string` | `''`    | Optional path to navigate to after setup |
+| Parameter        | Type         | Default | Description                                                                                                                                      |
+| ---------------- | ------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `initialPath`    | `string`     | `''`    | Optional path to navigate to after setup                                                                                                         |
+| `beforeNavigate` | `() => void` | —       | Optional setup (e.g. auth state) executed inside the frame before navigation, so route matching and loaders run only once with the correct state |
 
 ### Returns
 
@@ -29,8 +30,17 @@ import { setupStorybookUrl } from '#reatom/utility/setup-storybook-url'
 function ReatomDecorator({
   children,
   initialPath = '',
-}: PropsWithChildren<{ initialPath?: string }>) {
-  const frame = useMemo(() => setupStorybookUrl(initialPath), [])
+  authenticated = true,
+}: PropsWithChildren<{ authenticated?: boolean; initialPath?: string }>) {
+  const frame = useMemo(
+    () =>
+      setupStorybookUrl(initialPath, () => {
+        // Runs before navigation so protected-route loaders see the
+        // correct auth state on their first (and only) evaluation.
+        authSessionAtom.set(authenticated ? mockSession : null)
+      }),
+    [authenticated, initialPath],
+  )
   return (
     <reatomContext.Provider value={frame}>{children}</reatomContext.Provider>
   )
@@ -38,7 +48,10 @@ function ReatomDecorator({
 
 // Use in decorators:
 // (Story, { parameters }) => (
-//   <ReatomDecorator initialPath={parameters['initialPath']}>
+//   <ReatomDecorator
+//     authenticated={parameters['authenticated']}
+//     initialPath={parameters['initialPath']}
+//   >
 //     <Story />
 //   </ReatomDecorator>
 // )
@@ -51,6 +64,7 @@ function ReatomDecorator({
 3. Inside the frame:
    - Replaces `urlAtom.sync` with `noop` to prevent History API calls
    - Adds a change hook that restores the original URL via `history.replaceState` after every `urlAtom` update
+   - Runs `beforeNavigate` (if provided) — state set here is visible to route loaders on first evaluation, avoiding concurrent loader abort errors
    - Navigates to `BASE_URL + initialPath` via `urlAtom.go()`
 4. Returns the frame for use with `reatomContext.Provider`
 

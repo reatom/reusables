@@ -1,4 +1,4 @@
-import { urlAtom } from '@reatom/core'
+import { atom, urlAtom } from '@reatom/core'
 import { describe, test, beforeEach, expect } from 'test'
 
 import { setupStorybookUrl } from './setup-storybook-url'
@@ -47,6 +47,32 @@ describe('setupStorybookUrl', () => {
 
     frame.run(() => {
       expect(urlAtom().pathname).toBe('/dashboard')
+    })
+  })
+
+  test('runs beforeNavigate inside the frame before navigation', () => {
+    let pathnameDuringSetup: string | undefined
+
+    const frame = setupStorybookUrl('dashboard', () => {
+      // Navigation has not happened yet — loaders will see state set here
+      pathnameDuringSetup = urlAtom().pathname
+    })
+
+    expect(pathnameDuringSetup).toBe('/')
+    frame.run(() => {
+      expect(urlAtom().pathname).toBe('/dashboard')
+    })
+  })
+
+  test('state set in beforeNavigate is scoped to the returned frame', () => {
+    const marker = atom<string | null>(null, 'marker')
+
+    const frame = setupStorybookUrl('', () => {
+      marker.set('from-setup')
+    })
+
+    frame.run(() => {
+      expect(marker()).toBe('from-setup')
     })
   })
 })

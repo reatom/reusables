@@ -1,17 +1,15 @@
-import { reatomForm } from '@reatom/core'
+import { reatomField, reatomForm } from '@reatom/core'
 
 import { withFormAutoFocusOnError } from './with-form-auto-focus-on-error'
 
 const form = reatomForm(
   {
-    name: {
-      initState: '',
+    name: reatomField('', {
       validate: ({ value }) => (!value ? 'Required' : ''),
-    },
-    email: {
-      initState: '',
+    }),
+    email: reatomField('', {
       validate: ({ value }) => (!value ? 'Required' : ''),
-    },
+    }),
   },
   {
     onSubmit: async (state) => {

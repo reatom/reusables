@@ -10,10 +10,16 @@ const originalHref = window.location.href
  * suitable for passing to `reatomContext.Provider`.
  *
  * @param initialPath - Optional path to navigate to after setup
+ * @param beforeNavigate - Optional setup (e.g. auth state) executed inside the
+ *   frame before navigation, so route matching and loader evaluation happen
+ *   only once with the correct state, avoiding concurrent loader abort errors
  * @returns A context frame to provide to React context
  * @see https://dev.to/guria/reatom-extensibility-saves-the-day-595e
  */
-export const setupStorybookUrl = (initialPath = '') => {
+export const setupStorybookUrl = (
+  initialPath = '',
+  beforeNavigate?: () => void,
+) => {
   const frame = context.start()
   frame.run(() => {
     urlAtom.sync.set(() => noop)
@@ -22,6 +28,7 @@ export const setupStorybookUrl = (initialPath = '') => {
         window.history.replaceState({}, '', originalHref)
       }),
     )
+    beforeNavigate?.()
     const base = import.meta.env.BASE_URL ?? ''
     urlAtom.go(base + initialPath)
   })

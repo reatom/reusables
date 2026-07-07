@@ -37,8 +37,8 @@ const resolution = atom({ w: 1920, h: 1080 }, 'resolution').extend(
   ),
 )
 
-const renderer = reatomInstance(
-  () => resolution.instance().getContext('2d')!,
+const renderer = reatomInstance(() =>
+  resolution.instance().getContext('2d')!,
 ).extend(
   withComputed((ctx) => {
     ctx.fillStyle = '#333'

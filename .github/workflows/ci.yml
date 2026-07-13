@@ -38,8 +38,20 @@ jobs:
       - name: Build jsrepo
         run: pnpm jsrepo:build
 
+      # registry.json is regenerated, not hand-edited. On PRs it may be stale
+      # (contributors don't commit it) — warn but don't block; a maintainer runs
+      # `/rebuild-registry` before merge. On main it must always be in sync.
       - name: Verify registry is up to date
-        run: git diff --exit-code registry.json
+        run: |
+          if git diff --exit-code registry.json; then
+            exit 0
+          fi
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "::warning::registry.json is out of date. A maintainer should comment /rebuild-registry on this PR before merge."
+            exit 0
+          fi
+          echo "::error::registry.json is out of date on ${{ github.ref_name }}. It must be rebuilt (pnpm jsrepo:build) and committed."
+          exit 1
 
   deploy:
     needs: ci

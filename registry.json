@@ -1092,13 +1092,14 @@
 						}
 					],
 					"registryDependencies": [],
-					"dependencies": [
+					"dependencies": [],
+					"devDependencies": [
 						{
 							"ecosystem": "js",
-							"name": "react"
+							"name": "react",
+							"version": "^19.2.7"
 						}
-					],
-					"devDependencies": []
+					]
 				}
 			]
 		},

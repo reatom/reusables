@@ -23,7 +23,7 @@
   ],
   "author": "Aleksei Gurianov <gurianov@gmail.com>",
   "license": "MIT",
-  "packageManager": "pnpm@10.28.1",
+  "packageManager": "pnpm@11.13.1",
   "dependencies": {
     "@reatom/core": "^1001.1.0",
     "@reatom/react": "^1001.0.0",
@@ -46,6 +46,7 @@
     "prettier": "^3.9.4",
     "prettier-plugin-astro": "^0.14.1",
     "prettier-plugin-jsdoc": "^1.8.1",
+    "react": "^19.2.7",
     "shiki": "^4.3.1",
     "vitest": "^4.1.10"
   },

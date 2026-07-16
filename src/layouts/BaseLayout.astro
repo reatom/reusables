@@ -59,6 +59,7 @@ const pageTitle =
   function addCopyButtons() {
     document.querySelectorAll('pre').forEach((pre) => {
       if (pre.querySelector('.copy-button')) return
+      if (pre.closest('.mermaid-diagram')) return
 
       const button = document.createElement('button')
       button.className = 'copy-button'

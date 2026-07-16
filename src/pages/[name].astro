@@ -9,6 +9,7 @@ import TypeBadge from '../components/TypeBadge.astro'
 import CopyButton from '../components/CopyButton.astro'
 import Tabs from '../components/Tabs.astro'
 import CollapsibleCode from '../components/CollapsibleCode.astro'
+import Mermaid from '../components/Mermaid.astro'
 import { getAllReusables, getReusableByName } from '../lib/registry'
 import type { Reusable } from '../lib/registry'
 
@@ -38,9 +39,27 @@ if (!reusable) {
 
 const installCommand = `npx jsrepo add github/reatom/reusables ${reusable.name}`
 
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 // Configure marked with custom renderer for Shiki syntax highlighting
 const renderer = new marked.Renderer()
 renderer.code = function ({ text, lang }) {
+  // Mermaid fences are rendered into diagrams on the client by <Mermaid />.
+  // The definition ships as escaped text and stays visible if rendering fails.
+  if (lang === 'mermaid') {
+    return `<div class="mermaid-diagram">
+      <div class="mermaid-render"></div>
+      <pre class="mermaid-source">${escapeHtml(text)}</pre>
+    </div>`
+  }
+
   const language = lang || 'text'
   let codeHtml: string
   try {
@@ -108,6 +127,8 @@ if (reusable.doc) {
     docHtml = '<p>Documentation failed to render.</p>'
   }
 }
+
+const hasMermaid = docHtml.includes('class="mermaid-diagram"')
 
 // Determine language for example code
 function getExampleLang(reusable: Reusable) {
@@ -232,6 +253,7 @@ function getReusableLink(depName: string): string {
     </div>
   </main>
   <Footer />
+  {hasMermaid && <Mermaid />}
 </BaseLayout>
 
 <style>

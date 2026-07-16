@@ -6,14 +6,14 @@ Extend Reatom atoms and actions with [WebMCP](https://github.com/webmachinelearn
 
 ```mermaid
 flowchart TD
-    A[Reatom atom / action] -->|.extend(withMCP(...))| B{isAction?}
-    B -- yes --> C[adds registerMCP method]
-    B -- no  --> D[wraps with withInitHook]
-    C -->|registerMCP called| E[modelContext.registerTool]
-    D -->|first init| E
-    E --> F[navigator.modelContext / provided ctx]
-    F --> G[AI agent calls tool]
-    G -->|execute| H[Reatom reactive context via wrap]
+    A["Reatom atom / action"] -->|".extend(withMCP(...))"| B{"isAction?"}
+    B -- yes --> C["adds registerMCP method"]
+    B -- no --> D["wraps with withInitHook"]
+    C -->|"registerMCP called"| E["modelContext.registerTool"]
+    D -->|"first init"| E
+    E --> F["navigator.modelContext / provided ctx"]
+    F --> G["AI agent calls tool"]
+    G -->|"execute"| H["Reatom reactive context via wrap"]
 ```
 
 ## Installation

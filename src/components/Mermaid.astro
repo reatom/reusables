@@ -1,0 +1,113 @@
+---
+// Renders `mermaid` code fences emitted by the markdown renderer as diagrams.
+// Only included on pages whose docs contain at least one diagram, so the
+// mermaid bundle stays off every other page.
+//
+// TECH DEBT: diagrams render in the browser rather than at build time, because
+// mermaid needs a DOM and docs bypass Astro's rehype pipeline (they go through
+// marked in src/pages/[name].astro). Costs ~350KB of JS on a page with a chart
+// (zero elsewhere) and a brief flash of the raw definition before the SVG swaps
+// in. Rendering to SVG at build time would fix both — playwright is already a
+// devDependency — at the cost of running a headless browser during the build.
+---
+
+<style is:global>
+  .mermaid-diagram {
+    margin-bottom: var(--space-md);
+    padding: var(--space-md);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-gray-5);
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+  }
+
+  .mermaid-diagram svg {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Until the diagram renders (or if it fails), show the definition as code. */
+  .mermaid-source {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--color-gray-3);
+    white-space: pre;
+  }
+
+  .mermaid-diagram[data-rendered] .mermaid-source {
+    display: none;
+  }
+
+  .mermaid-error {
+    font-size: 0.8125rem;
+    color: var(--color-gray-3);
+    margin-bottom: var(--space-sm);
+  }
+</style>
+
+<script>
+  import mermaid from 'mermaid'
+
+  const styles = getComputedStyle(document.documentElement)
+  const color = (name: string) => styles.getPropertyValue(name).trim()
+
+  mermaid.initialize({
+    startOnLoad: false,
+    securityLevel: 'strict',
+    theme: 'base',
+    fontFamily: color('--font-sans') || 'system-ui, sans-serif',
+    themeVariables: {
+      darkMode: true,
+      background: color('--color-bg-surface'),
+      primaryColor: color('--color-accent-low'),
+      primaryTextColor: color('--color-gray-1'),
+      primaryBorderColor: color('--color-accent'),
+      secondaryColor: color('--color-bg-surface-hover'),
+      tertiaryColor: color('--color-bg-surface-hover'),
+      lineColor: color('--color-gray-4'),
+      textColor: color('--color-gray-1'),
+      mainBkg: color('--color-accent-low'),
+      nodeBorder: color('--color-accent'),
+      clusterBkg: color('--color-bg-surface-hover'),
+      clusterBorder: color('--color-gray-5'),
+      edgeLabelBackground: color('--color-bg-surface'),
+      noteBkgColor: color('--color-bg-surface-hover'),
+      noteTextColor: color('--color-gray-1'),
+      noteBorderColor: color('--color-gray-5'),
+    },
+  })
+
+  let counter = 0
+
+  async function renderDiagrams() {
+    // Mermaid sizes nodes by measuring their labels, so it has to run after the
+    // webfont loads — otherwise it measures the fallback font and clips text.
+    await document.fonts.ready
+
+    const containers = document.querySelectorAll<HTMLElement>(
+      '.mermaid-diagram:not([data-rendered]):not([data-failed])',
+    )
+
+    for (const container of containers) {
+      const source = container.querySelector('.mermaid-source')?.textContent
+      if (!source) continue
+
+      try {
+        const { svg } = await mermaid.render(`mermaid-${counter++}`, source)
+        const target = container.querySelector('.mermaid-render')
+        if (!target) continue
+        target.innerHTML = svg
+        container.setAttribute('data-rendered', 'true')
+      } catch (error) {
+        // Keep the definition visible as a code block rather than blanking it.
+        container.setAttribute('data-failed', 'true')
+        console.error('Failed to render mermaid diagram:', error)
+      }
+    }
+  }
+
+  renderDiagrams()
+  document.addEventListener('astro:after-swap', renderDiagrams)
+</script>

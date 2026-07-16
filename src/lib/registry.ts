@@ -1,10 +1,15 @@
-import { readFileSync } from 'node:fs'
-import { resolve, relative, isAbsolute } from 'node:path'
 import registryData from '../../registry.json'
 
-// ROOT should point to the repository root
-// registry.json paths already include "src/" prefix
-const ROOT = resolve(import.meta.dirname, '..', '..')
+// Reusable sources are inlined at bundle time rather than read from disk at
+// runtime: a filesystem path relative to this module survives `astro dev` but
+// not `astro build`, where the bundled chunk lives under dist/.
+// Keys are repo-root absolute ("/src/reusables/..."), matching registry.json's
+// relativePath with a leading slash.
+const sourceFiles = import.meta.glob('/src/reusables/**/*.{ts,tsx,md}', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+}) as Record<string, string>
 
 // --- Types ---
 
@@ -91,25 +96,16 @@ function parseType(rawType: string): ReusableType {
 }
 
 function readFile(relativePath: string): string | null {
-  try {
-    const fullPath = resolve(ROOT, relativePath)
-    // Prevent path traversal attacks by ensuring resolved path stays within ROOT
-    // This handles symlinks correctly by checking if the relative path escapes ROOT
-    const rel = relative(ROOT, fullPath)
-    if (rel.startsWith('..') || isAbsolute(rel)) {
-      throw new Error(`Path traversal detected: ${relativePath}`)
-    }
-    return readFileSync(fullPath, 'utf-8')
-  } catch (error) {
-    // Re-throw security errors instead of silently ignoring them
-    if (error instanceof Error && error.message.includes('Path traversal')) {
-      throw error
-    }
-    if (process.env.NODE_ENV === 'development') {
-      console.warn(`Failed to read file: ${relativePath}`, error)
-    }
-    return null
+  const content = sourceFiles[`/${relativePath}`]
+  if (content === undefined) {
+    // Every registry path is generated from a real file under src/reusables, so
+    // a miss means a stale registry.json — fail loudly instead of shipping a
+    // page with silently missing docs and source.
+    throw new Error(
+      `registry.json references "${relativePath}", which does not exist. Run \`pnpm jsrepo:build\` to rebuild the registry.`,
+    )
   }
+  return content
 }
 
 function findFileByRole(

@@ -1,5 +1,5 @@
 import { action, atom, reatomEnum } from '@reatom/core'
-import { reatomComponent } from '@reatom/react'
+import { reatomComponent, reatomFactoryComponent } from '@reatom/react'
 
 import { withBinding } from './bindings'
 import { withButton } from './blades'
@@ -8,7 +8,8 @@ import { hotWrap } from '../hot-wrap/hot-wrap'
 
 // --- Tweakpane with reatomComponent ---
 // Atoms are auto-subscribed when read in render
-// Actions use hotWrap for subscription + event handler wrapping
+// Actions use hotWrap in the reatomFactoryComponent factory body (init) for
+// subscription + event handler wrapping; the init frame is aborted on unmount
 
 const settingsPane = reatomPane({ name: 'settings', title: 'Settings' })
 
@@ -35,25 +36,29 @@ const resetAction = action(() => {
   mode.reset()
 }, 'reset').extend(withButton({ title: 'Reset All' }, settingsPane))
 
-export const SettingsPanel = reatomComponent(() => {
-  // Reading atoms auto-subscribes them → Tweakpane bindings activate
-  const currentSpeed = speed()
-  const isEnabled = enabled()
-  const pos = position()
-  const currentMode = mode()
+export const SettingsPanel = reatomFactoryComponent(() => {
+  // hotWrap for actions: subscribes (creates button) + wraps for onClick
+  const onReset = hotWrap(resetAction)
 
-  return (
-    <div>
-      <p>Speed: {currentSpeed} </p>
-      <p> Enabled: {isEnabled ? 'Yes' : 'No'} </p>
-      <p>
-        Position: {pos.x}, {pos.y}
-      </p>
-      <p>Mode: {currentMode}</p>
-      {/* hotWrap for actions: subscribes (creates button) + wraps for onClick */}
-      <button onClick={hotWrap(resetAction)}> Reset </button>
-    </div>
-  )
+  return () => {
+    // Reading atoms auto-subscribes them → Tweakpane bindings activate
+    const currentSpeed = speed()
+    const isEnabled = enabled()
+    const pos = position()
+    const currentMode = mode()
+
+    return (
+      <div>
+        <p>Speed: {currentSpeed} </p>
+        <p> Enabled: {isEnabled ? 'Yes' : 'No'} </p>
+        <p>
+          Position: {pos.x}, {pos.y}
+        </p>
+        <p>Mode: {currentMode}</p>
+        <button onClick={onReset}> Reset </button>
+      </div>
+    )
+  }
 }, 'SettingsPanel')
 
 // --- Folders example ---

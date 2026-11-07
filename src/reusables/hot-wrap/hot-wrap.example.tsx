@@ -37,7 +37,7 @@ const reset = action(() => count.set(0), 'reset').extend(withRemoteReset())
 
 // hotWrap runs in the factory body (init): its subscription lives until the
 // init frame is aborted on unmount, which closes the socket. The render frame
-// is not aborted on unmount, so hotWrap in render would never unsubscribe.
+// is not, so hotWrap throws when called in render.
 export const Counter = reatomFactoryComponent(() => {
   const onReset = hotWrap(reset)
 

@@ -1,4 +1,4 @@
-import { action, context, withConnectHook } from '@reatom/core'
+import { action, context, ReatomError, withConnectHook } from '@reatom/core'
 import {
   reatomComponent,
   reatomContext,
@@ -42,6 +42,14 @@ const mount = async (Component: FC, { strict = false } = {}) => {
   }
 }
 
+const catchError = (cb: () => void) => {
+  try {
+    cb()
+  } catch (error) {
+    return error
+  }
+}
+
 describe('hotWrap with @reatom/react', () => {
   test('in reatomFactoryComponent init: unsubscribes on unmount', async () => {
     const { target, connections } = reatomProbe('factoryInit')
@@ -57,31 +65,54 @@ describe('hotWrap with @reatom/react', () => {
     expect(connections).toEqual({ connects: 1, disconnects: 1 })
   })
 
-  test('in reatomComponent render: stays subscribed after unmount', async () => {
-    const { target, connections } = reatomProbe('defaultRender')
-    const Component = reatomComponent(
-      () => createElement('button', { onClick: hotWrap(target) }),
-      'DefaultRender',
-    )
-
-    const unmount = await mount(Component)
-    await unmount()
-    expect(connections).toEqual({ connects: 1, disconnects: 0 })
-  })
-
   for (const strict of [false, true]) {
-    test(`in reatomComponent render with abortOnUnmount${strict ? ', StrictMode' : ''}: unsubscribes on unmount`, async () => {
-      const { target, connections } = reatomProbe('abortOnUnmount')
-      const Component = reatomComponent(
-        () => createElement('button', { onClick: hotWrap(target) }),
-        { name: 'AbortOnUnmount', abortOnUnmount: true },
-      )
+    const mode = strict ? ' (StrictMode)' : ''
+
+    test(`in reatomFactoryComponent init: does not throw${mode}`, async () => {
+      const { target } = reatomProbe('factoryInitNoThrow')
+      const errors: unknown[] = []
+      const Component = reatomFactoryComponent(() => {
+        errors.push(catchError(() => hotWrap(target)))
+        return () => null
+      }, 'FactoryInitNoThrow')
 
       const unmount = await mount(Component, { strict })
-      expect(connections.connects - connections.disconnects).toBe(1)
-
       await unmount()
-      expect(connections.connects - connections.disconnects).toBe(0)
+      expect(errors.length).toBeGreaterThan(0)
+      expect(errors.every((error) => error === undefined)).toBe(true)
     })
+
+    const renders: Array<[string, (render: () => null) => FC]> = [
+      ['reatomComponent', (render) => reatomComponent(render, 'Render')],
+      [
+        'reatomComponent with abortOnUnmount',
+        (render) =>
+          reatomComponent(render, { name: 'Render', abortOnUnmount: true }),
+      ],
+      [
+        'reatomFactoryComponent',
+        (render) => reatomFactoryComponent(() => render, 'Render'),
+      ],
+    ]
+
+    for (const [name, reatomRender] of renders) {
+      test(`in ${name} render: throws and does not subscribe${mode}`, async () => {
+        const { target, connections } = reatomProbe('render')
+        const errors: unknown[] = []
+        const Component = reatomRender(() => {
+          errors.push(catchError(() => hotWrap(target)))
+          return null
+        })
+
+        const unmount = await mount(Component, { strict })
+        await unmount()
+        expect(errors.length).toBeGreaterThan(0)
+        for (const error of errors) {
+          expect(error).toBeInstanceOf(ReatomError)
+          expect((error as Error).message).toContain('factory body (init)')
+        }
+        expect(connections.connects).toBe(0)
+      })
+    }
   }
 })

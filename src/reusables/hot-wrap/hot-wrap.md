@@ -91,13 +91,14 @@ decides when it is released:
 
 - **`reatomFactoryComponent` factory body:** released on unmount. The init frame
   is aborted when the component unmounts.
-- **`reatomComponent` render:** never released. The render frame is not aborted
-  on unmount by default, so each mount leaks a subscription (two under
-  StrictMode). Anything started by the subscription, such as a socket or a
-  Tweakpane button from `withConnectHook`, stays alive.
-- **`reatomComponent(..., { abortOnUnmount: true })` render:** released on
-  unmount, but every render adds another subscription that lives until then.
-  The option also aborts everything else bound to the render frame on unmount.
+- **Component render** (`reatomComponent`, or the render function returned by
+  `reatomFactoryComponent`): `hotWrap` throws. The render frame is not aborted
+  on unmount by default, so the subscription would leak on every mount, keeping alive
+  anything it started, such as a socket or a Tweakpane button from
+  `withConnectHook`.
+
+Don't work around the throw with `reatomComponent(..., { abortOnUnmount: true })`:
+under StrictMode it currently aborts the whole Reatom context on unmount.
 
 Under StrictMode, release from the factory body needs `@reatom/react` with
 [reatom/reatom#1324](https://github.com/reatom/reatom/pull/1324); in 1001.0.1

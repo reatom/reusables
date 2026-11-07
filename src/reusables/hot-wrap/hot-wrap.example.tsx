@@ -5,7 +5,7 @@ import {
   type Ext,
   withConnectHook,
 } from '@reatom/core'
-import { reatomComponent } from '@reatom/react'
+import { reatomFactoryComponent } from '@reatom/react'
 
 import { hotWrap } from './hot-wrap'
 
@@ -35,15 +35,16 @@ const count = atom(0, 'count')
 // Action with extension that activates on subscription
 const reset = action(() => count.set(0), 'reset').extend(withRemoteReset())
 
-export const Counter = reatomComponent(() => {
-  const value = count()
+// hotWrap runs in the factory body (init): its subscription lives until the
+// init frame is aborted on unmount, which closes the socket. The render frame
+// is not, so hotWrap throws when called in render.
+export const Counter = reatomFactoryComponent(() => {
+  const onReset = hotWrap(reset)
 
-  return (
+  return () => (
     <div>
-      <p>Count: {value}</p>
-      {/* hotWrap subscribes -> socket listener starts */}
-      {/* On unmount -> cleanup runs, socket closes */}
-      <button onClick={hotWrap(reset)}>Reset</button>
+      <p>Count: {count()}</p>
+      <button onClick={onReset}>Reset</button>
     </div>
   )
 }, 'Counter')

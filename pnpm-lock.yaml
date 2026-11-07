@@ -13,7 +13,7 @@ importers:
         version: 1001.1.0
       '@reatom/react':
         specifier: ^1001.0.0
-        version: 1001.0.0(@reatom/core@1001.1.0)(react-dom@19.2.4(react@19.2.7))(react@19.2.7)
+        version: 1001.0.0(@reatom/core@1001.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@tweakpane/core':
         specifier: ^2.0.5
         version: 2.0.5
@@ -72,6 +72,9 @@ importers:
       react:
         specifier: ^19.2.7
         version: 19.2.7
+      react-dom:
+        specifier: ^19.2.7
+        version: 19.2.7(react@19.2.7)
       shiki:
         specifier: ^4.3.1
         version: 4.3.1
@@ -2156,10 +2159,10 @@ packages:
   radix3@1.1.2:
     resolution: {integrity: sha512-b484I/7b8rDEdSDKckSSBA8knMpcdsXudlE/LNL639wFoHKwLbEkQFZHWEYwDC0wa0FKUcCY+GAF73Z7wxNVFA==}
 
-  react-dom@19.2.4:
-    resolution: {integrity: sha512-AXJdLo8kgMbimY95O2aKQqsz2iWi9jMgKJhRBAxECE4IFxfcazB2LmzloIoibJI3C12IlY20+KFaLv+71bUJeQ==}
+  react-dom@19.2.7:
+    resolution: {integrity: sha512-t0BRVXvbiE/o20Hfw669rLbMCDWtYZLvmJigy2f0MxsXF+71pxhR3xOkspmsO8h3ZlNzyibAmtCa3l4lYKk6gQ==}
     peerDependencies:
-      react: ^19.2.4
+      react: ^19.2.7
 
   react@19.2.7:
     resolution: {integrity: sha512-HNe9WslTbXmFK8o8cmwgAeJFSBvt1bPdHCVKtaaV+WlAN36mpT4hcRpwbf3fY56ar2oIXzsBpOAiIRHAdY0OlQ==}
@@ -3089,11 +3092,11 @@ snapshots:
     optionalDependencies:
       idb-keyval: 6.2.2
 
-  '@reatom/react@1001.0.0(@reatom/core@1001.1.0)(react-dom@19.2.4(react@19.2.7))(react@19.2.7)':
+  '@reatom/react@1001.0.0(@reatom/core@1001.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
       '@reatom/core': 1001.1.0
       react: 19.2.7
-      react-dom: 19.2.4(react@19.2.7)
+      react-dom: 19.2.7(react@19.2.7)
 
   '@rolldown/binding-android-arm64@1.1.4':
     optional: true
@@ -4604,7 +4607,7 @@ snapshots:
 
   radix3@1.1.2: {}
 
-  react-dom@19.2.4(react@19.2.7):
+  react-dom@19.2.7(react@19.2.7):
     dependencies:
       react: 19.2.7
       scheduler: 0.27.0

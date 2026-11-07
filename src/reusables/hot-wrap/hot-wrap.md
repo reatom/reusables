@@ -1,6 +1,7 @@
 # hotWrap
 
-Combines `subscribe` + `wrap` in one call, with automatic cleanup on component unmount.
+Combines `subscribe` + `wrap` in one call. The subscription is released when the
+abort controller current at call time aborts.
 
 ## `hotWrap(target, frame?)`
 
@@ -35,7 +36,7 @@ import {
   type Ext,
   withConnectHook,
 } from '@reatom/core'
-import { reatomComponent } from '@reatom/react'
+import { reatomFactoryComponent } from '@reatom/react'
 import { hotWrap } from '#reatom/utility/hot-wrap'
 
 // External control channel (socket/CRDT) for remote resets.
@@ -62,31 +63,42 @@ const withRemoteReset = <Target extends Action<[], unknown>>(): Ext<Target> =>
 const count = atom(0, 'count')
 const reset = action(() => count.set(0), 'reset').extend(withRemoteReset())
 
-export const Counter = reatomComponent(() => {
-  const value = count()
+export const Counter = reatomFactoryComponent(() => {
+  // Factory body (init): subscribes -> socket listener starts.
+  // Unmount aborts the init frame -> socket closes.
+  const onReset = hotWrap(reset)
 
-  return (
+  return () => (
     <div>
-      <p>Count: {value}</p>
-      {/* hotWrap subscribes -> socket listener starts */}
-      {/* On unmount -> cleanup runs automatically */}
-      <button onClick={hotWrap(reset)}>Reset</button>
+      <p>Count: {count()}</p>
+      <button onClick={onReset}>Reset</button>
     </div>
   )
 }, 'Counter')
 ```
 
-Without `hotWrap`, you'd need to subscribe via `effect` + `getCalls` and use `wrap` separately:
+Without `hotWrap`, you'd subscribe and `wrap` separately in the factory body:
 
 ```tsx
-// Manual approach - hotWrap does this for you
-effect(() => {
-  getCalls(reset)
-})
-
-<button onClick={wrap(reset)}>Reset</button>
+abortVar.subscribe(reset.subscribe())
+const onReset = wrap(reset)
 ```
 
 ### Cleanup
 
-The subscription is connected to `abortVar`, so cleanup happens automatically on component unmount, context reset, or HMR.
+`hotWrap` ties the subscription to `abortVar` at call time, so where you call it
+decides when it is released:
+
+- **`reatomFactoryComponent` factory body:** released on unmount. The init frame
+  is aborted when the component unmounts.
+- **`reatomComponent` render:** never released. The render frame is not aborted
+  on unmount by default, so each mount leaks a subscription (two under
+  StrictMode). Anything started by the subscription, such as a socket or a
+  Tweakpane button from `withConnectHook`, stays alive.
+- **`reatomComponent(..., { abortOnUnmount: true })` render:** released on
+  unmount, but every render adds another subscription that lives until then.
+  The option also aborts everything else bound to the render frame on unmount.
+
+Under StrictMode, release from the factory body needs `@reatom/react` with
+[reatom/reatom#1324](https://github.com/reatom/reatom/pull/1324); in 1001.0.1
+and earlier the remount keeps the first init's subscription alive.

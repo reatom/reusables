@@ -9,10 +9,18 @@ const { showTagline = true } = Astro.props
 <header class="site-header">
   <div class="container header-inner">
     <a href={`${import.meta.env.BASE_URL}`} class="header-brand">
-      <span class="header-title">@reatom/reusables</span>
-      {showTagline && <span class="header-tagline">jsrepo registry</span>}
+      <span class="brand-mark" aria-hidden="true">
+        r.
+      </span>
+      <span class="header-title">
+        reatom<span class="brand-divider">/</span>reusables
+      </span>
+      {showTagline && <span class="header-tagline">open source</span>}
     </a>
-    <nav class="header-nav">
+    <nav class="header-nav" aria-label="Main navigation">
+      <a href={`${import.meta.env.BASE_URL}#registry`} class="header-link">
+        Registry
+      </a>
       <a
         href="https://v1000.reatom.dev/start/base"
         class="header-link"
@@ -36,7 +44,8 @@ const { showTagline = true } = Astro.props
 <style>
   .site-header {
     border-bottom: 1px solid var(--color-gray-5);
-    background: var(--color-bg-deep);
+    background: color-mix(in srgb, var(--color-bg-deep) 92%, transparent);
+    backdrop-filter: blur(16px);
     position: sticky;
     top: 0;
     z-index: 10;
@@ -46,13 +55,13 @@ const { showTagline = true } = Astro.props
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 3.5rem;
+    min-height: 4.5rem;
   }
 
   .header-brand {
     display: flex;
-    align-items: baseline;
-    gap: var(--space-sm);
+    align-items: center;
+    gap: var(--space-md);
     color: var(--color-white);
   }
 
@@ -63,6 +72,44 @@ const { showTagline = true } = Astro.props
   .header-title {
     font-weight: 600;
     font-size: 1rem;
+  }
+
+  .brand-mark {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--color-accent);
+    border-radius: 9px;
+    background: var(--color-accent-low);
+    color: var(--color-accent-light);
+    font-weight: 700;
+    font-size: 1.25rem;
+  }
+
+  .brand-divider {
+    margin-inline: 0.35rem;
+    color: var(--color-gray-4);
+    font-weight: 400;
+  }
+
+  @media (max-width: 640px) {
+    .header-tagline,
+    .header-nav a:first-child {
+      display: none;
+    }
+
+    .header-brand {
+      gap: var(--space-sm);
+    }
+
+    .header-title {
+      font-size: 0.8125rem;
+    }
+
+    .header-nav {
+      gap: var(--space-md);
+    }
   }
 
   .header-tagline {

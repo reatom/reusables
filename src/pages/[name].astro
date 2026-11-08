@@ -1,7 +1,6 @@
 ---
-import { Code } from 'astro:components'
 import { marked } from 'marked'
-import { createHighlighter } from 'shiki'
+import { highlighter } from '../lib/highlighter'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import Header from '../components/Header.astro'
 import Footer from '../components/Footer.astro'
@@ -12,12 +11,6 @@ import CollapsibleCode from '../components/CollapsibleCode.astro'
 import Mermaid from '../components/Mermaid.astro'
 import { getAllReusables, getReusableByName } from '../lib/registry'
 import type { Reusable } from '../lib/registry'
-
-// Initialize Shiki highlighter
-const highlighter = await createHighlighter({
-  themes: ['github-dark'],
-  langs: ['typescript', 'tsx', 'javascript', 'jsx', 'bash', 'json'],
-})
 
 export function getStaticPaths() {
   return getAllReusables().map((r) => ({
@@ -99,7 +92,7 @@ marked.use({
     }
     // Sanitize link URLs to prevent javascript: and data: URIs
     if (token.type === 'link' || token.type === 'image') {
-      const href = (token as any).href
+      const href = token.href
       if (href && typeof href === 'string') {
         const lower = href.toLowerCase().trim()
         if (
@@ -107,7 +100,7 @@ marked.use({
           lower.startsWith('data:') ||
           lower.startsWith('vbscript:')
         ) {
-          ;(token as any).href = ''
+          token.href = ''
         }
       }
     }
@@ -136,14 +129,6 @@ function getExampleLang(reusable: Reusable) {
   return 'ts' as const
 }
 
-// For tweakpane (multi-file source), the source field contains the index.ts
-// Show it with appropriate label
-function getSourceLabel(reusable: Reusable): string {
-  if (!reusable.sourcePath) return 'Source'
-  const parts = reusable.sourcePath.split('/')
-  return parts[parts.length - 1]
-}
-
 // Build link for registry dependencies
 function getReusableLink(depName: string): string {
   return `${import.meta.env.BASE_URL}${depName}/`
@@ -152,11 +137,11 @@ function getReusableLink(depName: string): string {
 
 <BaseLayout title={reusable.name}>
   <Header />
-  <main>
+  <main id="main-content" tabindex="-1">
     <div class="container detail-page">
-      <a href={`${import.meta.env.BASE_URL}`} class="back-link"
-        >&larr; All reusables</a
-      >
+      <a href={`${import.meta.env.BASE_URL}`} class="back-link">
+        &larr; All reusables
+      </a>
 
       <div class="detail-header">
         <h1 class="detail-title">{reusable.name}</h1>
@@ -177,36 +162,32 @@ function getReusableLink(depName: string): string {
               <CopyButton text={installCommand} />
             </div>
 
-            {
-              reusable.devDependencies.length > 0 && (
-                <div class="deps-section">
-                  <h3 class="deps-heading">Dependencies</h3>
-                  <ul class="deps-list">
-                    {reusable.devDependencies.map((dep) => (
-                      <li class="dep-item">
-                        <code>{dep.name}</code>
-                        <span class="dep-version">{dep.version}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )
-            }
+            {reusable.devDependencies.length > 0 && (
+              <div class="deps-section">
+                <h3 class="deps-heading">Dependencies</h3>
+                <ul class="deps-list">
+                  {reusable.devDependencies.map((dep) => (
+                    <li class="dep-item">
+                      <code>{dep.name}</code>
+                      <span class="dep-version">{dep.version}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-            {
-              reusable.registryDependencies.length > 0 && (
-                <div class="deps-section">
-                  <h3 class="deps-heading">Registry dependencies</h3>
-                  <ul class="deps-list">
-                    {reusable.registryDependencies.map((depName) => (
-                      <li class="dep-item">
-                        <a href={getReusableLink(depName)}>{depName}</a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )
-            }
+            {reusable.registryDependencies.length > 0 && (
+              <div class="deps-section">
+                <h3 class="deps-heading">Registry dependencies</h3>
+                <ul class="deps-list">
+                  {reusable.registryDependencies.map((depName) => (
+                    <li class="dep-item">
+                      <a href={getReusableLink(depName)}>{depName}</a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
           <div class="tab-panel" data-tab="source" hidden>
@@ -214,42 +195,36 @@ function getReusableLink(depName: string): string {
               Copy the source code below and save it to the specified file path
               in your project.
             </p>
-            {
-              reusable.sources.length > 0 ? (
-                reusable.sources.map((source) => (
-                  <div class="source-file">
-                    <div class="source-filename">{source.path}</div>
-                    <CollapsibleCode code={source.content} lang="ts" />
-                  </div>
-                ))
-              ) : (
-                <p class="no-source">No source available</p>
-              )
-            }
+            {reusable.sources.length > 0 ? (
+              reusable.sources.map((source) => (
+                <div class="source-file">
+                  <div class="source-filename">{source.path}</div>
+                  <CollapsibleCode code={source.content} lang="ts" />
+                </div>
+              ))
+            ) : (
+              <p class="no-source">No source available</p>
+            )}
           </div>
         </Tabs>
       </section>
 
-      {
-        docHtml && (
-          <section class="doc-section">
-            <h2 class="section-heading">Documentation</h2>
-            <div class="doc-content" set:html={docHtml} />
-          </section>
-        )
-      }
+      {docHtml && (
+        <section class="doc-section">
+          <h2 class="section-heading">Documentation</h2>
+          <div class="doc-content" set:html={docHtml} />
+        </section>
+      )}
 
-      {
-        reusable.example && (
-          <section class="code-section">
-            <h2 class="section-heading">Example</h2>
-            <CollapsibleCode
-              code={reusable.example}
-              lang={getExampleLang(reusable)}
-            />
-          </section>
-        )
-      }
+      {reusable.example && (
+        <section class="code-section">
+          <h2 class="section-heading">Example</h2>
+          <CollapsibleCode
+            code={reusable.example}
+            lang={getExampleLang(reusable)}
+          />
+        </section>
+      )}
     </div>
   </main>
   <Footer />
@@ -279,11 +254,13 @@ function getReusableLink(depName: string): string {
     align-items: center;
     gap: var(--space-md);
     margin-bottom: var(--space-xl);
+    flex-wrap: wrap;
   }
 
   .detail-title {
     font-size: 2rem;
     letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
   }
 
   .section-heading {
@@ -305,12 +282,14 @@ function getReusableLink(depName: string): string {
     border: 1px solid var(--color-gray-5);
     border-radius: var(--radius-md);
     padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-md);
+    max-width: 100%;
   }
 
   .install-command {
     font-family: var(--font-mono);
     font-size: 0.875rem;
     color: var(--color-gray-1);
+    overflow-wrap: anywhere;
   }
 
   .deps-section {
@@ -360,6 +339,7 @@ function getReusableLink(depName: string): string {
   .doc-content {
     line-height: 1.7;
     color: var(--color-gray-1);
+    overflow-wrap: anywhere;
   }
 
   .doc-content :global(h1) {
@@ -395,6 +375,9 @@ function getReusableLink(depName: string): string {
   }
 
   .doc-content :global(table) {
+    display: block;
+    overflow-x: auto;
+    max-width: 100%;
     width: 100%;
     border-collapse: collapse;
     margin-bottom: var(--space-md);
@@ -440,6 +423,7 @@ function getReusableLink(depName: string): string {
   }
 
   .source-filename {
+    overflow-wrap: anywhere;
     padding: var(--space-xs) var(--space-sm);
     background: var(--color-bg-surface);
     border: 1px solid var(--color-gray-5);

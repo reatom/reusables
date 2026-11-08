@@ -43,6 +43,9 @@ const pageTitle =
     </style>
   </head>
   <body>
+    <a class="skip-link" href="#main-content">
+      Skip to content
+    </a>
     <div class="page-wrapper">
       <div class="page-content">
         <slot />
@@ -97,7 +100,7 @@ const pageTitle =
       .forEach((container) => {
         container.setAttribute('data-initialized', 'true')
 
-        const button = container.querySelector('.expand-button') as HTMLElement
+        const button = container.querySelector<HTMLElement>('.expand-button')
         const code = container.querySelector('code')
         const style = getComputedStyle(container)
         const thresholdValue = style

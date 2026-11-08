@@ -2,20 +2,20 @@
 
 :root {
   /* Reatom brand colors (from reatom.dev palette) */
-  --color-bg: #171721;
-  --color-bg-deep: #0a0a0f;
-  --color-bg-surface: #24243a;
-  --color-bg-surface-hover: #35354c;
-  --color-accent: #6361a1;
-  --color-accent-light: #bca4e0;
-  --color-accent-low: #222234;
+  --color-bg: #13121a;
+  --color-bg-deep: #0e0d12;
+  --color-bg-surface: #1a1822;
+  --color-bg-surface-hover: #24212f;
+  --color-accent: #9b82db;
+  --color-accent-light: #c9b5f5;
+  --color-accent-low: #282136;
   --color-white: #fdfdff;
   --color-gray-1: #ecedf8;
-  --color-gray-2: #c0c1cf;
-  --color-gray-3: #8889a4;
+  --color-gray-2: #b9b5c6;
+  --color-gray-3: #9993a9;
   --color-gray-4: #55556e;
-  --color-gray-5: #35354c;
-  --color-gray-6: #24243a;
+  --color-gray-5: #322e3e;
+  --color-gray-6: #211e2a;
 
   /* Typography */
   --font-sans:
@@ -52,6 +52,43 @@
 
 html {
   color-scheme: dark;
+  scroll-padding-top: 6rem;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent-light);
+  outline-offset: 5px;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-bg-deep);
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 1rem;
+  z-index: 100;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-light);
+  color: var(--color-bg-deep);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
 }
 
 body {
@@ -140,6 +177,26 @@ pre .copy-button {
 
 pre:hover .copy-button {
   opacity: 1;
+}
+
+pre:focus-within .copy-button {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  pre .copy-button {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 pre .copy-button:hover {

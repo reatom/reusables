@@ -7,475 +7,704 @@ import ReusableCard from '../components/ReusableCard.astro'
 import { getReusablesGroupedByType } from '../lib/registry'
 
 const groups = getReusablesGroupedByType()
-const totalCount = groups.reduce((sum, g) => sum + g.items.length, 0)
-
-const typeLabels: Record<string, string> = {
+const totalCount = groups.reduce((sum, group) => sum + group.items.length, 0)
+const typeLabels = {
   factory: 'Factories',
   extension: 'Extensions',
   utility: 'Utilities',
   integration: 'Integrations',
 }
+const installCommand = 'npx jsrepo init github/reatom/reusables'
 ---
 
-<BaseLayout>
+<BaseLayout description="Reatom extensions, factories, and integrations. Browse the source, copy what you need, and make it yours.">
   <Header />
-  <main>
+  <main id="main-content" tabindex="-1">
     <section class="hero">
       <div class="container hero-inner">
-        <h1 class="hero-title">
-          Reusable primitives for<br />
-          <span class="hero-highlight">reatom</span> state management
-        </h1>
-        <p class="hero-description">
-          A jsrepo registry of {totalCount} drop-in extensions, factories, and utilities.
-          Copy-paste the pieces you need — no extra packages.
-        </p>
-        <div class="hero-install">
-          <code class="install-command"
-            >npx jsrepo init github/reatom/reusables</code
-          >
-          <CopyButton text="npx jsrepo init github/reatom/reusables" />
-        </div>
-      </div>
-    </section>
-
-    <section class="registry">
-      <div class="container">
-        {
-          groups.map((group) => (
-            <div class="registry-group">
-              <h2 class="group-heading">
-                {typeLabels[group.type] ?? group.type}
-              </h2>
-              <div class="registry-grid">
-                {group.items.map((item) => (
-                  <ReusableCard reusable={item} />
-                ))}
-              </div>
-            </div>
-          ))
-        }
-      </div>
-    </section>
-
-    <section class="faq">
-      <div class="container">
-        <div class="faq-header">
-          <p class="faq-eyebrow">FAQ</p>
-          <h2 class="faq-title">How reusables work</h2>
-          <p class="faq-intro">
-            Quick answers about the reusables pattern, jsrepo, and where new
-            ideas belong.
+        <div class="hero-copy">
+          <p class="eyebrow">
+            <span class="status-dot" aria-hidden="true"></span> The Reatom
+            source registry
+          </p>
+          <h1>
+            Good patterns.
+            <br />
+            <span>Your source code.</span>
+          </h1>
+          <p class="hero-description">
+            Small, tested building blocks for Reatom. Add the pieces you need to
+            your project, read every line, and adapt them as you go.
+          </p>
+          <div class="hero-actions">
+            <a href="#registry" class="primary-link">
+              Explore {totalCount} reusables <span aria-hidden="true">↓</span>
+            </a>
+            <a
+              href="https://github.com/reatom/reusables/blob/main/CONTRIBUTING.md"
+              class="secondary-link"
+            >
+              Contribute a pattern <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+          <p class="hero-note">
+            TypeScript source · MIT licensed · Distributed with jsrepo
           </p>
         </div>
-        <div class="faq-grid">
-          <details class="faq-item" open>
-            <summary>
-              <span class="faq-question">What is the reusables pattern?</span>
-              <span class="faq-icon" aria-hidden="true"></span>
-            </summary>
-            <div class="faq-answer">
-              <p>
-                Instead of installing a package, you copy the source code
-                directly into your project. This is the same "open code"
-                approach pioneered by
-                <a href="https://ui.shadcn.com" target="_blank" rel="noopener"
-                  >shadcn/ui</a
-                >: you own every line, so you can read, modify, and extend it
-                without fighting a library's API. No version lock-in, no
-                wrapping third-party components — just code that lives in your
-                repo and evolves with your project.
-              </p>
+        <div class="terminal" aria-label="Install a reusable with jsrepo">
+          <div class="terminal-bar">
+            <span class="terminal-dots" aria-hidden="true">
+              <i></i>
+              <i></i>
+              <i></i>
+            </span>
+            <span>your-project / terminal</span>
+            <span aria-hidden="true">⌘</span>
+          </div>
+          <div class="terminal-body">
+            <p class="terminal-comment"># Start with the registry</p>
+            <div class="terminal-command">
+              <span aria-hidden="true">$</span>
+              <code>{installCommand}</code>
+              <CopyButton text={installCommand} />
             </div>
-          </details>
-
-          <details class="faq-item">
-            <summary>
-              <span class="faq-question">What is jsrepo?</span>
-              <span class="faq-icon" aria-hidden="true"></span>
-            </summary>
-            <div class="faq-answer">
-              <p>
-                <a href="https://jsrepo.dev" target="_blank" rel="noopener"
-                  >jsrepo</a
-                > is a CLI that automates copy-paste code distribution. It lets you
-                browse a registry, pick specific items, and drop them into your project
-                — with support for updates and diffs when the upstream changes. Think
-                of it as the plumbing behind the reusables pattern.
-              </p>
+            <p class="terminal-comment second-step"># Add a little history</p>
+            <div class="terminal-command">
+              <span aria-hidden="true">$</span>
+              <code>npx jsrepo add withHistory</code>
+              <CopyButton text="npx jsrepo add withHistory" />
             </div>
-          </details>
-
-          <details class="faq-item">
-            <summary>
-              <span class="faq-question">Do I have to use jsrepo?</span>
-              <span class="faq-icon" aria-hidden="true"></span>
-            </summary>
-            <div class="faq-answer">
-              <p>
-                No. Every reusable is a plain TypeScript file you can copy by
-                hand. jsrepo just makes discovery, adding, and updating easier
-                with a single command. Use it if you want convenience; skip it
-                if you prefer to vendor files yourself.
-              </p>
-            </div>
-          </details>
-
-          <details class="faq-item">
-            <summary>
-              <span class="faq-question">How do I test Reatom code?</span>
-              <span class="faq-icon" aria-hidden="true"></span>
-            </summary>
-            <div class="faq-answer">
-              <p>
-                Add the test harness utility with <code
-                  >npx jsrepo add test</code
-                >. It provides automatic Reatom context management and mock
-                subscription utilities for Vitest tests.
-              </p>
-              <p style="margin-top: var(--space-sm);">
-                The test harness is also automatically included when you add any
-                reusable with the <code>--with-tests</code> flag:
-                <code>npx jsrepo add withHistory --with-tests</code>
-              </p>
-            </div>
-          </details>
-
-          <details class="faq-item">
-            <summary>
-              <span class="faq-question"
-                >Can I include tests, docs, and examples?</span
-              >
-              <span class="faq-icon" aria-hidden="true"></span>
-            </summary>
-            <div class="faq-answer">
-              <p>
-                Yes. Use flags to include additional files when adding a
-                reusable:
-              </p>
-              <ul class="faq-list">
-                <li>
-                  <strong>--with-tests</strong> — includes test files and the test
-                  harness utility
-                </li>
-                <li>
-                  <strong>--with-docs</strong> — includes documentation files (like
-                  detailed API docs)
-                </li>
-                <li>
-                  <strong>--with-examples</strong> — includes example usage files
-                  when available
-                </li>
-              </ul>
-              <p style="margin-top: var(--space-sm);">
-                Combine multiple flags: <code
-                  >npx jsrepo add withLogger --with-tests --with-docs</code
-                >
-              </p>
-            </div>
-          </details>
-
-          <details class="faq-item">
-            <summary>
-              <span class="faq-question">What makes a good reusable?</span>
-              <span class="faq-icon" aria-hidden="true"></span>
-            </summary>
-            <div class="faq-answer">
-              <p>
-                A focused pattern that is useful out of the box but small enough
-                to understand and modify. Good reusables have a clear single
-                purpose, readable code, and minimal assumptions about how
-                they'll be used. Third-party dependencies are fine when they're
-                the point of the integration (like a Tweakpane binding). The key
-                test: would a developer benefit from owning and tweaking this
-                code rather than importing it as a fixed dependency?
-              </p>
-            </div>
-          </details>
-
-          <details class="faq-item">
-            <summary>
-              <span class="faq-question"
-                >Core package, separate library, or reusable?</span
-              >
-              <span class="faq-icon" aria-hidden="true"></span>
-            </summary>
-            <div class="faq-answer">
-              <p>
-                Reatom distributes code three ways, each for a different kind of
-                thing:
-              </p>
-              <ul class="faq-list">
-                <li>
-                  <strong>Core</strong> (<code>@reatom/core</code>) — stable,
-                  dependency-free primitives with broad applicability. Changes
-                  here affect everyone, so the bar is high.
-                </li>
-                <li>
-                  <strong>Separate library</strong> (e.g. <code
-                    >@reatom/zod</code
-                  >) — a complete, cohesive integration with a stable upstream
-                  API where the surface is large enough to justify a dedicated
-                  package.
-                </li>
-                <li>
-                  <strong>Reusable</strong> — smaller or opinionated pieces where
-                  users benefit from owning the code: partial integrations, niche
-                  patterns, or cases where upstream APIs shift often and you'd rather
-                  adapt locally.
-                </li>
-              </ul>
-            </div>
-          </details>
-
-          <details class="faq-item">
-            <summary>
-              <span class="faq-question">Can I contribute a reusable?</span>
-              <span class="faq-icon" aria-hidden="true"></span>
-            </summary>
-            <div class="faq-answer">
-              <p>
-                Yes — open a PR. If the idea is opinionated or niche, that's
-                perfectly fine: we'll either generalize it together or ship it
-                as-is. Reusables are meant to be adapted by users, so a useful
-                starting point matters more than universal consensus.
-              </p>
-            </div>
-          </details>
+            <p class="terminal-success">
+              <span aria-hidden="true">✓</span> Source added. Ready to make it
+              yours.
+            </p>
+          </div>
+          <div class="terminal-footer">
+            <span class="file-symbol" aria-hidden="true">
+              TS
+            </span>{' '}
+            src/reatom/with-history.ts{' '}
+            <span class="file-status">added to your project</span>
+          </div>
         </div>
+      </div>
+    </section>
+
+    <section
+      class="registry container"
+      id="registry"
+      aria-labelledby="registry-heading"
+      data-catalog
+    >
+      <div class="section-header">
+        <div>
+          <p class="eyebrow">The collection</p>
+          <h2 id="registry-heading">Find your next building block.</h2>
+        </div>
+        <p class="collection-count">{totalCount} reusables, ready to adapt</p>
+      </div>
+      <div class="catalog-controls" hidden>
+        <label class="search-field">
+          <span aria-hidden="true">⌕</span>
+          <span class="sr-only">Search reusables</span>
+          <input
+            type="search"
+            name="search"
+            placeholder="Search by name or purpose…"
+            autocomplete="off"
+          />
+        </label>
+        <div class="filters" role="group" aria-label="Filter by type">
+          <button type="button" data-filter="all" aria-pressed="true">
+            All <span>{totalCount}</span>
+          </button>
+          {groups.map((group) => (
+            <button type="button" data-filter={group.type} aria-pressed="false">
+              {typeLabels[group.type]} <span>{group.items.length}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+      <p
+        class="results-status"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        hidden
+      ></p>
+      {groups.map((group) => (
+        <div class="registry-group" data-group={group.type}>
+          <div class="group-header">
+            <h3>{typeLabels[group.type]}</h3>
+            <span>{String(group.items.length).padStart(2, '0')}</span>
+            <div class="group-rule" aria-hidden="true"></div>
+          </div>
+          <div class="registry-grid">
+            {group.items.map((item) => (
+              <ReusableCard reusable={item} />
+            ))}
+          </div>
+        </div>
+      ))}
+      <div class="empty-state" hidden>
+        <h3>No reusables found.</h3>
+        <p>Try another name or choose a different type.</p>
+        <button type="button" data-reset>
+          Clear filters
+        </button>
+      </div>
+    </section>
+
+    <section class="faq container" aria-labelledby="faq-heading">
+      <div class="faq-intro">
+        <p class="eyebrow">A few things to know</p>
+        <h2 id="faq-heading">
+          Copy it.
+          <br />
+          Understand it.
+          <br />
+          <span>Make it yours.</span>
+        </h2>
+        <p>Reusables live in your repository. You decide how they evolve.</p>
+        <a href="https://www.jsrepo.dev/docs">
+          Read the jsrepo docs <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+      <div class="faq-items">
+        <details open>
+          <summary>How does this work?</summary>
+          <p>
+            jsrepo copies TypeScript source into your project and resolves the
+            files it depends on. You own the code and can change it to fit your
+            application. It can also help you review and pull in upstream
+            updates.
+          </p>
+        </details>
+        <details>
+          <summary>Do I have to use jsrepo?</summary>
+          <p>
+            No. Open any reusable to read its docs, examples, and source. Copy
+            the files by hand if you prefer.
+          </p>
+        </details>
+        <details>
+          <summary>Can I include tests and examples?</summary>
+          <p>
+            Yes. Add <code>--with-tests</code>, <code>--with-docs</code>, or{' '}
+            <code>--with-examples</code> to your add command. For example,{' '}
+            <code>npx jsrepo add withHistory --with-tests</code> includes its
+            tests and the shared Reatom test harness.
+          </p>
+        </details>
+        <details>
+          <summary>What makes a good reusable?</summary>
+          <p>
+            A focused pattern with a clear purpose, readable source, and tests.
+            Integrations can have third-party dependencies. The source should be
+            small enough for someone to understand and adapt.
+          </p>
+        </details>
+        <details>
+          <summary>Can I contribute?</summary>
+          <p>
+            Yes.{' '}
+            <a href="https://github.com/reatom/reusables/blob/main/CONTRIBUTING.md">
+              Read the contribution guide
+            </a>{' '}
+            and open a pull request with your implementation, documentation,
+            example, and tests.
+          </p>
+        </details>
       </div>
     </section>
   </main>
   <Footer />
 </BaseLayout>
 
+<script>
+  const catalog = document.querySelector<HTMLElement>('[data-catalog]')
+  if (catalog) {
+    const search = catalog.querySelector<HTMLInputElement>(
+      'input[type="search"]',
+    )
+    const buttons = catalog.querySelectorAll<HTMLButtonElement>('[data-filter]')
+    const cards = catalog.querySelectorAll<HTMLElement>('[data-reusable]')
+    const groups = catalog.querySelectorAll<HTMLElement>('[data-group]')
+    const status = catalog.querySelector<HTMLElement>('.results-status')
+    const empty = catalog.querySelector<HTMLElement>('.empty-state')
+    const controls = catalog.querySelector<HTMLElement>('.catalog-controls')
+    let selectedType = 'all'
+
+    function filter() {
+      const words =
+        search?.value.trim().toLowerCase().split(/\s+/).filter(Boolean) ?? []
+      let count = 0
+      cards.forEach((card) => {
+        const matchesType =
+          selectedType === 'all' || card.dataset.type === selectedType
+        const matchesSearch = words.every((word) =>
+          card.dataset.search?.includes(word),
+        )
+        card.hidden = !(matchesType && matchesSearch)
+        if (!card.hidden) count++
+      })
+      groups.forEach((group) => {
+        group.hidden = !group.querySelector('[data-reusable]:not([hidden])')
+      })
+      if (status) {
+        status.hidden = false
+        status.textContent = `${count} reusable${count === 1 ? '' : 's'} found`
+      }
+      if (empty) empty.hidden = count > 0
+      buttons.forEach((button) => {
+        button.setAttribute(
+          'aria-pressed',
+          String(button.dataset.filter === selectedType),
+        )
+      })
+    }
+
+    if (controls) controls.hidden = false
+    search?.addEventListener('input', filter)
+    buttons.forEach((button) =>
+      button.addEventListener('click', () => {
+        selectedType = button.dataset.filter ?? 'all'
+        filter()
+      }),
+    )
+    catalog.querySelector('[data-reset]')?.addEventListener('click', () => {
+      if (search) search.value = ''
+      selectedType = 'all'
+      filter()
+      search?.focus()
+    })
+  }
+</script>
+
 <style>
+  .eyebrow {
+    color: var(--color-accent-light);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
   .hero {
-    padding: var(--space-3xl) 0 var(--space-2xl);
     border-bottom: 1px solid var(--color-gray-5);
-    background: radial-gradient(
-      ellipse 80% 50% at 50% -20%,
-      rgba(99, 97, 161, 0.15),
-      transparent
-    );
+    background: radial-gradient(ellipse at 75% 20%, #6d46a318, transparent 60%);
   }
-
   .hero-inner {
-    max-width: 640px;
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    align-items: center;
+    gap: 3.5rem;
+    padding-block: clamp(3.5rem, 8vw, 7rem);
   }
-
-  .hero-title {
-    font-size: 2rem;
-    line-height: 1.25;
-    letter-spacing: -0.02em;
+  .hero-copy .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-bottom: 1.5rem;
   }
-
-  .hero-highlight {
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-accent-light);
+    box-shadow: 0 0 0 4px #9b82db16;
+  }
+  h1 {
+    font-size: clamp(2.5rem, 4.5vw, 4rem);
+    font-weight: 500;
+    letter-spacing: -0.055em;
+    line-height: 1.1;
+  }
+  h1 span,
+  .faq-intro h2 span {
     color: var(--color-accent-light);
   }
-
   .hero-description {
-    margin-top: var(--space-md);
+    max-width: 30rem;
     color: var(--color-gray-2);
-    font-size: 1.0625rem;
-    line-height: 1.6;
+    margin-top: 1.5rem;
+    font-size: 1rem;
+    line-height: 1.8;
   }
-
-  .hero-install {
-    margin-top: var(--space-xl);
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    font-size: 0.8125rem;
+  }
+  .primary-link {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-sm);
-    background: var(--color-bg-surface);
-    border: 1px solid var(--color-gray-5);
-    border-radius: var(--radius-md);
-    padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-md);
-  }
-
-  .install-command {
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
-    color: var(--color-gray-1);
-    white-space: nowrap;
-  }
-
-  .registry {
-    padding: var(--space-2xl) 0;
-  }
-
-  .registry-group {
-    margin-bottom: var(--space-2xl);
-  }
-
-  .registry-group:last-child {
-    margin-bottom: 0;
-  }
-
-  .group-heading {
-    font-size: 1.25rem;
+    gap: 1rem;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    background: var(--color-accent-light);
+    color: var(--color-bg-deep);
     font-weight: 600;
-    margin-bottom: var(--space-md);
-    color: var(--color-white);
   }
-
-  .registry-grid {
-    display: grid;
-    gap: var(--space-md);
-    grid-template-columns: 1fr;
+  .primary-link:hover {
+    background: var(--color-white);
+    color: var(--color-bg-deep);
   }
-
-  .faq {
-    padding: var(--space-2xl) 0 var(--space-3xl);
-    border-top: 1px solid var(--color-gray-5);
-    background:
-      linear-gradient(180deg, rgba(99, 97, 161, 0.15), transparent 65%),
-      radial-gradient(circle at 0% 0%, rgba(99, 97, 161, 0.1), transparent 45%);
-  }
-
-  .faq-header {
-    max-width: 680px;
-    margin-bottom: var(--space-xl);
-  }
-
-  .faq-eyebrow {
-    text-transform: uppercase;
-    letter-spacing: 0.22em;
-    font-size: 0.7rem;
-    color: var(--color-gray-3);
-    margin-bottom: var(--space-sm);
-  }
-
-  .faq-title {
-    font-size: 1.75rem;
-    margin-bottom: var(--space-sm);
-  }
-
-  .faq-intro {
+  .secondary-link {
     color: var(--color-gray-2);
   }
-
-  .faq-grid {
-    display: grid;
-    gap: var(--space-md);
+  .hero-note {
+    font-size: 0.6875rem;
+    color: var(--color-gray-3);
+    margin-top: 1.25rem;
   }
-
-  .faq-item {
-    background: var(--color-bg-surface);
+  .terminal {
+    min-width: 0;
+    background: var(--color-bg);
     border: 1px solid var(--color-gray-5);
-    border-radius: var(--radius-lg);
-    padding: var(--space-md) var(--space-lg);
-    transition:
-      border-color 0.2s,
-      background 0.2s,
-      transform 0.2s;
+    border-radius: 12px;
+    box-shadow: 0 20px 70px #0004;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
   }
-
-  .faq-item[open] {
-    border-color: rgba(188, 164, 224, 0.6);
-    background: rgba(36, 36, 58, 0.9);
-    transform: translateY(-2px);
-  }
-
-  .faq-item summary {
-    list-style: none;
-    cursor: pointer;
+  .terminal-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-md);
+    gap: 1rem;
+    padding: 1rem;
+    color: var(--color-gray-3);
+    border-bottom: 1px solid var(--color-gray-5);
   }
-
-  .faq-item summary::-webkit-details-marker {
+  .terminal-dots {
+    display: flex;
+    gap: 5px;
+  }
+  .terminal-dots i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #62596f;
+  }
+  .terminal-dots i:first-child {
+    background: #c58393;
+  }
+  .terminal-dots i:nth-child(2) {
+    background: #c6ac7e;
+  }
+  .terminal-dots i:last-child {
+    background: #8bab94;
+  }
+  .terminal-body {
+    padding: 1.5rem;
+  }
+  .terminal-comment {
+    color: var(--color-gray-3);
+    margin-bottom: 0.75rem;
+  }
+  .second-step {
+    margin-top: 1.75rem;
+  }
+  .terminal-command {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .terminal-command > span {
+    color: var(--color-accent);
+  }
+  .terminal-command code {
+    background: transparent;
+    padding: 0;
+    color: var(--color-gray-1);
+    font-size: inherit;
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+  .terminal-command :global(.copy-btn) {
+    margin-left: auto;
+    flex-shrink: 0;
+    font-size: 0.625rem;
+  }
+  .terminal-success {
+    color: #9ccaab;
+    margin-top: 2rem;
+    font-size: 0.625rem;
+  }
+  .terminal-success span {
+    margin-right: 0.5rem;
+  }
+  .terminal-footer {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 0.875rem 1.5rem;
+    background: #ffffff03;
+    border-top: 1px solid var(--color-gray-5);
+    color: var(--color-gray-2);
+  }
+  .file-symbol {
+    color: #9bbae0;
+    font-size: 0.625rem;
+  }
+  .file-status {
+    margin-left: auto;
+    color: var(--color-gray-3);
+    font-family: var(--font-sans);
+    font-size: 0.625rem;
+  }
+  .registry {
+    padding-block: 4.5rem;
+  }
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .section-header h2 {
+    margin-top: 0.75rem;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    letter-spacing: -0.04em;
+    font-weight: 500;
+  }
+  .collection-count {
+    color: var(--color-gray-3);
+    font-size: 0.75rem;
+  }
+  .catalog-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .search-field {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1 1 16rem;
+    padding-inline: 0.875rem;
+    border: 1px solid var(--color-gray-5);
+    border-radius: 6px;
+    background: var(--color-bg);
+    color: var(--color-gray-3);
+  }
+  .search-field:focus-within {
+    border-color: var(--color-accent);
+  }
+  input {
+    width: 100%;
+    min-width: 0;
+    padding-block: 0.75rem;
+    background: none;
+    color: var(--color-gray-1);
+    border: none;
+    font-size: 0.8125rem;
+  }
+  input::placeholder {
+    color: var(--color-gray-3);
+  }
+  input:focus-visible {
+    outline-offset: 0;
+  }
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+  }
+  .filters button,
+  .empty-state button {
+    background: transparent;
+    color: var(--color-gray-2);
+    border: 1px solid var(--color-gray-5);
+    padding: 0.625rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.75rem;
+  }
+  .filters button[aria-pressed='true'] {
+    background: var(--color-accent-low);
+    border-color: var(--color-accent);
+    color: var(--color-accent-light);
+  }
+  .filters button:hover {
+    color: var(--color-white);
+    border-color: var(--color-accent);
+  }
+  .filters button span {
+    margin-left: 0.375rem;
+    font-size: 0.625rem;
+    opacity: 0.7;
+  }
+  .results-status {
+    margin-block: 1rem;
+    color: var(--color-gray-3);
+    font-size: 0.75rem;
+  }
+  .registry-group {
+    margin-top: 2.5rem;
+  }
+  .group-header {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  .group-header h3 {
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .group-header > span {
+    color: var(--color-gray-3);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+  }
+  .group-rule {
+    height: 1px;
+    flex: 1;
+    background: var(--color-gray-5);
+    margin-left: 0.5rem;
+  }
+  .registry-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 4rem 1rem;
+    border: 1px dashed var(--color-gray-5);
+    border-radius: 8px;
+    margin-top: 2rem;
+  }
+  .empty-state p {
+    color: var(--color-gray-2);
+    margin-block: 0.5rem 1.5rem;
+  }
+  .faq {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 5rem;
+    padding-block: 3.5rem;
+    border-top: 1px solid var(--color-gray-5);
+  }
+  .faq-intro h2 {
+    font-size: 2rem;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.04em;
+    margin-block: 1.25rem;
+  }
+  .faq-intro > p:not(.eyebrow) {
+    max-width: 19rem;
+    color: var(--color-gray-2);
+    font-size: 0.875rem;
+  }
+  .faq-intro > a {
+    display: inline-block;
+    font-size: 0.8125rem;
+    margin-top: 1.25rem;
+  }
+  details {
+    border-bottom: 1px solid var(--color-gray-5);
+  }
+  summary {
+    padding-block: 1.25rem;
+    cursor: pointer;
+    color: var(--color-gray-1);
+    font-size: 0.875rem;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  summary::-webkit-details-marker {
     display: none;
   }
-
-  .faq-question {
-    font-weight: 600;
-    color: var(--color-white);
-    font-size: 1rem;
+  summary::after {
+    content: '+';
+    color: var(--color-gray-3);
   }
-
-  .faq-icon {
-    position: relative;
-    width: 1rem;
-    height: 1rem;
-    flex-shrink: 0;
+  details[open] summary::after {
+    content: '−';
   }
-
-  .faq-icon::before,
-  .faq-icon::after {
-    content: '';
-    position: absolute;
-    background: var(--color-accent-light);
-    border-radius: 999px;
-    transition:
-      opacity 0.2s,
-      transform 0.2s;
-  }
-
-  .faq-icon::before {
-    width: 100%;
-    height: 2px;
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-  }
-
-  .faq-icon::after {
-    height: 100%;
-    width: 2px;
-    left: 50%;
-    top: 0;
-    transform: translateX(-50%);
-  }
-
-  .faq-item[open] .faq-icon::after {
-    opacity: 0;
-  }
-
-  .faq-answer {
-    margin-top: var(--space-sm);
+  details p {
+    padding: 0 1.5rem 1.25rem 0;
     color: var(--color-gray-2);
-    font-size: 0.95rem;
-    line-height: 1.6;
+    font-size: 0.8125rem;
+    line-height: 1.8;
   }
-
-  .faq-answer a {
-    color: var(--color-accent-light);
-    text-decoration: underline;
-    text-underline-offset: 2px;
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
   }
-
-  .faq-list {
-    margin: var(--space-xs) 0 0;
-    padding-left: 1.25em;
-  }
-
-  .faq-list li {
-    margin-bottom: var(--space-xs);
-  }
-
-  .faq-list li:last-child {
-    margin-bottom: 0;
-  }
-
-  @media (min-width: 640px) {
-    .registry-grid {
-      grid-template-columns: repeat(2, 1fr);
+  @media (max-width: 1000px) {
+    .hero-inner {
+      gap: 2rem;
     }
-
-    .faq-grid {
+    .registry-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-  }
-
-  @media (min-width: 960px) {
-    .registry-grid {
-      grid-template-columns: repeat(3, 1fr);
+    .terminal-body {
+      padding: 1rem;
     }
-
-    .hero-title {
-      font-size: 2.5rem;
+    .terminal-command {
+      flex-wrap: wrap;
+    }
+    .terminal-command :global(.copy-btn) {
+      margin-left: 0;
+    }
+  }
+  @media (max-width: 760px) {
+    .hero-inner {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+    .hero-copy {
+      max-width: 32rem;
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 8vw, 3.5rem);
+    }
+    .registry {
+      padding-block: 3rem;
+    }
+    .faq {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .filters {
+      width: 100%;
+    }
+    .terminal-command :global(.copy-btn) {
+      margin-left: auto;
+    }
+  }
+  @media (max-width: 520px) {
+    .registry-grid {
+      grid-template-columns: 1fr;
+    }
+    .filters button {
+      padding: 0.5rem 0.625rem;
+    }
+    .file-status {
+      display: none;
+    }
+    .hero-note {
+      font-size: 0.625rem;
     }
   }
 </style>

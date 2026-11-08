@@ -3,22 +3,22 @@
   "version": "1.0.0",
   "description": "Remotion promo video for Reatom reusables registry",
   "scripts": {
-    "dev": "remotion studio",
-    "start": "remotion studio",
-    "build": "remotion render src/index.ts ReatomPromo out/promo.mp4",
-    "upgrade": "remotion upgrade"
+    "dev": "remotion studio --config .config/remotion.config.ts",
+    "start": "remotion studio --config .config/remotion.config.ts",
+    "build": "remotion render src/index.ts ReatomPromo ../.var/remotion/promo.mp4 --config .config/remotion.config.ts",
+    "upgrade": "remotion upgrade",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@remotion/cli": "^4.0.0",
-    "@remotion/bundler": "^4.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "remotion": "^4.0.0"
+    "@remotion/cli": "^4.0.541",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "remotion": "^4.0.541"
   },
   "devDependencies": {
-    "@remotion/eslint-config": "^4.0.0",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
-    "typescript": "^5.0.0"
-  }
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "^7.0.2"
+  },
+  "private": true
 }

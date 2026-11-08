@@ -248,7 +248,10 @@ export function withMCP<
   Target extends AtomLike = AtomLike,
   Input extends object = Record<string, unknown>,
 >(options: WithMCPOptions<Target, Input>): WithMCPExt<Target> {
-  return (<T extends Target>(target: T) => {
+  return extend
+
+  function extend<T extends Target>(target: T): T extends Action ? MCPExt : T
+  function extend(target: Target): MCPExt | Target {
     const {
       name = target.name,
       description,
@@ -304,8 +307,7 @@ export function withMCP<
 
       if (autoRegister) registerMCP()
 
-      // Intentional cast: T extends Action discriminates MCPExt vs. atom passthrough
-      return { registerMCP } as T extends Action ? MCPExt : T
+      return { registerMCP }
     }
 
     return target.extend(
@@ -314,7 +316,6 @@ export function withMCP<
         if (ctx === undefined) return
         registerTool(ctx)
       }),
-      // Intentional cast: atom targets pass through; T extends Action is false here
-    ) as T extends Action ? MCPExt : T
-  }) as WithMCPExt<Target>
+    )
+  }
 }

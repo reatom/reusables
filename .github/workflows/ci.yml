@@ -9,19 +9,22 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   ci:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: pnpm/action-setup@v4
+      - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
+      - name: Lint GitHub configuration
+        run: mise run lint
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -32,11 +35,17 @@ jobs:
       - name: Check formatting
         run: pnpm format:check
 
+      - name: Check types
+        run: pnpm typecheck
+
       - name: Run tests
         run: pnpm test
 
-      - name: Build jsrepo
-        run: pnpm jsrepo:build
+      - name: Build registry and website
+        run: pnpm build
+
+      - name: Test built website
+        run: pnpm test:site
 
       # registry.json is regenerated, not hand-edited. On PRs it may be stale
       # (contributors don't commit it) — warn but don't block; a maintainer runs
@@ -50,13 +59,14 @@ jobs:
             echo "::warning::registry.json is out of date. A maintainer should comment /rebuild-registry on this PR before merge."
             exit 0
           fi
-          echo "::error::registry.json is out of date on ${{ github.ref_name }}. It must be rebuilt (pnpm jsrepo:build) and committed."
+          echo "::error::registry.json is out of date on $GITHUB_REF_NAME. It must be rebuilt (pnpm jsrepo:build) and committed."
           exit 1
 
   deploy:
     needs: ci
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     permissions:
       pages: write
@@ -67,14 +77,9 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
+      - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -83,10 +88,10 @@ jobs:
         run: pnpm build
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
-          path: dist/
+          path: .var/site/
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

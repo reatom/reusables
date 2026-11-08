@@ -1,3 +1,12 @@
+packages:
+  - '.'
+  - 'remotion'
+
+# Astro's WASM type checker expects the emnapi 1.x ABI. Its unbounded peer
+# currently selects the incompatible 2.0 beta. Remove when astro2tsx fixes it.
+overrides:
+  '@emnapi/runtime': '1.11.3'
+
 allowBuilds:
   esbuild: true
   sharp: true

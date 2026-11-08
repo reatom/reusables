@@ -1,0 +1,28 @@
+[tools]
+node = "26.13.0"
+pnpm = "12.18.0"
+jactionlint = "2.5.0"
+
+[tasks.setup]
+description = "Install workspace dependencies and Chromium"
+run = ["pnpm install --frozen-lockfile", "pnpm exec playwright install chromium"]
+
+[tasks.dev]
+description = "Start the registry site"
+run = "pnpm dev"
+
+[tasks.check]
+description = "Check formatting, types, tests, registry, and site build"
+run = "pnpm check"
+
+[tasks.build]
+description = "Regenerate the registry and build the site"
+run = "pnpm build"
+
+[tasks.test]
+description = "Run Node and headless Chromium tests"
+run = "pnpm test"
+
+[tasks.lint]
+description = "Lint GitHub workflows and Dependabot configuration"
+run = "jactionlint --strict-exit"

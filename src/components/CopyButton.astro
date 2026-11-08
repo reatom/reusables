@@ -7,9 +7,17 @@ interface Props {
 const { text, label = 'Copy' } = Astro.props
 ---
 
-<button class="copy-btn" data-copy={text} type="button">
+<button
+  class="copy-btn"
+  data-copy={text}
+  type="button"
+  aria-label={`Copy ${text}`}
+>
   <span class="copy-label">{label}</span>
-  <span class="copy-check" aria-hidden="true">Copied!</span>
+  <span class="copy-check" aria-hidden="true">
+    Copied!
+  </span>
+  <span class="copy-status" role="status" aria-live="polite"></span>
 </button>
 
 <style>
@@ -40,6 +48,14 @@ const { text, label = 'Copy' } = Astro.props
     color: #6bcf9a;
   }
 
+  .copy-status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
   .copy-btn.copied .copy-label {
     display: none;
   }
@@ -49,27 +65,32 @@ const { text, label = 'Copy' } = Astro.props
   }
 </style>
 
-<script is:inline>
+<script>
   function initCopyButtons() {
-    document.querySelectorAll('.copy-btn').forEach((btn) => {
+    document.querySelectorAll<HTMLButtonElement>('.copy-btn').forEach((btn) => {
       if (btn.hasAttribute('data-copy-bound')) return
       btn.setAttribute('data-copy-bound', 'true')
       btn.addEventListener('click', (e) => {
         e.stopPropagation()
         const text = btn.dataset.copy
         if (!text) return
+        const status = btn.querySelector('.copy-status')
         if (!navigator.clipboard || !navigator.clipboard.writeText) {
-          console.warn('Clipboard API not available')
+          if (status)
+            status.textContent =
+              'Clipboard unavailable. Select and copy the command.'
           return
         }
         navigator.clipboard
           .writeText(text)
           .then(() => {
+            if (status) status.textContent = 'Copied to clipboard'
             btn.classList.add('copied')
             setTimeout(() => btn.classList.remove('copied'), 1500)
           })
           .catch(() => {
-            console.warn('Failed to copy to clipboard')
+            if (status)
+              status.textContent = 'Copy failed. Select and copy the command.'
           })
       })
     })

@@ -13,7 +13,11 @@ function getDescription(doc: string | null): string {
   const lines = doc.split('\n')
   for (const line of lines) {
     const trimmed = line.trim()
-    if (trimmed && !trimmed.startsWith('#')) return trimmed
+    if (trimmed && !trimmed.startsWith('#')) {
+      return trimmed
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+        .replace(/`([^`]+)`/g, '$1')
+    }
   }
   return ''
 }
@@ -21,25 +25,40 @@ function getDescription(doc: string | null): string {
 const description = getDescription(reusable.doc)
 ---
 
-<a href={`${import.meta.env.BASE_URL}${reusable.name}/`} class="reusable-card">
+<a
+  href={`${import.meta.env.BASE_URL}${reusable.name}/`}
+  class="reusable-card"
+  data-reusable
+  data-type={reusable.type}
+  data-search={`${reusable.name} ${description}`.toLowerCase()}
+>
   <div class="card-header">
     <span class="card-name">{reusable.name}</span>
     <TypeBadge type={reusable.type} />
   </div>
   {description && <p class="card-description">{description}</p>}
+  <span class="card-action">
+    View source & docs <span aria-hidden="true">↗</span>
+  </span>
 </a>
 
 <style>
   .reusable-card {
-    display: block;
-    background: var(--color-bg-surface);
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(
+      135deg,
+      var(--color-bg-surface),
+      var(--color-bg)
+    );
     border: 1px solid var(--color-gray-5);
     border-radius: var(--radius-md);
-    padding: var(--space-lg);
+    padding: 1.5rem;
     transition:
       border-color 0.15s,
       background 0.15s;
     color: inherit;
+    min-width: 0;
   }
 
   .reusable-card:hover {
@@ -53,12 +72,15 @@ const description = getDescription(reusable.doc)
     align-items: center;
     gap: var(--space-sm);
     margin-bottom: var(--space-sm);
+    justify-content: space-between;
+    flex-wrap: wrap;
   }
 
   .card-name {
     font-weight: 600;
     font-size: 1rem;
     color: var(--color-white);
+    overflow-wrap: anywhere;
   }
 
   .card-description {
@@ -66,8 +88,21 @@ const description = getDescription(reusable.doc)
     color: var(--color-gray-2);
     line-height: 1.5;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  .card-action {
+    display: flex;
+    justify-content: space-between;
+    padding-top: var(--space-lg);
+    margin-top: auto;
+    color: var(--color-gray-3);
+    font-size: 0.75rem;
+  }
+
+  .reusable-card:hover .card-action {
+    color: var(--color-accent-light);
   }
 </style>

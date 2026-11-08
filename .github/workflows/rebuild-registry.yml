@@ -1,74 +1,68 @@
 name: Rebuild registry
 
-# Maintainer-triggered rebuild of registry.json on a pull request.
-#
-# Contributors do NOT commit registry.json. When a PR is ready to merge, a
-# maintainer comments `/rebuild-registry` on it. This job checks out the PR head
-# branch, regenerates registry.json with `pnpm jsrepo:build`, and pushes the
-# result back to the branch so the committed registry matches the items on main
-# plus this PR.
-#
-# Notes:
-# - `issue_comment` events always run with the workflow file from the default
-#   branch, so this file must be merged to main to take effect.
-# - Pushing with the default GITHUB_TOKEN does NOT re-trigger `ci.yml` on the new
-#   commit (GitHub suppresses recursive workflow runs). If you require the CI
-#   check to re-run on the rebuilt commit before merge, add a repo secret
-#   REGISTRY_REBUILD_TOKEN (a PAT or GitHub App token with `contents: write`);
-#   the push below uses it when present and falls back to GITHUB_TOKEN otherwise.
-# - Only works for same-repo PR branches. The base-repo token cannot push to a
-#   fork's branch, so fork contributors must run `pnpm jsrepo:build` locally.
-
+# The command deliberately writes to a PR branch. Authorization runs without
+# write access, accepts only maintainers and same-repository PRs, and pins the
+# exact head before the write-enabled job checks it out.
+# jactionlint ignore=dangerous-triggers
 on:
   issue_comment:
     types: [created]
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: rebuild-registry-${{ github.event.issue.number }}
+  cancel-in-progress: false
 
 jobs:
-  rebuild:
-    # PR comment, contains the command, authored by a maintainer.
+  authorize:
     if: >-
       github.event.issue.pull_request &&
-      contains(github.event.comment.body, '/rebuild-registry') &&
+      github.event.comment.body == '/rebuild-registry' &&
       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      sha: ${{ steps.pr.outputs.sha }}
+      branch: ${{ steps.pr.outputs.branch }}
     steps:
-      - name: React to the command
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh api --method POST \
-            "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" \
-            -f content=eyes
-
-      - name: Checkout PR head
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.REGISTRY_REBUILD_TOKEN || secrets.GITHUB_TOKEN }}
-          # issue_comment carries no head ref; check out the PR by number.
-          ref: refs/pull/${{ github.event.issue.number }}/head
-          fetch-depth: 0
-
-      - name: Resolve PR head branch
+      - name: Authorize maintainer and resolve immutable PR head
         id: pr
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          COMMENTER: ${{ github.event.comment.user.login }}
+          PR_NUMBER: ${{ github.event.issue.number }}
         run: |
-          branch="$(gh pr view ${{ github.event.issue.number }} \
-            --repo ${{ github.repository }} --json headRefName -q .headRefName)"
-          echo "branch=$branch" >> "$GITHUB_OUTPUT"
-          # Land on the actual branch ref so we can push back to it.
-          git checkout -B "$branch"
+          permission="$(gh api "repos/$REPOSITORY/collaborators/$COMMENTER/permission" --jq .permission)"
+          case "$permission" in
+            admin|maintain|write) ;;
+            *) echo 'Only maintainers with write access may rebuild the registry.'; exit 1 ;;
+          esac
+          pr="$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER")"
+          test "$(jq -r .state <<< "$pr")" = open
+          test "$(jq -r .head.repo.full_name <<< "$pr")" = "$REPOSITORY"
+          echo "sha=$(jq -r .head.sha <<< "$pr")" >> "$GITHUB_OUTPUT"
+          echo "branch=$(jq -r .head.ref <<< "$pr")" >> "$GITHUB_OUTPUT"
 
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
+  rebuild:
+    needs: authorize
+    if: needs.authorize.outputs.sha != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout authorized PR commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          node-version: 22
-          cache: pnpm
+          token: ${{ secrets.REGISTRY_REBUILD_TOKEN || secrets.GITHUB_TOKEN }}
+          ref: ${{ needs.authorize.outputs.sha }}
+          persist-credentials: false
+
+      - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -76,29 +70,23 @@ jobs:
       - name: Rebuild registry
         run: pnpm jsrepo:build
 
-      - name: Commit and push if changed
-        id: commit
+      - name: Commit and push if the authorized head is still current
+        env:
+          GH_TOKEN: ${{ secrets.REGISTRY_REBUILD_TOKEN || secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          PR_BRANCH: ${{ needs.authorize.outputs.branch }}
+          PR_SHA: ${{ needs.authorize.outputs.sha }}
         run: |
           if git diff --quiet registry.json; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "registry.json already up to date."
+            echo 'registry.json already up to date.'
             exit 0
           fi
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add registry.json
-          git commit -m "chore: rebuild registry.json"
-          git push origin "HEAD:${{ steps.pr.outputs.branch }}"
-          echo "changed=true" >> "$GITHUB_OUTPUT"
-
-      - name: Report result
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          if [ "${{ steps.commit.outputs.changed }}" = "true" ]; then
-            body="✅ Rebuilt \`registry.json\` and pushed to \`${{ steps.pr.outputs.branch }}\`."
-          else
-            body="ℹ️ \`registry.json\` was already up to date; nothing to push."
-          fi
-          gh pr comment ${{ github.event.issue.number }} \
-            --repo ${{ github.repository }} --body "$body"
+          git commit -m 'chore: rebuild registry.json'
+          gh auth setup-git
+          # The lease rejects a concurrent contributor push, even if it rewrote
+          # the branch. Never replace code added after authorization.
+          git push --force-with-lease="refs/heads/$PR_BRANCH:$PR_SHA" \
+            "https://github.com/$REPOSITORY.git" "HEAD:refs/heads/$PR_BRANCH"

@@ -1,0 +1,26 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    cooldown:
+      default-days: 7
+    schedule:
+      interval: weekly
+    groups:
+      reatom:
+        patterns: ['@reatom/*']
+      vitest:
+        patterns: ['vitest', '@vitest/*']
+      remotion:
+        patterns: ['remotion', '@remotion/*']
+      react:
+        patterns: ['react', 'react-dom', '@types/react', '@types/react-dom']
+  - package-ecosystem: github-actions
+    directory: /
+    cooldown:
+      default-days: 7
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ['*']

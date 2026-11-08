@@ -2,6 +2,23 @@
 
 A collection of reusable Reatom factories and extensions distributed via [jsrepo](https://www.jsrepo.dev).
 
+## Development
+
+Use Node 26.13.0 and pnpm 12.18.0, or run `mise install` to install the pinned
+versions.
+
+```sh
+pnpm install --frozen-lockfile
+pnpm exec playwright install chromium
+pnpm dev
+```
+
+Open http://localhost:4321/reusables/. Run `mise run check` for formatting, types,
+Node and browser tests, and production site checks. `pnpm build` regenerates
+the registry and builds the website. See [CONTRIBUTING.md](CONTRIBUTING.md)
+for the contributor workflow and [remotion/README.md](remotion/README.md)
+for the promo video.
+
 ## Installation
 
 First, initialize jsrepo in your project:

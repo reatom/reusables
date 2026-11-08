@@ -1,8 +1,6 @@
-node_modules
-dist
+node_modules/
 .astro
+.var/
 
-__screenshots__
-
-# ralphex progress logs
+# Agent progress logs
 progress*.txt

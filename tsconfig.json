@@ -1,11 +1,3 @@
 {
-  "extends": "astro/tsconfigs/strict",
-  "compilerOptions": {
-    "types": ["node"],
-    "paths": {
-      "test": ["./src/reusables/test/test.ts"]
-    }
-  },
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"]
+  "extends": "./.config/tsconfig.json"
 }

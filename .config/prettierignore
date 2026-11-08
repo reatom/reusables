@@ -1,2 +1,5 @@
 pnpm-lock.yaml
 registry.json
+node_modules/
+.astro/
+.var/

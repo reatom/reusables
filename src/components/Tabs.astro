@@ -11,22 +11,25 @@ interface Props {
 
 const { tabs, defaultTab } = Astro.props
 const activeTab = defaultTab || tabs[0]?.id
+const id = `tabs-${crypto.randomUUID()}`
 ---
 
 <div class="tabs-container">
   <div class="tabs-header" role="tablist">
-    {
-      tabs.map((tab) => (
-        <button
-          role="tab"
-          class={`tab-button ${tab.id === activeTab ? 'active' : ''}`}
-          data-tab={tab.id}
-          aria-selected={tab.id === activeTab}
-        >
-          {tab.label}
-        </button>
-      ))
-    }
+    {tabs.map((tab) => (
+      <button
+        role="tab"
+        class={`tab-button ${tab.id === activeTab ? 'active' : ''}`}
+        data-tab={tab.id}
+        id={`${id}-${tab.id}`}
+        aria-controls={`${id}-${tab.id}-panel`}
+        aria-selected={tab.id === activeTab}
+        tabindex={tab.id === activeTab ? 0 : -1}
+        type="button"
+      >
+        {tab.label}
+      </button>
+    ))}
   </div>
   <div class="tabs-content">
     <slot />
@@ -39,15 +42,26 @@ const activeTab = defaultTab || tabs[0]?.id
     const panels = container.querySelectorAll<HTMLElement>('.tab-panel')
 
     buttons.forEach((button) => {
+      const panel = Array.from(panels).find(
+        (panel) => panel.dataset.tab === button.dataset.tab,
+      )
+      if (panel) {
+        panel.id = `${button.id}-panel`
+        panel.setAttribute('role', 'tabpanel')
+        panel.setAttribute('aria-labelledby', button.id)
+        panel.tabIndex = 0
+      }
       button.addEventListener('click', () => {
         const tabId = button.dataset.tab
 
         buttons.forEach((b) => {
           b.classList.remove('active')
           b.setAttribute('aria-selected', 'false')
+          b.tabIndex = -1
         })
         button.classList.add('active')
         button.setAttribute('aria-selected', 'true')
+        button.tabIndex = 0
 
         panels.forEach((panel) => {
           if (panel.dataset.tab === tabId) {
@@ -67,14 +81,26 @@ const activeTab = defaultTab || tabs[0]?.id
           }
         })
       })
+      button.addEventListener('keydown', (event) => {
+        const index = Array.from(buttons).indexOf(button)
+        let next: HTMLButtonElement | undefined
+        if (event.key === 'ArrowRight')
+          next = buttons[(index + 1) % buttons.length]
+        if (event.key === 'ArrowLeft')
+          next = buttons[(index - 1 + buttons.length) % buttons.length]
+        if (event.key === 'Home') next = buttons[0]
+        if (event.key === 'End') next = buttons[buttons.length - 1]
+        if (next) {
+          event.preventDefault()
+          next.focus()
+          next.click()
+        }
+      })
     })
   })
 </script>
 
 <style>
-  .tabs-container {
-  }
-
   .tabs-header {
     display: flex;
     border-bottom: 1px solid var(--color-gray-5);
@@ -111,9 +137,6 @@ const activeTab = defaultTab || tabs[0]?.id
     right: 0;
     height: 2px;
     background: var(--color-white);
-  }
-
-  .tabs-content :global(.tab-panel) {
   }
 
   .tabs-content :global(.tab-panel[hidden]) {

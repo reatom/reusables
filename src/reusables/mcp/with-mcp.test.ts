@@ -12,8 +12,14 @@ const client: MCPModelContextClient = {
   requestUserInteraction: async (callback) => callback(),
 }
 
+// The fake stores heterogeneous tools, like the browser's schema-driven registry.
+// A method signature lets it retain each tool's specific input contract.
+interface StoredTool extends Omit<MCPModelContextTool, 'execute'> {
+  execute(input: object, client: MCPModelContextClient): unknown
+}
+
 const createModelContext = () => {
-  const tools = new Map<string, MCPModelContextTool>()
+  const tools = new Map<string, StoredTool>()
   const modelContext: MCPModelContext = {
     provideContext(options = {}) {
       tools.clear()
@@ -62,13 +68,13 @@ describe('withMCP - actions', () => {
     )
 
     const unregister = add.registerMCP()
-    expect(registerToolSpy).toBeCalledTimes(1)
+    expect(registerToolSpy).toHaveBeenCalledTimes(1)
     expect(await tools.get('add')!.execute({ left: 2, right: 3 }, client)).toBe(
       5,
     )
     unregister()
-    expect(unregisterToolSpy).toBeCalledTimes(1)
-    expect(unregisterToolSpy).toBeCalledWith('add')
+    expect(unregisterToolSpy).toHaveBeenCalledTimes(1)
+    expect(unregisterToolSpy).toHaveBeenCalledWith('add')
   })
 
   test('duplicate registration is caller responsibility', () => {
@@ -76,11 +82,11 @@ describe('withMCP - actions', () => {
       createModelContext()
     const ping = action(() => 'pong', 'ping').extend(withMCP({ modelContext }))
     const unregister = ping.registerMCP()
-    expect(registerToolSpy).toBeCalledTimes(1)
+    expect(registerToolSpy).toHaveBeenCalledTimes(1)
     expect(() => ping.registerMCP()).toThrow('already registered')
     unregister()
-    expect(unregisterToolSpy).toBeCalledTimes(1)
-    expect(unregisterToolSpy).toBeCalledWith('ping')
+    expect(unregisterToolSpy).toHaveBeenCalledTimes(1)
+    expect(unregisterToolSpy).toHaveBeenCalledWith('ping')
   })
 
   test('autoRegister registers immediately on extend', () => {
@@ -88,7 +94,7 @@ describe('withMCP - actions', () => {
     action(() => 'pong', 'ping').extend(
       withMCP({ autoRegister: true, modelContext }),
     )
-    expect(registerToolSpy).toBeCalledTimes(1)
+    expect(registerToolSpy).toHaveBeenCalledTimes(1)
   })
 
   test('returns noop unsubscribe when no modelContext available', () => {
@@ -134,7 +140,7 @@ describe('withMCP - actions', () => {
       withMCP({ modelContext, annotations: { readOnlyHint: true } }),
     )
     const unregister = ping.registerMCP()
-    expect(registerToolSpy).toBeCalledWith(
+    expect(registerToolSpy).toHaveBeenCalledWith(
       expect.objectContaining({ annotations: { readOnlyHint: true } }),
     )
     unregister()
@@ -171,7 +177,7 @@ describe('withMCP - atoms', () => {
     // withInitHook fires asynchronously after the first atom access
     user()
     await Promise.resolve()
-    expect(registerToolSpy).toBeCalledTimes(1)
+    expect(registerToolSpy).toHaveBeenCalledTimes(1)
     expect(await tools.get('user')!.execute({}, client)).toEqual({
       id: 'u1',
       role: 'admin',
@@ -197,7 +203,7 @@ describe('withMCP - atoms', () => {
     )
     flagAtom()
     await Promise.resolve()
-    expect(registerToolSpy).toBeCalledWith(
+    expect(registerToolSpy).toHaveBeenCalledWith(
       expect.objectContaining({ annotations: { readOnlyHint: true } }),
     )
   })
@@ -216,7 +222,9 @@ describe('withMCP - atoms', () => {
       withMCP({
         modelContext,
         // params provided but must be ignored for atoms
-        params: () => [999] as Parameters<typeof counter>,
+        params: () => {
+          throw new Error('Atom params must not run')
+        },
       }),
     )
     counter()

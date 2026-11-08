@@ -1,0 +1,19 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "types": ["node"],
+    "paths": {
+      "test": ["../src/reusables/test/test.ts"]
+    },
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
+  "include": [
+    "../.var/astro/types.d.ts",
+    "../src/**/*",
+    "./*.ts",
+    "./*.mts",
+    "../jsrepo.config.mts"
+  ],
+  "exclude": ["../.var", "../remotion"]
+}
